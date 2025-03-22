@@ -1,0 +1,12 @@
+[04-Jun-2024 09:11:52 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/polnamac/public_html/ppid/config/database.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/polnamac/public_html/ppid/config/database.php on line 18
+[05-Jun-2024 02:19:49 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/polnamac/public_html/ppid/config/database.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/polnamac/public_html/ppid/config/database.php on line 18
+[04-Aug-2024 19:49:50 UTC] PHP Fatal error:  Uncaught Error: Call to undefined function env() in /home/polnamac/public_html/ppid/config/database.php:18
+Stack trace:
+#0 {main}
+  thrown in /home/polnamac/public_html/ppid/config/database.php on line 18
