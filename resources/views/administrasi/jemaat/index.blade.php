@@ -43,8 +43,9 @@
                                 <th class="text-uppercase font-weight-bolder" width="30px">N I A</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">Nama Jemaat</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">Alamat Domisili</th>
+                                <th class="text-uppercase font-weight-bolder ps-2">No. Telepon/HP</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">Status Keanggotaan</th>
-                                <th class=""></th>
+                                <!-- <th class=""></th> -->
                             </tr>
                         </thead>
                         <tbody>
@@ -54,21 +55,19 @@
                                     // Cek apakah jemaat adalah kepala keluarga (memiliki data di kk_jemaat)
                                     $isKK = $item->kkJemaat ? true : false;
                                 @endphp
-                                <tr>
+                                <tr onclick="window.location='{{ route('administrasi.data-jemaat.show', $item->id_jemaat) }}';" style="cursor: pointer;">
                                     <td class="align-middle">{!! $isKK ? '<strong>' . $no . '.</strong>' : $no . '.' !!}</td>
                                     <td class="text-center font-weight-bold" width="30px" style="word-wrap: break-word; white-space: normal !important;">
                                         {!! $isKK ? '<strong>' . $item->nia . '</strong>' : $item->nia !!}
                                     </td>
                                     <td class="align-left">
-                                        <a href="{{ route('administrasi.data-jemaat.show', $item->id_jemaat) }}" style="color:#000">
-                                            {!! $isKK ? '<strong>' . $item->nama_jemaat . '</strong>' : $item->nama_jemaat !!}
-                                            @if($item->status_aktif == "Meninggal Dunia")
-                                                <sup><i class="fa fa-solid fa-cross" style="color:purple;"></i></sup>
-                                            @endif
-                                            @if($item->status_aktif == "Atestasi")
-                                                <sup><i class="fa fa-solid fa-share" style="color:red"></i></sup>
-                                            @endif
-                                        </a>
+                                        {!! $isKK ? '<strong>' . $item->nama_jemaat . '</strong>' : $item->nama_jemaat !!}
+                                        @if($item->status_aktif == "Meninggal Dunia")
+                                            <sup><i class="fa fa-solid fa-cross" style="color:purple;"></i></sup>
+                                        @endif
+                                        @if($item->status_aktif == "Atestasi")
+                                            <sup><i class="fa fa-solid fa-share" style="color:red"></i></sup>
+                                        @endif
                                     </td>
                                     <td class="text-left">
                                         @if ($isKK)
@@ -80,16 +79,23 @@
                                         @endif
                                     </td>
                                     <td class="text-center">
-                                        {!! $isKK ? '<strong>' . $item->status_aktif . '</strong>' : $item->status_aktif !!}
+                                        {!! $isKK ? '<strong>' . $item->telepon . '</strong>' : $item->telepon !!}
                                     </td>
-                                    <td class="align-middle text-center">
-                                        <a class="btn btn-link text-dark px-1 mb-0" href="{{ route('administrasi.data-jemaat.edit', $item->nia) }}">
+                                    <td class="text-center">
+                                        @php
+                                            $badgeClass = $item->status_aktif == 'Aktif' ? 'bg-gradient-success' :
+                                                        ($item->status_aktif == 'Meninggal Dunia' ? 'bg-gradient-purple' : 'bg-gradient-danger');
+                                        @endphp
+                                        <span class="badge {{ $badgeClass }} text-white" style="font-size:9pt">{!! $isKK ? '<strong>' . $item->status_aktif . '</strong>' : $item->status_aktif !!}</span>
+                                    </td>
+                                    <!-- <td class="align-middle text-center">
+                                        <a class="btn btn-link text-dark px-1 mb-0" href="{{ route('administrasi.data-jemaat.edit', $item->id_jemaat) }}">
                                             <i class="fas fa-pencil-alt text-dark me-1" aria-hidden="true"></i>
                                         </a>
-                                        <a class="btn btn-link text-danger text-gradient px-1 mb-0" data-confirm-delete="true" href="{{ route('administrasi.data-jemaat.destroy', $item->nia) }}">
+                                        <a class="btn btn-link text-danger text-gradient px-1 mb-0" data-confirm-delete="true" href="{{ route('administrasi.data-jemaat.destroy', $item->id_jemaat) }}">
                                             <i class="far fa-trash-alt me-1"></i>
                                         </a>
-                                    </td>
+                                    </td> -->
                                 </tr>
                                 @php $no++; @endphp
                             @endforeach

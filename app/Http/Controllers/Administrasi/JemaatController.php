@@ -31,7 +31,17 @@ class JemaatController extends Controller
     {
         $title  = 'Hapus Data!';
         $text   = "Data akan dihapus, Anda Yakin?";
-        $btn    = '<a href="' . route('administrasi.data-jemaat.create') . '" class="btn btn-info bg-gradient-info btn-sm mt-3 ms-auto">Jemaat Baru</a>';
+        $btn    = '<a href="#" class="btn btn-warning bg-gradient-warning btn-sm mt-3 ms-auto dropdown" id="navbar-default_dropdown_1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Import</a>
+                    <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbar-default_dropdown_1">
+                        <a class="dropdown-item" href="'. route('download.template.excel.import', ['filename' => 'data-jemaat.xlsx']) .'">Download Template</a>
+                        <form action="'.route('administrasi.data-jemaat.import').'" method="POST" enctype="multipart/form-data" id="formImport">
+                            '. csrf_field() .'
+                            
+                            <input type="file" name="file" id="file" class="form-control" style="display: none;" accept=".xlsx,.xls" required>
+                            <a href="#" class="dropdown-item" id="importLink">Upload</a>
+                        </form>
+                    </div>
+                    <a href="' . route('administrasi.data-jemaat.create') . '" class="btn btn-info bg-gradient-info btn-sm mt-3 ms-auto">Jemaat Baru</a>';
         $page   = 'Administrasi';
         $judul  = 'Data Jemaat';
         $subjudul = 'Administrasi Jemaat';
@@ -39,7 +49,7 @@ class JemaatController extends Controller
 
         confirmDelete($title, $text);
 
-        $item   = Jemaat::with(['kkJemaat', 'hubunganKeluarga.kkJemaat'])->orderBy('nia')->get();
+        $item   = Jemaat::with(['kkJemaat', 'hubunganKeluarga.kkJemaat'])->get();
 
         return view('administrasi.jemaat.index',[
             'item' => $item,
@@ -57,21 +67,24 @@ class JemaatController extends Controller
      */
     public function create()
     {
-        $btn    = '<a href="' .route('administrasi.jemaat.index') . '" class="btn btn-secondary bg-gradient-secondary btn-sm mt-3 ms-auto">Kembali</a>';
+        $btn    = '<a href="' .route('administrasi.data-jemaat.index') . '" class="btn btn-secondary bg-gradient-secondary btn-sm mt-3 ms-auto">Kembali</a>';
         $page   = 'Content Management';
         $judul  = 'Jemaat';
         $subjudul = 'Jemaat Baru';
         $tombol = $btn;
-        $aksi = '' .route('administrasi.jemaat.store').'';
+        $aksi = '' .route('administrasi.data-jemaat.store').'';
 
-        return view('administrasi.jemaat.form',[
-            'btn'    => $btn,
-            'page'  => $page,
-            'judul'  => $judul,
-            'subjudul'  => $subjudul,
-            'tombol'  => $tombol, 
-            'aksi' => $aksi,
-        ]);
+        $kk = KKJemaat::with('jemaatKK')->get();
+
+        return view('administrasi.jemaat.form', compact(
+            'btn',
+            'page',
+            'judul',
+            'subjudul',
+            'tombol', 
+            'aksi',
+            'kk',
+        ));
     }
 
     /**
@@ -117,58 +130,77 @@ class JemaatController extends Controller
     {
         $title  = 'Hapus Data!';
         $text   = "Data akan dihapus, Anda Yakin?";
-        $btn    = '<a href="' .route('administrasi.data-jemaat.index') . '" class="btn btn-secondary bg-gradient-secondary btn-sm mt-3 ms-auto">Kembali</a>';
+        $btn    = '<a href="' . route('administrasi.data-jemaat.index') . '" class="btn btn-secondary bg-gradient-secondary btn-sm mt-3 ms-auto">Kembali</a>';
         $page   = 'Administrasi';
         $judul  = 'Data Jemaat';
         $subjudul = 'Administrasi Jemaat';
-        $tombol = $btn; 
-
-        // Ambil data jemaat berdasarkan ID
-        //$jemaat = Jemaat::with(['kkJemaat', 'hubunganKeluarga'])->findOrFail($id);
-        $jemaat = Jemaat::where('id_jemaat', $id)->first();
+        $tombol = $btn;
         
+        confirmDelete($title, $text);
+    
+        // Ambil data jemaat berdasarkan ID
+        $jemaat = Jemaat::with(['kkJemaat', 'hubunganKeluarga'])->where('id_jemaat', $id)->firstOrFail();
+        
+        // Cek apakah jemaat adalah kepala keluarga atau anggota keluarga
         $kk = KkJemaat::where('id_jemaat', $jemaat->id_jemaat)->first();
-        if($kk){
-            $dtkk = $kk;
-        }else{
-            echo $dtkk = HubunganKeluarga::where('id_jemaat', $id)->with('kkjemaat', 'jemaat.kkjemaat')->first();
+        
+        if ($kk) {
+            // Jemaat adalah kepala keluarga
+            $kepalaKeluarga = $kk;
+            $id_kk = $kk->id_kk_jemaat;
+        } else {
+            // Jemaat adalah anggota keluarga
+            $hubungan = HubunganKeluarga::where('id_jemaat', $id)->with('kkJemaat')->first();
+            $kepalaKeluarga = $hubungan?->kkJemaat;
+            $id_kk = $hubungan?->id_kk_jemaat;
         }
-        // Ambil data kepala keluarga (KK) berdasarkan ID KK yang sama
-        $kepalaKeluarga = KkJemaat::where('id_kk_jemaat', $jemaat->id_kk_jemaat)->first();
-
-        // Ambil semua anggota keluarga berdasarkan ID KK
-        $anggotaKeluarga = HubunganKeluarga::where('id_kk_jemaat', $jemaat->id_kk_jemaat)->with('jemaat')->get();
-
-        return view('administrasi.jemaat.detail', compact('kepalaKeluarga', 'anggotaKeluarga', 'jemaat'),[
-            'btn'    => $btn,
-            'page'  => $page,
-            'judul'  => $judul,
-            'subjudul'  => $subjudul,
-            'tombol'  => $tombol, 
-        ]);
+    
+        // Ambil semua anggota keluarga be  rdasarkan ID KK
+        $anggotaKeluarga = HubunganKeluarga::where('id_kk_jemaat', $id_kk)->with('jemaat')->get();
+        $aksi = '' .route('administrasi.data-jemaat.update', $id).'';
+    
+        return view('administrasi.jemaat.detail', compact(
+            'kepalaKeluarga', 
+            'anggotaKeluarga', 
+            'jemaat', 
+            'btn',
+            'page',
+            'judul',
+            'subjudul',
+            'tombol',
+            'id_kk',
+            'aksi',
+        ));
     }
+    
 
     public function edit($Jemaat)
     {
-        $item =  Jemaat::where('id', $Jemaat)->firstOrFail();
+        $item = Jemaat::with([
+            'kkJemaat',
+            'hubunganKeluarga.kkJemaat.jemaatKK'
+        ])->where('id_jemaat', $Jemaat)->firstOrFail();
         
         $btn    = '<a href="' .route('administrasi.data-jemaat.index') . '" class="btn btn-secondary bg-gradient-secondary btn-sm mt-3 ms-auto">Kembali</a>';
         $page   = 'Content Management';
-        $judul  = 'Jemaat';
-        $subjudul = 'Update Jemaat';
+        $judul  = 'Adminsitrasi Jemaat';
+        $subjudul = 'Update Data Jemaat';
         $tombol = $btn; 
 
-        $aksi = '' .route('administrasi.data-jemaat.update', $item->id).'';
+        $aksi = '';
+        $kk = KKJemaat::with('jemaatKK')->get();
 
-        return view('administrasi.data-jemaat.form', compact('jemaat'),[
-            'btn'       => $btn,
-            'page'      => $page,
-            'judul'     => $judul,
-            'subjudul'  => $subjudul,
-            'tombol'    => $tombol, 
-            'item'      => $item,
-            'aksi'      => $aksi,
-        ]);
+        //dd($item);
+        return view('administrasi.jemaat.form', compact('item',
+            'btn',
+            'page',
+            'judul',
+            'subjudul',
+            'tombol', 
+            'item',
+            'aksi',
+            'kk',
+        ));
     }
 
     /**
@@ -176,38 +208,80 @@ class JemaatController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $Jemaat = Jemaat::where('id', $id)->firstOrFail();
+        DB::beginTransaction(); // Mulai transaksi
 
-        if($request->publish != ''){
-            $publish = 'Y';
-        }else{
-            $publish = 'N';
-        }
-
-        if($request->role == 'Pangan')
-        {
-            $roleid = '1';
-        }elseif($request->role == 'Pertanian'){
-            $roleid = '2';
-        }else{
-            $roleid = '0';
-        }
-        
-        
-        $Jemaat->name     = $request->nama;
-        $Jemaat->email    = $request->email;
-        if($request->password != ''){
-            $Jemaat->password = Hash::make($request->password);
-        }
-        $Jemaat->aktif    = $publish;
-        $Jemaat->role     = $request->role;
-        $Jemaat->role_id  = $roleid;
-        $Jemaat->image    = '08_03_05_2021_05_25_Administrator.jpg';
+        try {
+            $kk = KkJemaat::where('id_kk_jemaat', $request->id_kk)->firstOrFail();
             
-        $Jemaat->save();
+            // Simpan data kepala keluarga
+            $KKjemaat = Jemaat::where('id_jemaat', $id)->firstOrFail();
+            $KKjemaat->nama_jemaat    =   $request->kepala_keluarga;
+            $KKjemaat->gender         =   $request->p_l_kk;
+            $KKjemaat->telepon        =   $request->telepon_kk;
+            $KKjemaat->tempat_lahir   =   $request->tempat_lahir_kk;
+            $KKjemaat->tanggal_lahir  =   $request->tanggal_lahir_kk;
+            $KKjemaat->tanggal_baptis =   $request->tanggal_baptis_kk;
+            $KKjemaat->tanggal_sidi   =   $request->tanggal_sidi_kk;
+            $KKjemaat->tanggal_nikah  =   $request->tanggal_nikah_kk;
+            $KKjemaat->status_menikah =   $request->status_menikah_kk;
+            $KKjemaat->asal_gereja    =   $request->asal_gereja_kk;
+            $KKjemaat->tanggal_terdaftar = $request->tanggal_terdaftar_kk;
+            $KKjemaat->status_aktif   =   $request->status_aktif_kk;
+            $KKjemaat->keterangan     =   $request->keterangan_kk;
+            $KKjemaat->save();
 
+            // Update Anggota Keluarga
+            if ($request->has('nia_anggota')) {
+                foreach ($request->nia_anggota as $index => $nia) {
+                    // Cari anggota berdasarkan NIA
+                    $anggota = Jemaat::where('nia', $nia)->first();
 
-        return redirect()->route('administrasi.data-jemaat.index')->with('success', 'Berhasil mengubah data.');
+                    if (!$anggota) {
+                        // Buat anggota baru jika tidak ditemukan
+                        $anggota = new Jemaat();
+                    }
+
+                    // Isi data anggota
+                    $anggota->nia = $nia;
+                    $anggota->nama_jemaat = $request->nama_jemaat[$index];
+                    $anggota->gender = $request->p_l[$index];
+                    $anggota->tempat_lahir = $request->tempat_lahir[$index];
+                    $anggota->tanggal_lahir = $request->tanggal_lahir[$index];
+                    $anggota->tanggal_baptis = $request->tanggal_baptis[$index];
+                    $anggota->tanggal_sidi = $request->tanggal_sidi[$index];
+                    $anggota->asal_gereja = $request->asal_gereja[$index];
+                    $anggota->tanggal_terdaftar = $request->tanggal_terdaftar[$index];
+                    $anggota->status_aktif = $request->status_aktif[$index];
+                    $anggota->keterangan = $request->keterangan[$index];
+
+                    // Simpan data (update atau insert)
+                    $anggota->save();
+                    $idJemaat = $anggota->id_jemaat; // ID yang baru dibuat oleh database
+
+                    // Simpan hubungan keluarga
+                    HubunganKeluarga::updateOrCreate(
+                        [
+                            'id_jemaat' => $idJemaat, // ID Jemaat yang baru dibuat
+                        ],
+                        [
+                            'id_kk_jemaat' => $request->id_kk, // Kepala keluarga
+                            'hubungan_keluarga' => $request->hubungan_keluarga[$index]
+                        ]
+                    );
+                }
+            }
+            
+            $kk->alamat = $request->alamat;        
+            $kk->save();
+
+            DB::commit();
+            return redirect()->back()->with('success', 'Data berhasil diupdate!');
+        } catch (\Exception $e) {
+            DB::rollBack();
+            
+            // Tampilkan error ke dalam session flash message
+            return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
+        }
     }
 
     /**
@@ -216,15 +290,27 @@ class JemaatController extends Controller
     public function destroy($id)
     {
         try {
-            $Jemaat = Jemaat::where('id', $id)->firstOrFail();
+            $hubungan = HubunganKeluarga::where('id_jemaat', $id)->first();
+            if ($hubungan) {
+                $hubungan->delete();
+            }
+            $Jemaat = Jemaat::where('id_jemaat', $id)->firstOrFail();
             $Jemaat->delete();
 
-            return redirect('web/data-jemaat')->with(['success' => 'Jemaat berhasil dihapus.']);
+            if (request()->ajax()) {
+                return response()->json(['success' => 'Jemaat berhasil dihapus.']);
+            }
+
+            return redirect()->back()->with(['success' => 'Jemaat berhasil dihapus.']);
 
         } catch (\Exception $e) {
-            return redirect('web/data-jemaat')->with('error', 'Gagal, Jemaat tidak dapat dihapus.');
-        }            
+            if (request()->ajax()) {
+                return response()->json(['error' => 'Gagal menghapus data: ' . $e->getMessage()], 500);
+            }
+            return redirect()->back()->with('error', 'Gagal menghapus data: ' . $e->getMessage());
+        }
     }
+
 
     public function publish($id)
     {
@@ -246,3 +332,4 @@ class JemaatController extends Controller
     }
    
 }
+

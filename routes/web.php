@@ -86,6 +86,9 @@ Route::middleware(['auth', 'active', 'verify.otp'])->group(function () {
         });
 
         Route::prefix('administrasi')->name('administrasi.')->middleware(['role:Administrator'])->group(function () {
+            Route::post('data-jemaat/import', [JemaatController::class, 'import'])->name('data-jemaat.import');
+            //Route::get('data-jemaat/{id}', [JemaatController::class, 'show'])->name('data-jemaat.get');
+            //Route::post('data-jemaat/{id}', [JemaatController::class, 'show'])->name('data-jemaat.post');
             Route::resource('data-jemaat', JemaatController::class);
         });
     });
