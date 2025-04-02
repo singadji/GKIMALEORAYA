@@ -266,7 +266,7 @@
     // Update nomor urut baris
     function updateRowNumbers() {
         $("#tableBody tr").each(function (index) {
-            $(this).find("td:first").text(index + 1);
+            $(this).find("td:first").text(index);
         });
     }
 });

@@ -86,7 +86,7 @@
                                             $badgeClass = $item->status_aktif == 'Aktif' ? 'bg-gradient-success' :
                                                         ($item->status_aktif == 'Meninggal Dunia' ? 'bg-gradient-purple' : 'bg-gradient-danger');
                                         @endphp
-                                        <span class="badge {{ $badgeClass }} text-white" style="font-size:9pt">{!! $isKK ? '<strong>' . $item->status_aktif . '</strong>' : $item->status_aktif !!}</span>
+                                        <span class="badge {{ $badgeClass }} text-white">{!! $isKK ? '<strong>' . $item->status_aktif . '</strong>' : $item->status_aktif !!}</span>
                                     </td>
                                     <!-- <td class="align-middle text-center">
                                         <a class="btn btn-link text-dark px-1 mb-0" href="{{ route('administrasi.data-jemaat.edit', $item->id_jemaat) }}">
@@ -107,4 +107,17 @@
         </div>
         @include('layouts.footers.auth.footer')
     </div>
+
+    <script>
+        document.getElementById('importLink').addEventListener('click', function (e) {
+            e.preventDefault();
+            document.getElementById('file').click();
+        });
+
+        document.getElementById('file').addEventListener('change', function () {
+            if (this.files.length > 0) {
+                document.getElementById('formImport').submit();
+            }
+        });
+    </script>
 @endsection
