@@ -117,13 +117,13 @@
                                 <tr>
                                     <th>Tanggal Baptis</th>
                                     <td>
-                                        <input type="date" required id="ubahdata" name="tanggal_baptis_kk" value="{{ $kepalaKeluarga->jemaatKK->tanggal_baptis ?? '-' }}" placeholder="Tanggal Baptis" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                        <input type="date" id="ubahdata" name="tanggal_baptis_kk" value="{{ $kepalaKeluarga->jemaatKK->tanggal_baptis ?? '-' }}" placeholder="Tanggal Baptis" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>Tanggal Sidi</th>
                                     <td>
-                                        <input type="date" required id="ubahdata" name="tanggal_sidi_kk" value="{{ $kepalaKeluarga->jemaatKK->tanggal_sidi ?? '-' }}" placeholder="Tanggal Sidi" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                        <input type="date" id="ubahdata" name="tanggal_sidi_kk" value="{{ $kepalaKeluarga->jemaatKK->tanggal_sidi ?? '-' }}" placeholder="Tanggal Sidi" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                     </td>
                                 </tr>
                                 <tr>
@@ -269,10 +269,10 @@
                                             <input type="date" required id="ubahdata" style="width:120px;"  name="tanggal_lahir[]" value="{{ $anggota->jemaat->tanggal_lahir ?? 'Tidak Diketahui' }}" placeholder="Tanggal Lahir" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                         </td>
                                         <td class="text-center">
-                                            <input type="date" required id="ubahdata" style="width:120px;"  name="tanggal_baptis[]" value="{{ $anggota->jemaat->tanggal_baptis ?? 'Tidak Diketahui' }}" placeholder="Tanggal Baptis" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                            <input type="date" id="ubahdata" style="width:120px;"  name="tanggal_baptis[]" value="{{ $anggota->jemaat->tanggal_baptis ?? 'Tidak Diketahui' }}" placeholder="Tanggal Baptis" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                         </td>
                                         <td class="text-center">
-                                            <input type="date" required id="ubahdata" style="width:120px;"  name="tanggal_sidi[]" value="{{ $anggota->jemaat->tanggal_sidi ?? 'Tidak Diketahui' }}" placeholder="Tanggal Sidi" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                            <input type="date" id="ubahdata" style="width:120px;"  name="tanggal_sidi[]" value="{{ $anggota->jemaat->tanggal_sidi ?? 'Tidak Diketahui' }}" placeholder="Tanggal Sidi" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                         </td>
                                         <td class="text-center">
                                             <input type="text" required id="ubahdata" style="width:150px;"  name="asal_gereja[]" value="{{ $anggota->jemaat->asal_gereja ?? 'Tidak Diketahui' }}" placeholder="" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
@@ -345,8 +345,8 @@
             </td>
             <td><input type="text" required class="form-control form-control-sm" name="tempat_lahir[]" placeholder="Tempat Lahir"></td>
             <td><input type="date" required class="form-control form-control-sm" name="tanggal_lahir[]"></td>
-            <td><input type="date" required class="form-control form-control-sm" name="tanggal_baptis[]"></td>
-            <td><input type="date" required class="form-control form-control-sm" name="tanggal_sidi[]"></td>
+            <td><input type="date"  class="form-control form-control-sm" name="tanggal_baptis[]"></td>
+            <td><input type="date"  class="form-control form-control-sm" name="tanggal_sidi[]"></td>
             <td><input type="text" required class="form-control form-control-sm" name="asal_gereja[]" placeholder="Gereja Asal"></td>
             <td><input type="date" class="form-control form-control-sm" name="tanggal_terdaftar[]"></td>
             <td>
