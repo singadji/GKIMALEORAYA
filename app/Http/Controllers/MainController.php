@@ -14,11 +14,7 @@ use App\Models\IdentitasWeb;
 use App\Models\Slider;
 use App\Models\Album;
 
-use App\Models\MasterKomoditas;
-use App\Models\MasterPasar;
-use App\Models\MasterBulan;
-use App\Models\HargaPangan;
-use App\Models\HargaPanganDetail;
+
 use App\Helpers\FunctionHelper;
 
 use Illuminate\Support\Facades\DB;

@@ -60,7 +60,11 @@
                                 <tr>
                                     <th width="20px">P / L</th>
                                     <td>
-                                        <input type="text" required name="p_l_kk" value="{{ old('gender') }}" placeholder="" class="form-control form-control-sm">
+                                        <select name="p_l_kk" class="form-control form-control-sm select2" data-toggle="select" required>
+                                            <option value="">-- Pilih --</option>
+                                            <option value="P">Perempuan</option>
+                                            <option value="L">Laki-laki</option>
+                                        </select>
                                     </td>
                                 </tr>
                                 <tr>
@@ -95,13 +99,13 @@
                                 <tr>
                                     <th>Tanggal Baptis</th>
                                     <td>
-                                        <input type="date" required name="tanggal_baptis_kk" value="{{ old('tanggal_baptis') }}" placeholder="Tanggal Baptis" class="form-control form-control-sm">
+                                        <input type="date" name="tanggal_baptis_kk" value="{{ old('tanggal_baptis') }}" placeholder="Tanggal Baptis" class="form-control form-control-sm">
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>Tanggal Sidi</th>
                                     <td>
-                                        <input type="date" required name="tanggal_sidi_kk" value="{{ old('tanggal_sidi') }}" placeholder="Tanggal Sidi" class="form-control form-control-sm">
+                                        <input type="date"  name="tanggal_sidi_kk" value="{{ old('tanggal_sidi') }}" placeholder="Tanggal Sidi" class="form-control form-control-sm">
                                     </td>
                                 </tr>
                                 <tr>
@@ -109,7 +113,7 @@
                                     <td>
                                         <div class="row">
                                             <div class="col-md-6">
-                                                <select class="form-control-sm select2-hidden-accessible" required data-toggle="select" name="status_menikah_kk">
+                                                <select class="form-control-sm select2" required data-toggle="select" name="status_menikah_kk">
                                                     <option>--pilih--</option>
                                                     <option value="Belum Menikah">Belum Menikah </option>
                                                     <option value="Menikah">Menikah</option>
@@ -145,9 +149,9 @@
                                 <tr>
                                     <th>Status Keanggotaan</th>
                                     <td>
-                                        <div class="row" id="status-row" style="display: none;">
+                                        <div class="row" id="status-row">
                                             <div class="col-md-6">
-                                                <select class="form-control-sm select2-hidden-accessible" required data-toggle="select" name="status_aktif_kk">
+                                                <select class="form-control-sm select2" required data-toggle="select" name="status_aktif_kk">
                                                     <option>--pilih--</option>
                                                     <option value="Aktif">Aktif</option>
                                                     <option value="Atestasi">Atestasi</option>
@@ -218,7 +222,13 @@
             <td class="text-center"></td>
             <td><input type="text" required style="width:70px;" name="nia_anggota[]" placeholder="NIA" class="form-control form-control-sm nia"></td>
             <td><input type="text" required class="form-control form-control-sm" name="nama_jemaat[]" placeholder="Nama Jemaat"></td>
-            <td><input type="text" required class="form-control form-control-sm" name="p_l[]" placeholder="Jenis Kelamin"></td>
+            <td>
+                <select class="form-control form-control-sm select2" data-toggle="select" required name="p_l[]">
+                        <option value="">-- Pilih --</option>
+                        <option value="P">Perempuan</option>
+                        <option value="L">Laki-laki</option>
+                    </select>
+            </td>
             <td>
                 <select class="form-control-sm select2" data-toggle="select" required name="hubungan_keluarga[]">
                     <option value="Kepala Keluarga">Kepala Keluarga</option>
@@ -235,7 +245,7 @@
             <td><input type="text" required class="form-control form-control-sm" name="asal_gereja[]" placeholder="Gereja Asal"></td>
             <td><input type="date" class="form-control form-control-sm" name="tanggal_terdaftar[]"></td>
             <td>
-                <select class="form-control-sm" required name="status_aktif[]">
+                <select class="form-control-sm select2" required name="status_aktif[]">
                     <option value="Aktif">Aktif</option>
                     <option value="Atestasi">Atestasi</option>
                     <option value="Meninggal Dunia">Meninggal Dunia</option>

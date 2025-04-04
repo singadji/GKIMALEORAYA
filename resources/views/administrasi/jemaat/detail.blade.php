@@ -131,7 +131,7 @@
                                     <td>
                                         <div class="row">
                                             <div class="col-md-6">
-                                                <select class="form-control-sm select2-hidden-accessible" required data-toggle="select" name="status_menikah_kk" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                                <select class="form-control-sm select2" required data-toggle="select" name="status_menikah_kk" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                                     <option>--pilih--</option>
                                                     <option @if($kepalaKeluarga->jemaatKK->status_menikah == 'Belum Menikah') selected @endif value="Belum Menikah">Belum Menikah </option>
                                                     <option @if($kepalaKeluarga->jemaatKK->status_menikah == 'Menikah') selected @endif value="Menikah">Menikah</option>
@@ -176,7 +176,7 @@
                                         </span>
                                         <div class="row" id="status-row" style="display: none;">
                                             <div class="col-md-6">
-                                                <select class="form-control-sm select2-hidden-accessible" required data-toggle="select" name="status_aktif_kk" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                                <select class="form-control-sm select2" required data-toggle="select" name="status_aktif_kk" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                                     <option>--pilih--</option>
                                                     <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Aktif') selected @endif value="Aktif">Aktif</option>
                                                     <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Atestasi') selected @endif value="Atestasi">Atestasi</option>
@@ -238,7 +238,7 @@
                                             <input type="text" required id="ubahdata" style="width:30px;" name="p_l[]" value="{{ $anggota->jemaat->gender ?? 'Tidak Diketahui' }}" placeholder="P / L" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                         </td>
                                         <td class="text-center">
-                                            <select class="form-control-sm select2-hidden-accessible" required data-toggle="select" name="hubungan_keluarga[]" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                            <select class="form-control-sm select2" required data-toggle="select" name="hubungan_keluarga[]" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                                 <option>--pilih--</option>
                                                 <option value="Kepala Keluarga" 
                                                     {{ ( optional($anggota)->hubungan_keluarga != 'Kepala Keluarga') ? 'selected' : '' }}>
@@ -289,11 +289,12 @@
                                             </span>
                                             <div class="row status-row1" id="status-row1" style="display: none;">
                                                 <div class="col-md-6">
-                                                    <select class="form-control-sm select2-hidden-accessible" required data-toggle="select" name="status_aktif[]" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                                    <select class="form-control-sm select2" required data-toggle="select" name="status_aktif[]" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                                         <option>--pilih--</option>
                                                         <option @if($anggota->jemaat->status_aktif == 'Aktif') selected @endif value="Aktif">Aktif</option>
                                                         <option @if($anggota->jemaat->status_aktif == 'Atestasi') selected @endif value="Atestasi">Atestasi</option>
                                                         <option @if($anggota->jemaat->status_aktif == 'Meninggal Dunia') selected @endif value="Meninggal Dunia">Meninggal Dunia</option>
+                                                        <option @if($anggota->jemaat->status_aktif == 'Tidak Tahu') selected @endif value="Tidak Tahu">Tidak Tahu</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -350,7 +351,7 @@
             <td><input type="text" required class="form-control form-control-sm" name="asal_gereja[]" placeholder="Gereja Asal"></td>
             <td><input type="date" class="form-control form-control-sm" name="tanggal_terdaftar[]"></td>
             <td>
-                <select class="form-control-sm" required name="status_aktif[]">
+                <select class="form-control-sm select2" required name="status_aktif[]">
                     <option value="Aktif">Aktif</option>
                     <option value="Atestasi">Atestasi</option>
                     <option value="Meninggal Dunia">Meninggal Dunia</option>

@@ -46,9 +46,10 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'active', 'verify.otp'])->group(function () {
-    Route::get('admin/home', function() {
-        return view('admin/dashboard/dashboard');
-    });     
+    Route::get('admin/home', [DashboardController::class, 'index']);
+    //Route::get('admin/home', function() {
+       // return view('admin/dashboard/dashboard');
+    //});     
 
     Route::group(['middleware' => ['auth']], function () {
         Route::get('getkecamatan', [WilayahController::class, 'getKecamatan']);

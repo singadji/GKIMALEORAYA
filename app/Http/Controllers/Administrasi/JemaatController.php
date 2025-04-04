@@ -94,10 +94,12 @@ class JemaatController extends Controller
         DB::beginTransaction(); // Mulai transaksi
 
         try {
-            $kk = KkJemaat::where('id_kk_jemaat', $request->id_kk)->firstOrFail();
+            $kk = new KkJemaat();
+            //$kk = KkJemaat::where('id_kk_jemaat', $request->id_kk)->firstOrFail();
             
             // Simpan data kepala keluarga
-            $KKjemaat = Jemaat::where('id_jemaat', $id)->firstOrFail();
+            $KKjemaat = new Jemaat();
+            $KKjemaat->nia            =   $request->nia_kk;
             $KKjemaat->nama_jemaat    =   $request->kepala_keluarga;
             $KKjemaat->gender         =   $request->p_l_kk;
             $KKjemaat->telepon        =   $request->telepon_kk;
@@ -112,6 +114,13 @@ class JemaatController extends Controller
             $KKjemaat->status_aktif   =   $request->status_aktif_kk;
             $KKjemaat->keterangan     =   $request->keterangan_kk;
             $KKjemaat->save();
+
+            $idJemaat = $KKjemaat->id_jemaat; 
+
+            $kk->id_jemaat = $idJemaat;
+            $kk->alamat = $request->alamat;    
+            $kk->id_group_wilayah = $request->group_wilayah_kk;
+            $kk->save();
 
             // Update Anggota Keluarga
             if ($request->has('nia_anggota')) {
@@ -153,12 +162,9 @@ class JemaatController extends Controller
                     );
                 }
             }
-            
-            $kk->alamat = $request->alamat;        
-            $kk->save();
 
             DB::commit();
-            return redirect()->back()->with('success', 'Data berhasil diupdate!');
+            return redirect()->route('administrasi.data-jemaat.index')->with('success', 'Berhasil menambahkan data-jemaat.');
         } catch (\Exception $e) {
             DB::rollBack();
             
@@ -318,7 +324,8 @@ class JemaatController extends Controller
                 }
             }
             
-            $kk->alamat = $request->alamat;        
+            $kk->alamat = $request->alamat;
+            $kk->id_group_wilayah = $request->group_wilayah_kk;
             $kk->save();
 
             DB::commit();
