@@ -52,7 +52,6 @@
                             @php $no = 1; @endphp
                             @foreach($item as $item)
                                 @php
-                                    // Cek apakah jemaat adalah kepala keluarga (memiliki data di kk_jemaat)
                                     $isKK = $item->kkJemaat ? true : false;
                                 @endphp
                                 <tr onclick="window.location='{{ route('administrasi.data-jemaat.show', $item->id_jemaat) }}';" style="cursor: pointer;">

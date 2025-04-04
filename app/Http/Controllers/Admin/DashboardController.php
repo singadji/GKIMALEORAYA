@@ -19,10 +19,37 @@ class DashboardController extends Controller
     // Index
     public function index()
     {
-        $aktif = Jemaat::where('status_aktif', 'Aktif')->count();
-        $atestasi = Jemaat::where('status_aktif', 'Atestasi')->count();
-        $kk = Jemaat::where('status_aktif', 'Aktif')->whereHas('kkJemaat')->count();
+        $Jaktif = Jemaat::where('status_aktif', 'Aktif')->count();
+        $Jatestasi = Jemaat::where('status_aktif', 'Atestasi')->count();
+        $Jkk = Jemaat::where('status_aktif', 'Aktif')->whereHas('kkJemaat')->count();
         
-        return view('admin.dashboard.dashboard', compact('kk', 'aktif', 'atestasi'));
+        return view('admin.dashboard.dashboard', compact('Jkk', 'Jaktif', 'Jatestasi'));
+    }
+
+    public function detail($detail)
+    {
+        if($detail == 'atestasi')
+        {
+            $item = Jemaat::where('status_aktif', 'Atestasi')->get();
+            $Hjudul = "<h1>Data Jemaat Atestasi</h1><hr>";
+        }
+        if($detail == 'aktif')
+        {
+            $Hjudul = "<h1>Data Jemaat Aktif</h1><hr>";
+            $item = Jemaat::where('status_aktif', 'Aktif')->get();
+        }
+        if($detail == 'kepala-keluarga')
+        {
+            $Hjudul = "<h1>Data Kepala Keluarga</h1><hr>";
+            $item = Jemaat::where('status_aktif', 'Aktif')->whereHas('kkJemaat')->get();
+        }
+        
+        $Jaktif = Jemaat::where('status_aktif', 'Aktif')->count();
+        $Jatestasi = Jemaat::where('status_aktif', 'Atestasi')->count();
+        $Jkk = Jemaat::where('status_aktif', 'Aktif')->whereHas('kkJemaat')->count();
+
+        $Hjudul = strtoupper($Hjudul);
+
+        return view('admin.dashboard.dashboard', compact('Jkk', 'Jaktif', 'Jatestasi', 'item', 'Hjudul'));
     }
 }

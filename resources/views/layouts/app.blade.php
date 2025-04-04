@@ -209,8 +209,8 @@ $(document).ready(function() {
         responsive: true,
         searching: true,
         fixedHeader: true,
-        dom: '<"top"<"length-and-buttons"lB>f>rt<"bottom"ip><"clear">', // Struktur baru untuk layout
-        buttons: ['excel', 'print'],
+        //dom: '<"top"<"length-and-buttons"lB>f>rt<"bottom"ip><"clear">', // Struktur baru untuk layout
+        //buttons: ['excel', 'print'],
         lengthMenu: [ [10, 50, 100, -1], [10, 50, 100, "semua"] ],
         pageLength: 10,
         language: {  
