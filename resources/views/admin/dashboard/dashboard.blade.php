@@ -182,7 +182,6 @@
                             @endforeach
                         </tbody>
                     </table>
-                    <p style="font-size:10pt; color:red">*cetak tebal adalah Kepala Keluarga</p>
                 </div>
           @else
           <div id="chartContainer">
