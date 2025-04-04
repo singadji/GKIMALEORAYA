@@ -89,14 +89,13 @@
                                 <label class="form-control-label" for="">Role</label>
                                 <select class="form-control select2-hidden-accessible" data-toggle="select" name="role" <?php if(isset($item) && \Auth::user()->role != 'Administrator'){ echo 'disabled'; }?>>
                                     <option <?php if(isset($item) && $item->role == 'Administrator'){ echo 'selected'; } ?> value="Administrator">Administrator </option>
-                                    <option <?php if(isset($item) && $item->role == 'Pangan'){ echo 'selected'; } ?> value="Pangan">Pangan</option>
-                                    <option <?php if(isset($item) && $item->role == 'Pertanian'){ echo 'selected';} ?> value="Pertanian">Pertanian</option>
+                                    <option <?php if(isset($item) && $item->role == 'User'){ echo 'selected'; } ?> value="User">User</option>
 								</select>
                             </div>
                         </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="" class="form-control-label">Publish</label>
+                                    <label for="" class="form-control-label">Aktif</label>
                                     <div class="form-check">
                                     <label class="custom-toggle">
                                         <input type="checkbox" name="publish" id="" value="Y" @if(isset($item) && $item->aktif == 'Y') checked @endif>
