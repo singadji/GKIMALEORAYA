@@ -46,19 +46,19 @@
                     <div class="card-body table-responsive">
                             <table class="table table-hover data-table wrap">
                                 <tr>
-                                    <th>Nomor Induk Anggota</th>
+                                    <th>Nomor Induk Anggota <span class="text-danger">*</span></th>
                                     <td>
                                         <input type="text" required id="nia" name="nia_kk" value="{{ old('nia_kk') }}" placeholder="N I A" class="form-control form-control-sm">
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th width="20px">Nama Kepala Keluarga</th>
+                                    <th width="20px">Nama Kepala Keluarga<span class="text-danger">*</span></th>
                                     <td>
                                         <input type="text" required name="kepala_keluarga" value="{{ old('nama_jemaat') }}" placeholder="Kepala Keluarga" class="form-control form-control-sm">
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th width="20px">P / L</th>
+                                    <th width="20px">L / P<span class="text-danger">*</span></th>
                                     <td>
                                         <select name="p_l_kk" class="form-control form-control-sm select2" data-toggle="select" required>
                                             <option value="">-- Pilih --</option>
@@ -68,19 +68,19 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>Alamat</th>
+                                    <th>Alamat<span class="text-danger">*</span></th>
                                     <td>
                                         <input type="text" required name="alamat" value="{{ old('alamat') }}" placeholder="Alamat" class="form-control form-control-sm">
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>Nomor Telepon / HP</th>
+                                    <th>Nomor Telepon / HP<span class="text-danger">*</span></th>
                                     <td>
                                         <input type="text" required name="telepon_kk" value="{{ old('telepon') }}" placeholder="Telepon" class="form-control form-control-sm">
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>Tempat, Tanggal Lahir</th>
+                                    <th>Tempat, Tanggal Lahir<span class="text-danger">*</span></th>
                                     <td>
                                         <div class="row">
                                             <div class="col-md-8">
@@ -97,19 +97,19 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>Tanggal Baptis</th>
+                                    <th>Tanggal Baptis<span class="text-danger">*</span></th>
                                     <td>
                                         <input type="date" name="tanggal_baptis_kk" value="{{ old('tanggal_baptis') }}" placeholder="Tanggal Baptis" class="form-control form-control-sm">
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>Tanggal Sidi</th>
+                                    <th>Tanggal Sidi<span class="text-danger">*</span></th>
                                     <td>
                                         <input type="date"  name="tanggal_sidi_kk" value="{{ old('tanggal_sidi') }}" placeholder="Tanggal Sidi" class="form-control form-control-sm">
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>Status dan Tanggal Pernikahan</th>
+                                    <th>Status dan Tanggal Pernikahan<span class="text-danger">*</span></th>
                                     <td>
                                         <div class="row">
                                             <div class="col-md-6">
@@ -147,7 +147,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>Status Keanggotaan</th>
+                                    <th>Status Keanggotaan<span class="text-danger">*</span></th>
                                     <td>
                                         <div class="row" id="status-row">
                                             <div class="col-md-6">
@@ -180,17 +180,17 @@
                             <thead>
                                 <tr>
                                     <th class="text-center">#</th>
-                                    <th class="text-center">N I A</th>
-                                    <th class="text-center">Nama Jemaat</th>
-                                    <th class="text-center">P / L</th>
-                                    <th class="text-center">Hubungan</th>
+                                    <th class="text-center">N I A<span class="text-danger">*</span></th>
+                                    <th class="text-center">Nama Jemaat<span class="text-danger">*</span></th>
+                                    <th class="text-center">P / L<span class="text-danger">*</span></th>
+                                    <th class="text-center">Hubungan<span class="text-danger">*</span></th>
                                     <th class="text-center">Tempat<br>Lahir</th>
-                                    <th class="text-center">Tanggal<br>Lahir</th>
+                                    <th class="text-center">Tanggal<br>Lahir<span class="text-danger">*</span></th>
                                     <th class="text-center">Tanggal<br>Baptis</th>
                                     <th class="text-center">Tanggal<br>Sidi</th>
                                     <th class="text-center">Gereja Asal</th>
                                     <th class="text-center">Tanggal<br>Terdaftar</th>
-                                    <th class="text-center">Status<br>Keanggotaan</th>
+                                    <th class="text-center">Status<br>Keanggotaan<span class="text-danger">*</span></th>
                                     <th class="text-center">Keterangan</th>
                                     <th class="text-center" hidden></th>
                                 </tr>
@@ -202,6 +202,7 @@
                     </div>
                     <div class="card-footer">
                         <button type="submit" id="simpan" class="btn btn-warning bg-gradient-warning btn-md"> Simpan </button>
+                        <p class="p-4"><span class="text-danger">* Harus disi dengan lengkap.</span></p>
                     </div>
                 </div>
                 </form>
@@ -240,8 +241,8 @@
             </td>
             <td><input type="text" required class="form-control form-control-sm" name="tempat_lahir[]" placeholder="Tempat Lahir"></td>
             <td><input type="date" required class="form-control form-control-sm" name="tanggal_lahir[]"></td>
-            <td><input type="date" required class="form-control form-control-sm" name="tanggal_baptis[]"></td>
-            <td><input type="date" required class="form-control form-control-sm" name="tanggal_sidi[]"></td>
+            <td><input type="date" class="form-control form-control-sm" name="tanggal_baptis[]"></td>
+            <td><input type="date" class="form-control form-control-sm" name="tanggal_sidi[]"></td>
             <td><input type="text" required class="form-control form-control-sm" name="asal_gereja[]" placeholder="Gereja Asal"></td>
             <td><input type="date" class="form-control form-control-sm" name="tanggal_terdaftar[]"></td>
             <td>

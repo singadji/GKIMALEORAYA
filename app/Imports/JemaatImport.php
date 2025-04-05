@@ -80,9 +80,9 @@ class JemaatImport
                 $idGroupWilayah = $this->getIdGroupWilayah($wilayah);
 
                 // Cek apakah jemaat adalah kepala keluarga
-                $kepalaKeluarga = strtolower(trim($row[16])); // Normalisasi teks
+                $kepalaKeluarga = strtolower(trim($row[17])); // Normalisasi teks
 
-                if ($kepalaKeluarga === 'ya') { 
+                if ($kepalaKeluarga === 'KK') { 
                     // Jika kepala keluarga, simpan ke kk_jemaat
                     DB::table('kk_jemaat')->updateOrInsert(
                         ['id_jemaat' => $idJemaat],

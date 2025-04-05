@@ -67,38 +67,38 @@
                     <div class="card-body table-responsive">
                             <table class="table table-hover data-table wrap">
                                 <tr>
-                                    <th>Nomor Induk Anggota</th>
+                                    <th>Nomor Induk Anggota<span class="text-danger">*</span></th>
                                     <td>
                                         <input type="text" required id="nia" name="nia_kk" value="{{ $kepalaKeluarga->jemaatKK->nia ?? 'Tidak Diketahui' }}" placeholder="N I A" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                         <input type="hidden" name="id_kk" value="{{ $id_kk }}">
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th width="20px">Nama Kepala Keluarga</th>
+                                    <th width="20px">Nama Kepala Keluarga<span class="text-danger">*</span></th>
                                     <td>
                                         <input type="text" required id="ubahdata" name="kepala_keluarga" value="{{ $kepalaKeluarga->jemaatKK->nama_jemaat ?? 'Tidak Diketahui' }}" placeholder="Kepala Keluarga" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th width="20px">P / L</th>
+                                    <th width="20px">L / P<span class="text-danger">*</span></th>
                                     <td>
                                         <input type="text" required id="ubahdata" name="p_l_kk" value="{{ $kepalaKeluarga->jemaatKK->gender ?? 'Tidak Diketahui' }}" placeholder="" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>Alamat</th>
+                                    <th>Alamat<span class="text-danger">*</span></th>
                                     <td>
                                         <input type="text" required id="ubahdata" name="alamat" value="{{ $kepalaKeluarga->alamat ?? 'Tidak Diketahui' }}" placeholder="Alamat" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>Nomor Telepon / HP</th>
+                                    <th>Nomor Telepon / HP<span class="text-danger">*</span></th>
                                     <td>
                                         <input type="text" required id="ubahdata" name="telepon_kk" value="{{ $kepalaKeluarga->jemaatKK->telepon ?? '-' }}" placeholder="Telepon" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>Tempat, Tanggal Lahir</th>
+                                    <th>Tempat, Tanggal Lahir<span class="text-danger">*</span></th>
                                     <td>
                                         <div class="row">
                                             <div class="col-md-8">
@@ -115,19 +115,19 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>Tanggal Baptis</th>
+                                    <th>Tanggal Baptis<span class="text-danger">*</span></th>
                                     <td>
                                         <input type="date" id="ubahdata" name="tanggal_baptis_kk" value="{{ $kepalaKeluarga->jemaatKK->tanggal_baptis ?? '-' }}" placeholder="Tanggal Baptis" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>Tanggal Sidi</th>
+                                    <th>Tanggal Sidi<span class="text-danger">*</span></th>
                                     <td>
                                         <input type="date" id="ubahdata" name="tanggal_sidi_kk" value="{{ $kepalaKeluarga->jemaatKK->tanggal_sidi ?? '-' }}" placeholder="Tanggal Sidi" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>Status dan Tanggal Pernikahan</th>
+                                    <th>Status dan Tanggal Pernikahan<span class="text-danger">*</span></th>
                                     <td>
                                         <div class="row">
                                             <div class="col-md-6">
@@ -165,7 +165,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>Status Keanggotaan</th>
+                                    <th>Status Keanggotaan<span class="text-danger">*</span></th>
                                     @php
                                         $badgeClass = $kepalaKeluarga->jemaatKK->status_aktif == 'Aktif' ? 'bg-gradient-success' :
                                                     ($kepalaKeluarga->jemaatKK->status_aktif == 'Meninggal Dunia' ? 'bg-gradient-primary' : 'bg-gradient-danger');
@@ -180,8 +180,9 @@
                                                     <option>--pilih--</option>
                                                     <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Aktif') selected @endif value="Aktif">Aktif</option>
                                                     <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Atestasi') selected @endif value="Atestasi">Atestasi</option>
+                                                    <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Pasif') selected @endif value="Pasif">Pasif</option>
                                                     <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Meninggal Dunia') selected @endif value="Meninggal Dunia">Meninggal Dunia</option>
-                                                    <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Tidak Tahu') selected @endif value="Tidak Tahu">Tidak Tahu</option>
+                                                    <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Bukan Anggota') selected @endif value="Bukan Anggota">Bukan Anggota</option>
                                                 </select>
                                             </div>
                                             <div class="col-md-6">
@@ -207,7 +208,7 @@
                                     <th class="text-center">#</th>
                                     <th class="text-center">N I A</th>
                                     <th class="text-center">Nama Jemaat</th>
-                                    <th class="text-center">P / L</th>
+                                    <th class="text-center">L / P</th>
                                     <th class="text-center">Hubungan</th>
                                     <th class="text-center">Tempat<br>Lahir</th>
                                     <th class="text-center">Tanggal<br>Lahir</th>
@@ -230,9 +231,33 @@
                                         <td class="text-center">{{ $key+1 }}</td>
                                         <td>
                                             <input type="text" required id="nia" style="width:70px;" name="nia_anggota[]" value="{{ $anggota->jemaat->nia ?? 'Tidak Diketahui' }}" placeholder="NIA" class="form-control form-control-sm nia" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                            <input type="hidden" name="id_anggota[]" value="{{ $anggota->jemaat->id_jemaat }}">
                                         </td>
                                         <td>
-                                            <input type="text" required id="ubahdata" style="width:150px;" name="nama_jemaat[]" value="{{ $anggota->jemaat->nama_jemaat ?? 'Tidak Diketahui' }}" placeholder="Nama Jemaat" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                            @php
+                                                // Cek apakah id_jemaat dari anggota ini ada di dalam kk_jemaat
+                                                $isKK = in_array($anggota->jemaat->id_jemaat, $kk_jemaat->pluck('id_jemaat')->toArray());
+                                            @endphp
+
+                                            <div class="d-flex align-items-center gap-1">
+                                            <input type="text"
+                                                    required
+                                                    id="ubahdata"
+                                                    style="width:150px;"
+                                                    name="nama_jemaat[]"
+                                                    value="{{ $anggota->jemaat->nama_jemaat ?? 'Tidak Diketahui' }}"
+                                                    placeholder="Nama Jemaat"
+                                                    class="form-control form-control-sm"
+                                                    {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                                @if ($isKK)
+                                                    <a href="{{ route('administrasi.data-jemaat.show', $anggota->jemaat->id_jemaat) }}"
+                                                    class="text-primary"
+                                                    target="_blank"
+                                                    title="Lihat Detail">&nbsp;
+                                                        <i class="ni ni-zoom-split-in fs-5" style="font-size:12pt"></i>
+                                                    </a>
+                                                @endif
+                                            </div>
                                         </td>
                                         <td>
                                             <input type="text" required id="ubahdata" style="width:30px;" name="p_l[]" value="{{ $anggota->jemaat->gender ?? 'Tidak Diketahui' }}" placeholder="P / L" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
@@ -293,8 +318,9 @@
                                                         <option>--pilih--</option>
                                                         <option @if($anggota->jemaat->status_aktif == 'Aktif') selected @endif value="Aktif">Aktif</option>
                                                         <option @if($anggota->jemaat->status_aktif == 'Atestasi') selected @endif value="Atestasi">Atestasi</option>
+                                                        <option @if($anggota->jemaat->status_aktif == 'Pasif') selected @endif value="Pasif">Pasif</option>
                                                         <option @if($anggota->jemaat->status_aktif == 'Meninggal Dunia') selected @endif value="Meninggal Dunia">Meninggal Dunia</option>
-                                                        <option @if($anggota->jemaat->status_aktif == 'Tidak Tahu') selected @endif value="Tidak Tahu">Tidak Tahu</option>
+                                                        <option @if($anggota->jemaat->status_aktif == 'Bukan Anggota') selected @endif value="Bukan Anggota">Bukan Anggota</option>
                                                     </select>
                                                 </div>
                                             </div>
@@ -314,6 +340,7 @@
                     </div>
                     <div class="card-footer">
                         <button type="submit" id="simpan" class="btn btn-warning bg-gradient-warning btn-md"> Simpan </button>
+                        <p class="p-4"><span class="text-danger">* Harus disi dengan lengkap.</span></p>
                     </div>
                 </div>
                 </form>
@@ -354,8 +381,9 @@
                 <select class="form-control-sm select2" required name="status_aktif[]">
                     <option value="Aktif">Aktif</option>
                     <option value="Atestasi">Atestasi</option>
+                    <option value="Atestasi">Pasif</option>
                     <option value="Meninggal Dunia">Meninggal Dunia</option>
-                    <option value="Tidak Tahu">Tidak Tahu</option>
+                    <option value="Bukan Anggota">Bukan Anggota</option>
                 </select>
             </td>
             <td><input type="text" class="form-control form-control-sm" name="keterangan[]" placeholder="Keterangan"></td>

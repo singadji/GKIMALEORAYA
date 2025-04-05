@@ -11,6 +11,7 @@ use App\Http\Controllers\Web\ManajemenUserController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Administrasi\JemaatController;
+use App\Http\Controllers\Administrasi\BaptisanController;
 use App\Http\Controllers\Auth\MfaController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\PageController;
@@ -89,6 +90,7 @@ Route::middleware(['auth', 'active', 'verify.otp'])->group(function () {
 
         Route::prefix('administrasi')->name('administrasi.')->middleware(['role:Administrator'])->group(function () {
             Route::post('data-jemaat/import', [JemaatController::class, 'import'])->name('data-jemaat.import');
+            Route::get('anggota-baptisan', [BaptisanController::class, 'index'])->name('anggota-baptisan');
             Route::resource('data-jemaat', JemaatController::class);
         });
     });

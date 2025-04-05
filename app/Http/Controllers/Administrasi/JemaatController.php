@@ -195,6 +195,8 @@ class JemaatController extends Controller
         
         // Cek apakah jemaat adalah kepala keluarga atau anggota keluarga
         $kk = KkJemaat::where('id_jemaat', $jemaat->id_jemaat)->first();
+        $kk_jemaat = KkJemaat::select('id_jemaat')->get();
+
         
         if ($kk) {
             // Jemaat adalah kepala keluarga
@@ -223,6 +225,7 @@ class JemaatController extends Controller
             'tombol',
             'id_kk',
             'aksi',
+            'kk_jemaat'
         ));
     }
     
@@ -284,10 +287,10 @@ class JemaatController extends Controller
             $KKjemaat->save();
 
             // Update Anggota Keluarga
-            if ($request->has('nia_anggota')) {
-                foreach ($request->nia_anggota as $index => $nia) {
+            if ($request->has('id_anggota')) {
+                foreach ($request->id_anggota as $index => $nia) {
                     // Cari anggota berdasarkan NIA
-                    $anggota = Jemaat::where('nia', $nia)->first();
+                    $anggota = Jemaat::where('id_jemaat', $nia)->first();
 
                     if (!$anggota) {
                         // Buat anggota baru jika tidak ditemukan
@@ -295,7 +298,7 @@ class JemaatController extends Controller
                     }
 
                     // Isi data anggota
-                    $anggota->nia = $nia;
+                    $anggota->nia = $request->nia_anggota[$index];
                     $anggota->nama_jemaat = $request->nama_jemaat[$index];
                     $anggota->gender = $request->p_l[$index];
                     $anggota->tempat_lahir = $request->tempat_lahir[$index];

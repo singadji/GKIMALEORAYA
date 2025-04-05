@@ -49,7 +49,7 @@
       @if(\Auth::user()->role == 'Administrator')
         
       <div class="row">
-        <div class="col-xl-4 col-md-6">
+        <div class="col-xl-3 col-md-6">
           <div class="card card-stats">
             <!-- Card body -->
             <a href="{{ route('admin.detail', 'atestasi') }}">
@@ -70,7 +70,7 @@
           </div>
         </div>
         
-        <div class="col-xl-4 col-md-6">
+        <div class="col-xl-3 col-md-6">
           <div class="card card-stats">
             <!-- Card body -->
             <a href="{{ route('admin.detail', 'aktif') }}">
@@ -90,7 +90,27 @@
             </a>
           </div>
         </div>
-        <div class="col-xl-4 col-md-6">
+        <div class="col-xl-3 col-md-6">
+          <div class="card card-stats">
+            <!-- Card body -->
+            <a href="{{ route('administrasi.anggota-baptisan') }}">
+            <div class="card-body">
+              <div class="row">
+                <div class="col">
+                  <h5 class="card-title text-uppercase text-muted mb-0">Jumlah Anggota Baptisan</h5>
+                  <span class="h1 font-weight-bold mb-0">{{ $baptisan }}</span> Jemaat
+                </div>
+                <div class="col-auto">
+                  <div class="icon icon-shape bg-gradient-warning text-white rounded-circle shadow">
+                  <i class="fa fa-solid fa-user"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+            </a>
+          </div>
+        </div>
+        <div class="col-xl-3 col-md-6">
           <div class="card card-stats">
             <!-- Card body -->
             <a href="{{ route('admin.detail', 'kepala-keluarga') }}">
@@ -131,7 +151,9 @@
                                 <th class="text-uppercase font-weight-bolder" width="10">#</th>
                                 <th class="text-uppercase font-weight-bolder" width="30px">N I A</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">Nama Jemaat</th>
+                                <th class="text-uppercase font-weight-bolder ps-2">L/P</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">Alamat Domisili</th>
+                                <th class="text-uppercase font-weight-bolder ps-2">Wil.</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">No. Telepon/HP</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">Status Keanggotaan</th>
                                 <!-- <th class=""></th> -->
@@ -157,6 +179,9 @@
                                             <sup><i class="fa fa-solid fa-share" style="color:red"></i></sup>
                                         @endif
                                     </td>
+                                    <td class="align-left">
+                                        {!!  $item->gender !!}
+                                    </td>
                                     <td class="text-left">
                                         @if($isKK)
                                             {{ $item->kkJemaat->alamat }} <!-- Alamat dari KK Jemaat -->
@@ -165,7 +190,16 @@
                                         @else
                                             Tidak Diketahui
                                         @endif
-                                        </td>
+                                    </td>
+                                    <td class="align-left">
+                                        @if($isKK)
+                                            {{ $item->kkJemaat->id_group_wilayah }} <!-- Alamat dari KK Jemaat -->
+                                        @elseif ($item->hubunganKeluarga && $item->hubunganKeluarga->kkJemaat)
+                                            {{ $item->hubunganKeluarga->kkJemaat->id_group_wilayah }} <!-- Alamat dari Hubungan Keluarga -->
+                                        @else
+                                            Tidak Diketahui
+                                        @endif
+                                    </td>
                                     <td class="text-center">
                                         {!!  $item->telepon !!}
                                     </td>
