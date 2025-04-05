@@ -52,9 +52,14 @@ class DashboardController extends Controller
         $Jaktif = Jemaat::where('status_aktif', 'Aktif')->count();
         $Jatestasi = Jemaat::where('status_aktif', 'Atestasi')->count();
         $Jkk = Jemaat::where('status_aktif', 'Aktif')->whereHas('kkJemaat')->count();
+        $baptisan = Jemaat::with(['kkJemaat', 'hubunganKeluarga.kkJemaat'])
+               ->whereNull('tanggal_sidi')
+               ->whereNotNull('tanggal_baptis')
+               ->whereIn('status_aktif', ['Aktif', 'Pasif', 'Bukan Anggota'])
+               ->count();
 
         $Hjudul = strtoupper($Hjudul);
 
-        return view('admin.dashboard.dashboard', compact('Jkk', 'Jaktif', 'Jatestasi', 'item', 'Hjudul'));
+        return view('admin.dashboard.dashboard', compact('Jkk', 'Jaktif', 'Jatestasi', 'item', 'Hjudul', 'baptisan'));
     }
 }
