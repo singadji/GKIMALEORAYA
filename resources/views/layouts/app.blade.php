@@ -209,8 +209,43 @@ $(document).ready(function() {
         responsive: true,
         searching: true,
         fixedHeader: true,
-        dom: '<"top"<"length-and-buttons"lB>f>rt<"bottom"ip><"clear">', // Struktur baru untuk layout
-        buttons: ['excel', 'print', 'copy'],
+        dom: '<"top"<"length-and-buttons d-flex justify-content-between align-items-center"lB>f>rt<"bottom"ip><"clear">',
+
+        buttons: [
+            {
+                extend: 'excel',
+                text: '<i class="fas fa-file-excel"></i> Export Excel',
+                className: 'btn btn-success btn-sm',
+                title:''
+            },
+            {
+                extend: 'print',
+                text: '<i class="fas fa-print"></i> Cetak',
+                className: 'btn btn-primary btn-sm',
+                title: '', // Kosongkan
+                messageTop: function () {
+                    const userTitle = prompt("Masukkan judul laporan:", "Laporan Data Anggota Jemaat");
+                    // Simpan ke variable global untuk akses di customize
+                    window.dynamicPrintTitle = userTitle ?? 'Laporan Tanpa Judul';
+                    return 'Dicetak: ' + new Date().toLocaleDateString();
+                },
+                customize: function (win) {
+                    const title = window.dynamicPrintTitle ?? 'Laporan';
+                    $(win.document.body).css('font-size', '14pt')
+                        .prepend('<h2 style="text-align:center; margin-bottom: 20px;">' + title + '</h2>');
+
+                    $(win.document.body).find('table')
+                        .addClass('compact')
+                        .css('font-size', 'inherit');
+                }
+            },
+            {
+                extend: 'copy',
+                text: '<i class="fas fa-copy"></i> Copy',
+                className: 'btn btn-warning btn-sm',
+                title:''
+            }
+        ],
         lengthMenu: [ [10, 50, 100, -1], [10, 50, 100, "semua"] ],
         pageLength: 10,
         language: {  
