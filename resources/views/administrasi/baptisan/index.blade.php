@@ -28,7 +28,7 @@
     <div class="container-fluid mt--6">
         <div class="card mb-10">
             <div class="card-header mb-0">
-                <h3>Data Anggota Baptisan</h3>
+                <h1>{!! $Hjudul !!}</h1>
             </div>
             <br>
             <div class="">

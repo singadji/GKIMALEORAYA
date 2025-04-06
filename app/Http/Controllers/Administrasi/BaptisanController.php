@@ -30,12 +30,14 @@ class BaptisanController extends Controller
         $page   = 'Administrasi';
         $judul  = 'Data Jemaat';
         $subjudul = 'Data Anggota Baptisan';
-        $tombol = $btn; 
+        $tombol = $btn;
+        $Hjudul = strtoupper($subjudul);
 
         $item = Jemaat::with(['kkJemaat', 'hubunganKeluarga.kkJemaat'])
                ->whereNull('tanggal_sidi')
                ->whereNotNull('tanggal_baptis')
                ->whereIn('status_aktif', ['Aktif', 'Pasif', 'Bukan Anggota'])
+               ->where('tanggal_lahir', '!=', '1900-01-01')
                ->get();
 
         return view('administrasi.baptisan.index',[
@@ -45,6 +47,7 @@ class BaptisanController extends Controller
             'judul'  => $judul,
             'subjudul'  => $subjudul,
             'tombol'  => $tombol,
+            'Hjudul' => $Hjudul,
         ]);
     }
    

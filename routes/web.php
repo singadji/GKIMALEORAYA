@@ -12,10 +12,10 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Administrasi\JemaatController;
 use App\Http\Controllers\Administrasi\BaptisanController;
+use App\Http\Controllers\Master\WilayahController;
 use App\Http\Controllers\Auth\MfaController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\PageController;
-use App\Http\Controllers\WilayahController;
   
 Route::get('/', function () {
     return view('template');
@@ -92,6 +92,10 @@ Route::middleware(['auth', 'active', 'verify.otp'])->group(function () {
             Route::post('data-jemaat/import', [JemaatController::class, 'import'])->name('data-jemaat.import');
             Route::get('anggota-baptisan', [BaptisanController::class, 'index'])->name('anggota-baptisan');
             Route::resource('data-jemaat', JemaatController::class);
+        });
+
+        Route::prefix('master')->name('master.')->middleware(['role:Administrator'])->group(function () {
+            Route::resource('grup-wilayah', WilayahController::class);
         });
     });
 });

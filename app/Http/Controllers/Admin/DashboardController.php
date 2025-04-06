@@ -26,6 +26,7 @@ class DashboardController extends Controller
                ->whereNull('tanggal_sidi')
                ->whereNotNull('tanggal_baptis')
                ->whereIn('status_aktif', ['Aktif', 'Pasif', 'Bukan Anggota'])
+               ->where('tanggal_lahir', '!=', '1900-01-01')
                ->count();
         
         return view('admin.dashboard.dashboard', compact('Jkk', 'Jaktif', 'Jatestasi', 'baptisan'));
@@ -56,6 +57,8 @@ class DashboardController extends Controller
                ->whereNull('tanggal_sidi')
                ->whereNotNull('tanggal_baptis')
                ->whereIn('status_aktif', ['Aktif', 'Pasif', 'Bukan Anggota'])
+               ->where('status_aktif', '!=', 'Meninggal Dunia')
+               ->where('tanggal_lahir', '!=', '1900-01-01')
                ->count();
 
         $Hjudul = strtoupper($Hjudul);

@@ -60,10 +60,9 @@
                                 <tr>
                                     <th width="20px">L / P<span class="text-danger">*</span></th>
                                     <td>
-                                        <select name="p_l_kk" class="form-control form-control-sm select2" data-toggle="select" required>
-                                            <option value="">-- Pilih --</option>
-                                            <option value="P">Perempuan</option>
+                                        <select name="p_l_kk" class="form-control form-control-sm" data-toggle="select" required>
                                             <option value="L">Laki-laki</option>
+                                            <option value="P">Perempuan</option>
                                         </select>
                                     </td>
                                 </tr>
@@ -113,8 +112,7 @@
                                     <td>
                                         <div class="row">
                                             <div class="col-md-6">
-                                                <select class="form-control-sm select2" required data-toggle="select" name="status_menikah_kk">
-                                                    <option>--pilih--</option>
+                                                <select class="form-control-sm" required data-toggle="select" name="status_menikah_kk">
                                                     <option value="Belum Menikah">Belum Menikah </option>
                                                     <option value="Menikah">Menikah</option>
                                                     <option value="Duda">Duda</option>
@@ -151,12 +149,12 @@
                                     <td>
                                         <div class="row" id="status-row">
                                             <div class="col-md-6">
-                                                <select class="form-control-sm select2" required data-toggle="select" name="status_aktif_kk">
-                                                    <option>--pilih--</option>
+                                                <select class="form-control-sm" required data-toggle="select" name="status_aktif_kk">
+                                                    
                                                     <option value="Aktif">Aktif</option>
                                                     <option value="Atestasi">Atestasi</option>
                                                     <option value="Meninggal Dunia">Meninggal Dunia</option>
-                                                    <option value="Tidak Tahu">Tidak Tahu</option>
+                                                    <option value="Bukan Anggota">Bukan Anggota</option>
                                                 </select>
                                             </div>
                                             <div class="col-md-6">
@@ -176,13 +174,13 @@
                     </div>
                     <div class="card-body table-responsive">
                         <a href="#" id="addRow" class="btn btn-primary mb-2 btn-sm">Tambah Anggota Keluarga</a>
-                        <table class="table table-bordered table-hover data-table warping" id="tableBody">
+                        <table class="table table-hover data-table warping" id="tableBody">
                             <thead>
                                 <tr>
                                     <th class="text-center">#</th>
                                     <th class="text-center">N I A<span class="text-danger">*</span></th>
                                     <th class="text-center">Nama Jemaat<span class="text-danger">*</span></th>
-                                    <th class="text-center">P / L<span class="text-danger">*</span></th>
+                                    <th class="text-center">L / P<span class="text-danger">*</span></th>
                                     <th class="text-center">Hubungan<span class="text-danger">*</span></th>
                                     <th class="text-center">Tempat<br>Lahir</th>
                                     <th class="text-center">Tanggal<br>Lahir<span class="text-danger">*</span></th>
@@ -224,14 +222,13 @@
             <td><input type="text" required style="width:70px;" name="nia_anggota[]" placeholder="NIA" class="form-control form-control-sm nia"></td>
             <td><input type="text" required class="form-control form-control-sm" name="nama_jemaat[]" placeholder="Nama Jemaat"></td>
             <td>
-                <select class="form-control form-control-sm select2" data-toggle="select" required name="p_l[]">
-                        <option value="">-- Pilih --</option>
-                        <option value="P">Perempuan</option>
-                        <option value="L">Laki-laki</option>
-                    </select>
+                <select class="form-control form-control-sm" data-toggle="select" required name="p_l[]">
+                    <option value="L">L</option>
+                    <option value="P">P</option>
+                </select>
             </td>
             <td>
-                <select class="form-control-sm select2" data-toggle="select" required name="hubungan_keluarga[]">
+                <select class="form-control form-control-sm" data-toggle="select" required name="hubungan_keluarga[]">
                     <option value="Kepala Keluarga">Kepala Keluarga</option>
                     <option value="Pasangan">Pasangan</option>
                     <option value="Anak">Anak</option>
@@ -246,7 +243,7 @@
             <td><input type="text" required class="form-control form-control-sm" name="asal_gereja[]" placeholder="Gereja Asal"></td>
             <td><input type="date" class="form-control form-control-sm" name="tanggal_terdaftar[]"></td>
             <td>
-                <select class="form-control-sm select2" required name="status_aktif[]">
+                <select class="form-control-sm" required name="status_aktif[]">
                     <option value="Aktif">Aktif</option>
                     <option value="Atestasi">Atestasi</option>
                     <option value="Meninggal Dunia">Meninggal Dunia</option>
