@@ -7,7 +7,7 @@
     "require": {
         "php": "^8.3",
         "bacon/bacon-qr-code": "^3.0",
-        "barryvdh/laravel-dompdf": "^3.0",
+        "barryvdh/laravel-dompdf": "^3.1",
         "ckfinder/ckfinder-laravel-package": "^5.0",
         "creagia/laravel-sign-pad": "^2.1",
         "endroid/qr-code": "^5.1",
@@ -38,7 +38,8 @@
             "Database\\Seeders\\": "database/seeders/"
         },
         "files": [
-            "app/Helpers/Rupiah.php"
+            "app/Helpers/Rupiah.php",
+            "app/Helpers/DateHelper.php"
         ]
     },
     "autoload-dev": {

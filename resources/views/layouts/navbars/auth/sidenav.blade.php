@@ -20,7 +20,7 @@
             <a class="navbar-brand" href="{{ asset('admin/home') }}">
             <img src="{{ asset('assets/img/logo.png') }}" class="navbar-brand-img" alt="...">
             </a>
-            <div class=" ml-auto ">
+            <div class=" ml-0 ">
                 <div class="sidenav-toggler d-none d-xl-block active" data-action="sidenav-unpin" data-target="#sidenav-main">
                     <div class="sidenav-toggler-inner">
                     <i class="sidenav-toggler-line"></i>

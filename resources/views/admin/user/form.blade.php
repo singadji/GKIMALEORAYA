@@ -86,14 +86,13 @@
                                 <label class="form-control-label" for="">Role</label>
                                 <select class="form-control select2-hidden-accessible" data-toggle="select" name="role" @if(isset($item)) disabled @endif>
                                     <option @if(isset($item) && $item->role == 'Administrator') selected @endif value="Administrator">Administrator </option>
-                                    <option @if(isset($item) && $item->role == 'Pangan') selected @endif value="Pangan">Pangan</option>
-                                    <option @if(isset($item) && $item->role == 'Pertanian') selected @endif value="Pertanian">Pertanian</option>
+                                    <option @if(isset($item) && $item->role == 'User') selected @endif value="User">User</option>
 								</select>
                             </div>
                         </div>
                             <div class="col-md-4">
                                 <div class="form-group">
-                                    <label for="" class="form-control-label">Publish</label>
+                                    <label for="" class="form-control-label">Aktif</label>
                                     <div class="form-check">
                                     <label class="custom-toggle">
                                         <input type="checkbox" name="publish" id="" value="Y" @if(isset($item) && $item->aktif == 'Y') checked @endif disabled>

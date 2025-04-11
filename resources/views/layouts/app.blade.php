@@ -209,8 +209,43 @@ $(document).ready(function() {
         responsive: true,
         searching: true,
         fixedHeader: true,
-        dom: '<"top"<"length-and-buttons"lB>f>rt<"bottom"ip><"clear">', // Struktur baru untuk layout
-        buttons: ['excel', 'print'],
+        dom: '<"top"<"length-and-buttons d-flex justify-content-between align-items-center"lB>f>rt<"bottom"ip><"clear">',
+
+        buttons: [
+            {
+                extend: 'excel',
+                text: '<i class="fas fa-file-excel"></i> Export Excel',
+                className: 'btn btn-success btn-sm',
+                title:''
+            },
+            {
+                extend: 'print',
+                text: '<i class="fas fa-print"></i> Cetak',
+                className: 'btn btn-primary btn-sm',
+                title: '', // Kosongkan
+                messageTop: function () {
+                    const userTitle = prompt("Masukkan judul laporan:", "Laporan Data Anggota Jemaat");
+                    // Simpan ke variable global untuk akses di customize
+                    window.dynamicPrintTitle = userTitle ?? 'Laporan Tanpa Judul';
+                    return 'Dicetak: ' + new Date().toLocaleDateString();
+                },
+                customize: function (win) {
+                    const title = window.dynamicPrintTitle ?? 'Laporan';
+                    $(win.document.body).css('font-size', '14pt')
+                        .prepend('<h2 style="text-align:center; margin-bottom: 20px;">' + title + '</h2>');
+
+                    $(win.document.body).find('table')
+                        .addClass('compact')
+                        .css('font-size', 'inherit');
+                }
+            },
+            {
+                extend: 'copy',
+                text: '<i class="fas fa-copy"></i> Copy',
+                className: 'btn btn-warning btn-sm',
+                title:''
+            }
+        ],
         lengthMenu: [ [10, 50, 100, -1], [10, 50, 100, "semua"] ],
         pageLength: 10,
         language: {  
@@ -271,7 +306,47 @@ $(document).ready(function() {
         });
     }
 });
-
 </script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const inputs = document.querySelectorAll('.tanggal-terformat');
+
+        inputs.forEach(function (input) {
+            const defaultValue = input.dataset.default;
+
+            input.addEventListener('focus', function () {
+                this.type = 'date';
+                this.value = defaultValue || '';
+            });
+
+            input.addEventListener('blur', function () {
+                if (this.value) {
+                    const tanggal = new Date(this.value);
+                    if (!isNaN(tanggal.getTime())) {
+                        const options = { day: 'numeric', month: 'long', year: 'numeric' };
+                        const formatted = tanggal.toLocaleDateString('id-ID', options);
+                        this.dataset.default = this.value;
+                        this.type = 'text';
+                        this.value = formatted;
+                    }
+                } else {
+                    // Kembalikan ke nilai awal jika tidak memilih tanggal baru
+                    if (defaultValue) {
+                        const tanggal = new Date(defaultValue);
+                        const options = { day: 'numeric', month: 'long', year: 'numeric' };
+                        const formatted = tanggal.toLocaleDateString('id-ID', options);
+                        this.type = 'text';
+                        this.value = formatted;
+                    } else {
+                        this.type = 'text';
+                        this.value = '';
+                    }
+                }
+            });
+        });
+    });
+</script>
+
 </body>
 </html>

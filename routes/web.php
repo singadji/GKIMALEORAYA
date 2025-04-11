@@ -11,10 +11,11 @@ use App\Http\Controllers\Web\ManajemenUserController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Administrasi\JemaatController;
+use App\Http\Controllers\Administrasi\BaptisanController;
+use App\Http\Controllers\Master\WilayahController;
 use App\Http\Controllers\Auth\MfaController;
 use App\Http\Controllers\MainController;
 use App\Http\Controllers\PageController;
-use App\Http\Controllers\WilayahController;
   
 Route::get('/', function () {
     return view('template');
@@ -46,9 +47,11 @@ Route::middleware('auth')->group(function () {
 });
 
 Route::middleware(['auth', 'active', 'verify.otp'])->group(function () {
-    Route::get('admin/home', function() {
-        return view('admin/dashboard/dashboard');
-    });     
+    Route::get('admin/home', [DashboardController::class, 'index']);
+    Route::get('admin/{detail}', [DashboardController::class, 'detail'])->name('admin.detail');
+    //Route::get('admin/home', function() {
+       // return view('admin/dashboard/dashboard');
+    //});     
 
     Route::group(['middleware' => ['auth']], function () {
         Route::get('getkecamatan', [WilayahController::class, 'getKecamatan']);
@@ -86,7 +89,14 @@ Route::middleware(['auth', 'active', 'verify.otp'])->group(function () {
         });
 
         Route::prefix('administrasi')->name('administrasi.')->middleware(['role:Administrator'])->group(function () {
+            Route::post('data-jemaat/import', [JemaatController::class, 'import'])->name('data-jemaat.import');
+            Route::get('data-jemaat/cetak/{par1}', [JemaatController::class, 'cetakJemaat'])->name('data-jemaat.cetak');
+            Route::get('anggota-baptisan', [BaptisanController::class, 'index'])->name('anggota-baptisan');
             Route::resource('data-jemaat', JemaatController::class);
+        });
+
+        Route::prefix('master')->name('master.')->middleware(['role:Administrator'])->group(function () {
+            Route::resource('grup-wilayah', WilayahController::class);
         });
     });
 });
