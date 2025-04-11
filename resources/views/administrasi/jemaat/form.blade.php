@@ -222,7 +222,7 @@
             <td><input type="text" required style="width:70px;" name="nia_anggota[]" placeholder="NIA" class="form-control form-control-sm nia"></td>
             <td><input type="text" required class="form-control form-control-sm" name="nama_jemaat[]" placeholder="Nama Jemaat"></td>
             <td>
-                <select class="form-control form-control-sm" data-toggle="select" required name="p_l[]">
+                <select class="form-control form-control-sm" data-toggle="select" style="width:50px;" required name="p_l[]">
                     <option value="L">L</option>
                     <option value="P">P</option>
                 </select>

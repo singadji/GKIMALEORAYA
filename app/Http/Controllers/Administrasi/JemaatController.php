@@ -12,6 +12,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Imports\JemaatImport;
 
 use Illuminate\Support\Facades\Hash;
+use Barryvdh\DomPDF\Facade\Pdf;
 
 use App\Models\Jemaat;
 use App\Models\KKJemaat;
@@ -225,7 +226,8 @@ class JemaatController extends Controller
             'tombol',
             'id_kk',
             'aksi',
-            'kk_jemaat'
+            'kk_jemaat',
+            'id'
         ));
     }
     
@@ -385,6 +387,35 @@ class JemaatController extends Controller
             return redirect()->back()->with('error', 'Terjadi kesalahan saat mengimport data, ' .  $e->getMessage(), 500);
 
         }
+    }
+
+    public function cetakJemaat($id)
+    {
+        $jemaat = Jemaat::with(['kkJemaat', 'hubunganKeluarga'])->where('id_jemaat', $id)->firstOrFail();
+
+        // Cek apakah jemaat adalah kepala keluarga atau anggota keluarga
+        $kk = KkJemaat::where('id_jemaat', $jemaat->id_jemaat)->first();
+        $kk_jemaat = KkJemaat::select('id_jemaat')->get();
+
+        
+        if ($kk) {
+            // Jemaat adalah kepala keluarga
+            $kepalaKeluarga = $kk;
+            $id_kk = $kk->id_kk_jemaat;
+        } else {
+            // Jemaat adalah anggota keluarga
+            $hubungan = HubunganKeluarga::where('id_jemaat', $id)->with('kkJemaat')->first();
+            $kepalaKeluarga = $hubungan?->kkJemaat;
+            $id_kk = $hubungan?->id_kk_jemaat;
+        }
+
+        // Ambil semua anggota keluarga be  rdasarkan ID KK
+        $anggotaKeluarga = HubunganKeluarga::where('id_kk_jemaat', $id_kk)->with('jemaat')->get();
+        
+        $pdf = Pdf::loadView('administrasi.jemaat.cetak', compact('jemaat', 'kepalaKeluarga', 'anggotaKeluarga', 'kk_jemaat'));
+        
+        return $pdf->setPaper('a4', 'landscape')->download('Data-Jemaat-'.$jemaat->nama_jemaat.'.pdf');
+
     }
    
 }

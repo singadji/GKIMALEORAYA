@@ -90,6 +90,7 @@ Route::middleware(['auth', 'active', 'verify.otp'])->group(function () {
 
         Route::prefix('administrasi')->name('administrasi.')->middleware(['role:Administrator'])->group(function () {
             Route::post('data-jemaat/import', [JemaatController::class, 'import'])->name('data-jemaat.import');
+            Route::get('data-jemaat/cetak/{par1}', [JemaatController::class, 'cetakJemaat'])->name('data-jemaat.cetak');
             Route::get('anggota-baptisan', [BaptisanController::class, 'index'])->name('anggota-baptisan');
             Route::resource('data-jemaat', JemaatController::class);
         });

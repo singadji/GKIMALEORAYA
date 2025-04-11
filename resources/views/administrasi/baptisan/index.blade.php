@@ -69,7 +69,7 @@
                                         {!!  $item->gender !!}
                                     </td>
                                     <td class="text-left">
-                                        {{ $item->tempat_lahir ?? ' - '}},  {{ Carbon::parse($item->tanggal_lahir)->format('d M Y') }}
+                                        {{ $item->tempat_lahir ?? ' - '}},  {{ Carbon::parse($item->tanggal_lahir)->translatedFormat('d F Y') }}
                                     </td>
                                     <td class="text-left">
                                         @php

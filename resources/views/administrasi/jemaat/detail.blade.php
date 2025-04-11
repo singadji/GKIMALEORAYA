@@ -23,20 +23,29 @@
         @endif
     @endsection
 
-<div class="container-fluid mt--6">
+<div class="container-fluid mt-6">
     <div class="card mb-10">
         <div class="card-header mb-0">
             <h3>Detail Data Jemaat</h3>
 
             @if(isset($anggotaKeluarga))
+            <div class="d-flex align-items-center gap-2 mt-3 flex-wrap">
                 <span id="batal" @if(!isset($edit)) @endif>
-                    <a class="btn btn-default text-white bg-gradient-default btn-sm mt-3 ms-auto batal"
+                    <a class="btn btn-default text-white bg-gradient-default btn-sm batal"
                        id="btl" name="batal" value="Batal">Batal</a>
                 </span>
+
                 <span id="edit">
-                    <a class="btn btn-default text-white bg-gradient-default btn-sm mt-3 ms-auto edit"
-                       id="edt" name="edit" value="Ubah Data">Ubah Data</a>
+                    <a class="btn btn-default text-white bg-gradient-default btn-sm edit"
+                    id="edt" name="edit" value="Ubah Data"><i class="fas fa-pencil-alt"></i> Ubah Data</a>
                 </span>
+                &nbsp;<span>
+                <a href="{{ route('administrasi.data-jemaat.cetak', $id) }}" class="btn btn-danger btn-sm">
+                    <i class="fas fa-file-pdf"></i> Export PDF
+                </a>
+                </span>
+            </div>
+
                 <!-- <span id="hapus">
                     <a data-confirm-delete="true" href="{{ route('administrasi.data-jemaat.destroy', $id_kk) }}"
                        class="btn btn-danger bg-gradient-danger btn-sm mt-3 ms-auto">Hapus</a>
@@ -82,9 +91,9 @@
                                 <tr>
                                     <th width="20px">L / P<span class="text-danger">*</span></th>
                                     <td>
-                                        <select name="p_l_kk" id="ubahdata" class="form-control form-control-sm" data-toggle="select" required {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
-                                            <option value="L" {{ ($kepalaKeluarga->jemaatKK->gender ?? '') == 'L' ? 'selected' : '' }}>Laki-laki</option>
-                                            <option value="P" {{ ($kepalaKeluarga->jemaatKK->gender ?? '') == 'P' ? 'selected' : '' }}>Perempuan</option>
+                                        <select name="p_l_kk" id="ubahdata" class="form-control form-control-sm" required {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                            <option value="L" {{ ($kepalaKeluarga->jemaatKK->gender ?? '') == 'L' ? 'selected' : '' }}>L</option>
+                                            <option value="P" {{ ($kepalaKeluarga->jemaatKK->gender ?? '') == 'P' ? 'selected' : '' }}>P</option>
                                         </select>
                                     </td>
                                 </tr>
@@ -110,8 +119,15 @@
                                                     {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                             </div>
                                             <div class="col-md-4">
-                                                <input type="date" required name="tanggal_lahir_kk" value="{{ $kepalaKeluarga->jemaatKK->tanggal_lahir ?? '-' }}"
-                                                    class="form-control form-control-sm"
+                                                <input required type="text"
+                                                    id="ubahdata"
+                                                    name="tanggal_lahir_kk"
+                                                    class="form-control form-control-sm tanggal-terformat"
+                                                    placeholder="Tanggal Lahir"
+                                                    value="{{ optional($kepalaKeluarga->jemaatKK)->tanggal_lahir 
+                                                        ? \Carbon\Carbon::parse($kepalaKeluarga->jemaatKK->tanggal_lahir)->translatedFormat('d F Y') 
+                                                        : '' }}"
+                                                    data-default="{{ optional($kepalaKeluarga->jemaatKK)->tanggal_lahir }}"
                                                     {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                             </div>
                                         </div>
@@ -120,13 +136,31 @@
                                 <tr>
                                     <th>Tanggal Baptis</th>
                                     <td>
-                                        <input type="date" id="ubahdata" name="tanggal_baptis_kk" value="{{ $kepalaKeluarga->jemaatKK->tanggal_baptis ?? '-' }}" placeholder="Tanggal Baptis" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                        <input type="text"
+                                            id="ubahdata"
+                                            name="tanggal_baptis_kk"
+                                            class="form-control form-control-sm tanggal-terformat"
+                                            placeholder="Tanggal Baptis"
+                                            value="{{ optional($kepalaKeluarga->jemaatKK)->tanggal_baptis 
+                                                ? \Carbon\Carbon::parse($kepalaKeluarga->jemaatKK->tanggal_baptis)->translatedFormat('d F Y') 
+                                                : '' }}"
+                                            data-default="{{ optional($kepalaKeluarga->jemaatKK)->tanggal_baptis }}"
+                                            {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                     </td>
                                 </tr>
                                 <tr>
                                     <th>Tanggal Sidi</th>
                                     <td>
-                                        <input type="date" id="ubahdata" name="tanggal_sidi_kk" value="{{ $kepalaKeluarga->jemaatKK->tanggal_sidi ?? '-' }}" placeholder="Tanggal Sidi" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                        <input type="text"
+                                            id="ubahdata"
+                                            name="tanggal_sidi_kk"
+                                            class="form-control form-control-sm tanggal-terformat"
+                                            placeholder="Tanggal Sidi"
+                                            value="{{ optional($kepalaKeluarga->jemaatKK)->tanggal_sidi 
+                                                ? \Carbon\Carbon::parse($kepalaKeluarga->jemaatKK->tanggal_sidi)->translatedFormat('d F Y') 
+                                                : '' }}"
+                                            data-default="{{ optional($kepalaKeluarga->jemaatKK)->tanggal_sidi }}"
+                                            {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>    
                                     </td>
                                 </tr>
                                 <tr>
@@ -134,7 +168,7 @@
                                     <td>
                                         <div class="row">
                                             <div class="col-md-6">
-                                                <select class="form-control form-control-sm" data-toggle="select" name="status_menikah_kk" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                                <select class="form-control form-control-sm" name="status_menikah_kk" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                                     
                                                     <option @if($kepalaKeluarga->jemaatKK->status_menikah == 'Belum Menikah') selected @endif value="Belum Menikah">Belum Menikah </option>
                                                     <option @if($kepalaKeluarga->jemaatKK->status_menikah == 'Menikah') selected @endif value="Menikah">Menikah</option>
@@ -143,7 +177,16 @@
                                                 </select>
                                             </div>
                                             <div class="col-md-6">
-                                                <input type="date" id="ubahdata" name="tanggal_nikah_kk" value="{{ $kepalaKeluarga->jemaatKK->tanggal_nikah ?? '-' }}" placeholder="Tanggal Nikah" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                                <input type="text"
+                                                id="ubahdata"
+                                                name="tanggal_nikah_kk"
+                                                class="form-control form-control-sm tanggal-terformat"
+                                                placeholder="Tanggal Sidi"
+                                                value="{{ optional($kepalaKeluarga->jemaatKK)->tanggal_nikah 
+                                                    ? \Carbon\Carbon::parse($kepalaKeluarga->jemaatKK->tanggal_nikah)->translatedFormat('d F Y') 
+                                                    : '' }}"
+                                                data-default="{{ optional($kepalaKeluarga->jemaatKK)->tanggal_nikah }}"
+                                                {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                             </div>
                                         </div>
                                     </td>
@@ -156,7 +199,16 @@
                                                 <input type="text" id="ubahdata" name="asal_gereja_kk" value="{{ $kepalaKeluarga->jemaatKK->asal_gereja ?? '-' }}" placeholder="Gereja Asal" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                             </div>
                                             <div class="col-md-6">
-                                                <input type="date" id="ubahdata" name="tanggal_terdaftar_kk" value="{{ $kepalaKeluarga->jemaatKK->tanggal_terdaftar ?? '-' }}" placeholder="Tanggal Terdaftar" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                                <input type="text"
+                                                    id="ubahdata"
+                                                    name="tanggal_terdaftar_kk"
+                                                    class="form-control form-control-sm tanggal-terformat"
+                                                    placeholder="Tanggal Sidi"
+                                                    value="{{ optional($kepalaKeluarga->jemaatKK)->tanggal_terdaftar 
+                                                        ? \Carbon\Carbon::parse($kepalaKeluarga->jemaatKK->tanggal_terdaftar)->translatedFormat('d F Y') 
+                                                        : '' }}"
+                                                    data-default="{{ optional($kepalaKeluarga->jemaatKK)->tanggal_terdaftar }}"
+                                                    {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                             </div>
                                         </div>
                                     </td>
@@ -179,7 +231,7 @@
                                         </span>
                                         <div class="row" id="status-row" style="display: none;">
                                             <div class="col-md-6">
-                                                <select class="form-control form-control-sm" data-toggle="select" required  name="status_aktif_kk" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                                <select class="form-control form-control-sm" required  name="status_aktif_kk" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                                     <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Aktif') selected @endif value="Aktif">Aktif</option>
                                                     <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Atestasi') selected @endif value="Atestasi">Atestasi</option>
                                                     <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Pasif') selected @endif value="Pasif">Pasif</option>
@@ -262,18 +314,14 @@
                                             </div>
                                         </td>
                                         <td>
-                                            <select name="p_l[]" id="ubahdata" style="width: 50px;" class="form-control form-control-sm" data-toggle="select" {{ isset($anggotaKeluarga) ? 'disabled' : '' }} required>
+                                            <select name="p_l[]" id="ubahdata" style="width: 50px;" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }} required>
                                                 <option value="L" {{ ($anggota->jemaat->gender ?? '') == 'L' ? 'selected' : '' }}>L</option>
                                                 <option value="P" {{ ($anggota->jemaat->gender ?? '') == 'P' ? 'selected' : '' }}>P</option>
                                             </select>
                                         </td>
                                         <td class="text-center">
-                                            <select class="form-control form-control-sm" required data-toggle="select" name="hubungan_keluarga[]" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                            <select class="form-control form-control-sm" required name="hubungan_keluarga[]" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                                 
-                                                <option value="Kepala Keluarga" 
-                                                    {{ ( optional($anggota)->hubungan_keluarga != 'Kepala Keluarga') ? 'selected' : '' }}>
-                                                    Kepala Keluarga
-                                                </option>
                                                 <option value="Pasangan" 
                                                     {{ ( optional($anggota)->hubungan_keluarga == 'Pasangan') ? 'selected' : '' }}>
                                                     Pasangan
@@ -296,18 +344,54 @@
                                             <input type="text" required id="ubahdata" style="width:150px;" name="tempat_lahir[]" value="{{ $anggota->jemaat->tempat_lahir ?? 'Tidak Diketahui' }}" placeholder="Tempat Lahir" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                         </td>
                                         <td class="text-center">
-                                            <input type="date" required id="ubahdata" style="width:120px;"  name="tanggal_lahir[]" value="{{ $anggota->jemaat->tanggal_lahir ?? 'Tidak Diketahui' }}" placeholder="Tanggal Lahir" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                            <input required type="text"
+                                                    id="ubahdata"
+                                                    name="tanggal_lahir[]"
+                                                    class="form-control form-control-sm tanggal-terformat"
+                                                    placeholder="Tanggal Lahir"
+                                                    value="{{ optional($anggota->jemaat)->tanggal_lahir
+                                                        ? \Carbon\Carbon::parse($anggota->jemaat->tanggal_lahir)->translatedFormat('d F Y') 
+                                                        : '' }}"
+                                                    data-default="{{ optional($anggota->jemaat)->tanggal_lahir }}"
+                                                    {{ isset($anggotaKeluarga) ? 'disabled' : '' }} style="width:130px;">
                                         </td>
                                         <td class="text-center">
-                                            <input type="date" id="ubahdata" style="width:120px;"  name="tanggal_baptis[]" value="{{ $anggota->jemaat->tanggal_baptis ?? 'Tidak Diketahui' }}" placeholder="Tanggal Baptis" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                            <input type="text"
+                                                    id="ubahdata"
+                                                    name="tanggal_baptis[]"
+                                                    class="form-control form-control-sm tanggal-terformat"
+                                                    placeholder="Tanggal Baptis"
+                                                    value="{{ optional($anggota->jemaat)->tanggal_baptis
+                                                        ? \Carbon\Carbon::parse($anggota->jemaat->tanggal_baptis)->translatedFormat('d F Y') 
+                                                        : '' }}"
+                                                    data-default="{{ optional($anggota->jemaat)->tanggal_baptis }}"
+                                                    {{ isset($anggotaKeluarga) ? 'disabled' : '' }} style="width:130px;">
                                         </td>
                                         <td class="text-center">
-                                            <input type="date" id="ubahdata" style="width:120px;"  name="tanggal_sidi[]" value="{{ $anggota->jemaat->tanggal_sidi ?? 'Tidak Diketahui' }}" placeholder="Tanggal Sidi" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                            <input type="text"
+                                                    id="ubahdata"
+                                                    name="tanggal_sidi[]"
+                                                    class="form-control form-control-sm tanggal-terformat"
+                                                    placeholder="Tanggal Sidi"
+                                                    value="{{ optional($anggota->jemaat)->tanggal_sidi
+                                                        ? \Carbon\Carbon::parse($anggota->jemaat->tanggal_sidi)->translatedFormat('d F Y') 
+                                                        : '' }}"
+                                                    data-default="{{ optional($anggota->jemaat)->tanggal_sidi }}"
+                                                    {{ isset($anggotaKeluarga) ? 'disabled' : '' }} style="width:130px;">
                                         </td>
                                         <td class="text-center">
                                             <input type="text" id="ubahdata" style="width:150px;"  name="asal_gereja[]" value="{{ $anggota->jemaat->asal_gereja ?? 'Tidak Diketahui' }}" placeholder="" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                         <td class="text-center">
-                                            <input type="date" id="ubahdata" style="width:120px;"  name="tanggal_terdaftar[]" value="{{ $anggota->jemaat->tanggal_terdaftar ?? 'Tidak Diketahui' }}" placeholder="Tanggal Terdaftar" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                            <input type="text"
+                                                    id="ubahdata"
+                                                    name="tanggal_terdaftar[]"
+                                                    class="form-control form-control-sm tanggal-terformat"
+                                                    placeholder="Tanggal Terdaftar"
+                                                    value="{{ optional($anggota->jemaat)->tanggal_terdaftar
+                                                        ? \Carbon\Carbon::parse($anggota->jemaat->tanggal_terdaftar)->translatedFormat('d F Y') 
+                                                        : '' }}"
+                                                    data-default="{{ optional($anggota->jemaat)->tanggal_terdaftar }}"
+                                                    {{ isset($anggotaKeluarga) ? 'disabled' : '' }} style="width:130px;">
                                         </td>
                                             @php
                                             $badgeClass = $anggota->jemaat->status_aktif == 'Aktif' ? 'bg-gradient-success' :
@@ -319,7 +403,7 @@
                                             </span>
                                             <div class="row status-row1" id="status-row1" style="display: none;">
                                                 <div class="col-md-12">
-                                                    <select class="form-control form-control-sm" required data-toggle="select" required name="status_aktif[]" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                                    <select class="form-control form-control-sm" required required name="status_aktif[]" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                                         <option @if($anggota->jemaat->status_aktif == 'Aktif') selected @endif value="Aktif">Aktif</option>
                                                         <option @if($anggota->jemaat->status_aktif == 'Atestasi') selected @endif value="Atestasi">Atestasi</option>
                                                         <option @if($anggota->jemaat->status_aktif == 'Pasif') selected @endif value="Pasif">Pasif</option>
@@ -332,11 +416,11 @@
                                         <td>
                                             <input type="text" id="ubahdata" style="width:150px;"  name="keterangan[]" value="{{ $anggota->jemaat->keterangan ?? '' }}" placeholder="" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                         </td>
-                                        <td class="">
+                                        <!-- <td class="">
                                         <a class="btn btn-link text-danger text-gradient px-1 mb-0" data-confirm-delete="true" href="{{ route('administrasi.data-jemaat.destroy', $anggota->jemaat->id_jemaat) }}">
                                             <i class="far fa-trash-alt me-1"></i>
                                         </a>
-                                        </td>
+                                        </td> -->
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -366,13 +450,13 @@
             <td><input type="text" required style="width:70px;" name="nia_anggota[]" placeholder="NIA" class="form-control form-control-sm nia"></td>
             <td><input type="text" required class="form-control form-control-sm" name="nama_jemaat[]" placeholder="Nama Jemaat"></td>
             <td>
-                <select class="form-control form-control-sm" data-toggle="select" required name="p_l[]">
+                <select class="form-control form-control-sm" style="width:50px;" required name="p_l[]">
                     <option value="L">L</option>
                     <option value="P">P</option>
                 </select>
             </td>
             <td>
-                <select class="form-control form-control-sm" data-toggle="select" required name="hubungan_keluarga[]">
+                <select class="form-control form-control-sm" required name="hubungan_keluarga[]">
                     <option value="Kepala Keluarga">Kepala Keluarga</option>
                     <option value="Pasangan">Pasangan</option>
                     <option value="Anak">Anak</option>
@@ -381,13 +465,13 @@
                 </select>
             </td>
             <td><input type="text" required class="form-control form-control-sm" name="tempat_lahir[]" placeholder="Tempat Lahir"></td>
-            <td><input type="date" required class="form-control form-control-sm" name="tanggal_lahir[]"></td>
-            <td><input type="date"  class="form-control form-control-sm" name="tanggal_baptis[]"></td>
-            <td><input type="date"  class="form-control form-control-sm" name="tanggal_sidi[]"></td>
+            <td><input type="date" required class="form-control form-control-sm tanggal-terformat" name="tanggal_lahir[]"></td>
+            <td><input type="date"  class="form-control form-control-sm tanggal-terformat" name="tanggal_baptis[]"></td>
+            <td><input type="date"  class="form-control form-control-sm tanggal-terformat" name="tanggal_sidi[]"></td>
             <td><input type="text" required class="form-control form-control-sm" name="asal_gereja[]" placeholder="Gereja Asal"></td>
-            <td><input type="date" class="form-control form-control-sm" name="tanggal_terdaftar[]"></td>
+            <td><input type="date" class="form-control form-control-sm tanggal-terformat" name="tanggal_terdaftar[]"></td>
             <td>
-                <select class="form-control form-control-sm" required data-toggle="select" name="status_aktif[]">
+                <select class="form-control form-control-sm" required name="status_aktif[]">
                     <option value="Aktif">Aktif</option>
                     <option value="Atestasi">Atestasi</option>
                     <option value="Atestasi">Pasif</option>
