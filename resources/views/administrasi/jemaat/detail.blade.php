@@ -100,7 +100,7 @@
                                 <tr>
                                     <th>Alamat<span class="text-danger">*</span></th>
                                     <td>
-                                        <input type="text" required id="ubahdata" name="alamat" value="{{ $kepalaKeluarga->alamat ?? 'Tidak Diketahui' }}" placeholder="Alamat" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                        <input type="text" required id="ubahdata" name="alamat_kk" value="{{ $kepalaKeluarga->alamat ?? 'Tidak Diketahui' }}" placeholder="Alamat" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                     </td>
                                 </tr>
                                 <tr>
@@ -268,6 +268,7 @@
                                     <th class="text-center">Tanggal<br>Lahir<span class="text-danger">*</span></th>
                                     <th class="text-center">Tanggal<br>Baptis</th>
                                     <th class="text-center">Tanggal<br>Sidi</th>
+                                    <th class="text-center">Status<br>Pernikahan</th>
                                     <th class="text-center">Gereja Asal</th>
                                     <th class="text-center">Tanggal<br>Terdaftar</th>
                                     <th class="text-center">Status<br>Keanggotaan<span class="text-danger">*</span></th>
@@ -334,10 +335,6 @@
                                                     {{ ( optional($anggota)->hubungan_keluarga == 'Kerabat') ? 'selected' : '' }}>
                                                     Kerabat
                                                 </option>
-                                                <option value="Belum Menikah" 
-                                                    {{ ( optional($anggota)->hubungan_keluarga == 'Belum Menikah') ? 'selected' : '' }}>
-                                                    Belum Menikah
-                                                </option>
                                             </select>    
                                         </td>
                                         <td class="text-center">
@@ -378,6 +375,14 @@
                                                         : '' }}"
                                                     data-default="{{ optional($anggota->jemaat)->tanggal_sidi }}"
                                                     {{ isset($anggotaKeluarga) ? 'disabled' : '' }} style="width:130px;">
+                                        </td>
+                                        <td class="text-center">
+                                            <select class="form-control form-control-sm" required name="status_menikah[]" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                                <option @if($anggota->jemaat->status_menikah == 'Menikah') selected @endif value="Menikah">Menikah</option>
+                                                <option @if($anggota->jemaat->status_menikah == 'Belum Menikah') selected @endif value="Belum Menikah">Belum Menikah</option>
+                                                <option @if($anggota->jemaat->status_menikah == 'Duda') selected @endif value="Duda">Duda</option>
+                                                <option @if($anggota->jemaat->status_menikah == 'Janda') selected @endif value="Janda">Jandaa</option>
+                                            </select>    
                                         </td>
                                         <td class="text-center">
                                             <input type="text" id="ubahdata" style="width:150px;"  name="asal_gereja[]" value="{{ $anggota->jemaat->asal_gereja ?? 'Tidak Diketahui' }}" placeholder="" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
@@ -461,13 +466,20 @@
                     <option value="Pasangan">Pasangan</option>
                     <option value="Anak">Anak</option>
                     <option value="Kerabat">Kerabat</option>
-                    <option value="Belum Menikah">Belum Menikah</option>
                 </select>
             </td>
             <td><input type="text" required class="form-control form-control-sm" name="tempat_lahir[]" placeholder="Tempat Lahir"></td>
             <td><input type="date" required class="form-control form-control-sm tanggal-terformat" name="tanggal_lahir[]"></td>
             <td><input type="date"  class="form-control form-control-sm tanggal-terformat" name="tanggal_baptis[]"></td>
             <td><input type="date"  class="form-control form-control-sm tanggal-terformat" name="tanggal_sidi[]"></td>
+            <td>
+                <select class="form-control form-control-sm" required name="status_menikah[]">
+                    <option value="Menikah">Menikah</option>
+                    <option value="Belum Menikah">Belum Menikah</option>
+                    <option value="Duda">Duda</option>
+                    <option value="Janda">Janda</option>
+                </select>
+            </td>
             <td><input type="text" required class="form-control form-control-sm" name="asal_gereja[]" placeholder="Gereja Asal"></td>
             <td><input type="date" class="form-control form-control-sm tanggal-terformat" name="tanggal_terdaftar[]"></td>
             <td>
