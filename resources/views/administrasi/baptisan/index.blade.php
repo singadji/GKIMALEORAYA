@@ -101,17 +101,4 @@
         </div>
         @include('layouts.footers.auth.footer')
     </div>
-
-    <script>
-        document.getElementById('importLink').addEventListener('click', function (e) {
-            e.preventDefault();
-            document.getElementById('file').click();
-        });
-
-        document.getElementById('file').addEventListener('change', function () {
-            if (this.files.length > 0) {
-                document.getElementById('formImport').submit();
-            }
-        });
-    </script>
 @endsection

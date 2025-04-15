@@ -19,6 +19,7 @@ use App\Models\KKJemaat;
 use App\Models\HubunganKeluarga;
 
 use Carbon\Carbon;
+use App\Halpers\DateHelper;
 
 use Alert;
 
@@ -51,15 +52,7 @@ class JemaatController extends Controller
 
         $item   = Jemaat::with(['kkJemaat', 'hubunganKeluarga.kkJemaat'])->get();
 
-        return view('administrasi.jemaat.index',[
-            'item' => $item,
-            'btn'    => $btn,
-            'page'  => $page,
-            'judul'  => $judul,
-            'subjudul'  => $subjudul,
-            'tombol'  => $tombol,
-            compact('item')
-        ]);
+        return view('administrasi.jemaat.index',compact('item', 'btn', 'page', 'judul', 'subjudul', 'tombol'));
     }
 
     /**
@@ -273,67 +266,72 @@ class JemaatController extends Controller
             
             // Simpan data kepala keluarga
             $KKjemaat = Jemaat::where('id_jemaat', $id)->firstOrFail();
-            $KKjemaat->nama_jemaat    =   $request->kepala_keluarga;
-            $KKjemaat->gender         =   $request->p_l_kk;
-            $KKjemaat->telepon        =   $request->telepon_kk;
-            $KKjemaat->tempat_lahir   =   $request->tempat_lahir_kk;
-            $KKjemaat->tanggal_lahir  =   $request->tanggal_lahir_kk;
-            $KKjemaat->tanggal_baptis =   $request->tanggal_baptis_kk;
-            $KKjemaat->tanggal_sidi   =   $request->tanggal_sidi_kk;
-            $KKjemaat->tanggal_nikah  =   $request->tanggal_nikah_kk;
-            $KKjemaat->status_menikah =   $request->status_menikah_kk;
-            $KKjemaat->asal_gereja    =   $request->asal_gereja_kk;
-            $KKjemaat->tanggal_terdaftar = $request->tanggal_terdaftar_kk;
-            $KKjemaat->status_aktif   =   $request->status_aktif_kk;
-            $KKjemaat->keterangan     =   $request->keterangan_kk;
+            $KKjemaat->nama_jemaat       = $request->kepala_keluarga;
+            $KKjemaat->gender            = $request->p_l_kk;
+            $KKjemaat->telepon           = $request->telepon_kk;
+            $KKjemaat->tempat_lahir      = $request->tempat_lahir_kk;
+            $KKjemaat->tanggal_lahir     = parseTanggalIndo($request->tanggal_lahir_kk);
+            $KKjemaat->tanggal_baptis    = parseTanggalIndo($request->tanggal_baptis_kk);
+            $KKjemaat->tanggal_sidi      = parseTanggalIndo($request->tanggal_sidi_kk);
+            $KKjemaat->tanggal_nikah     = parseTanggalIndo($request->tanggal_nikah_kk);
+            $KKjemaat->status_menikah    = $request->status_menikah_kk;
+            $KKjemaat->asal_gereja       = $request->asal_gereja_kk;
+            $KKjemaat->tanggal_terdaftar = parseTanggalIndo($request->tanggal_terdaftar_kk);
+            $KKjemaat->status_aktif      = $request->status_aktif_kk;
+            $KKjemaat->keterangan        = $request->keterangan_kk;
             $KKjemaat->save();
 
             // Update Anggota Keluarga
             if ($request->has('id_anggota')) {
-                foreach ($request->id_anggota as $index => $nia) {
-                    // Cari anggota berdasarkan NIA
-                    $anggota = Jemaat::where('id_jemaat', $nia)->first();
-
-                    if (!$anggota) {
-                        // Buat anggota baru jika tidak ditemukan
+                foreach ($request->nia_anggota as $index => $nia) {
+                    // Kalau ada id_anggota pada index ini, pakai sebagai acuan
+                    $idAnggota = $request->id_anggota[$index] ?? null;
+                
+                    if ($idAnggota) {
+                        $anggota = Jemaat::find($idAnggota);
+                    } else {
                         $anggota = new Jemaat();
                     }
-
-                    // Isi data anggota
-                    $anggota->nia = $request->nia_anggota[$index];
-                    $anggota->nama_jemaat = $request->nama_jemaat[$index];
-                    $anggota->gender = $request->p_l[$index];
-                    $anggota->tempat_lahir = $request->tempat_lahir[$index];
-                    $anggota->tanggal_lahir = $request->tanggal_lahir[$index];
-                    $anggota->tanggal_baptis = $request->tanggal_baptis[$index];
-                    $anggota->tanggal_sidi = $request->tanggal_sidi[$index];
-                    $anggota->asal_gereja = $request->asal_gereja[$index];
-                    $anggota->tanggal_terdaftar = $request->tanggal_terdaftar[$index];
-                    $anggota->status_aktif = $request->status_aktif[$index];
-                    $anggota->keterangan = $request->keterangan[$index];
-
-                    // Simpan data (update atau insert)
+                
+                    $anggota->nia               = $nia;
+                    $anggota->nama_jemaat       = $request->nama_jemaat[$index];
+                    $anggota->gender            = $request->p_l[$index];
+                    $anggota->tempat_lahir      = $request->tempat_lahir[$index];
+                    $anggota->tanggal_lahir     = parseTanggalIndo($request->tanggal_lahir[$index]);
+                    $anggota->tanggal_baptis    = parseTanggalIndo($request->tanggal_baptis[$index]);
+                    $anggota->tanggal_sidi      = parseTanggalIndo($request->tanggal_sidi[$index]);
+                    $anggota->asal_gereja       = $request->asal_gereja[$index];
+                    $anggota->tanggal_terdaftar = parseTanggalIndo($request->tanggal_terdaftar[$index]);
+                    $anggota->status_aktif      = $request->status_aktif[$index];
+                    $anggota->status_menikah    = $request->status_menikah[$index];
+                    $anggota->keterangan        = $request->keterangan[$index];
+                
                     $anggota->save();
-                    $idJemaat = $anggota->id_jemaat; // ID yang baru dibuat oleh database
-
-                    // Simpan hubungan keluarga
+                    $idJemaat = $anggota->id_jemaat;
+                
                     HubunganKeluarga::updateOrCreate(
+                        ['id_jemaat' => $idJemaat],
                         [
-                            'id_jemaat' => $idJemaat, // ID Jemaat yang baru dibuat
-                        ],
-                        [
-                            'id_kk_jemaat' => $request->id_kk, // Kepala keluarga
+                            'id_kk_jemaat' => $request->id_kk,
                             'hubungan_keluarga' => $request->hubungan_keluarga[$index]
                         ]
                     );
-                }
+
+                    if($request->status_menikah[$index] == "Menikah" && !preg_match('/[WKA]/i', $nia) && $request->p_l[$index] == "L"){
+                        KkJemaat::updateOrCreate(
+                            ['id_jemaat' => $idJemaat],
+                            ['id_group_wilayah' => $request->group_wilayah_kk],
+                            ['alamat' => '-']
+                        );
+                    }
+                }                
             }
             
-            $kk->alamat = $request->alamat;
+            $kk->alamat = $request->alamat_kk;
             $kk->id_group_wilayah = $request->group_wilayah_kk;
             $kk->save();
 
-            DB::commit();
+            DB::commit(); 
             return redirect()->back()->with('success', 'Data berhasil diupdate!');
         } catch (\Exception $e) {
             DB::rollBack();
