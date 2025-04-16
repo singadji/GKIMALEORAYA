@@ -116,18 +116,14 @@ class JemaatController extends Controller
             $kk->id_group_wilayah = $request->group_wilayah_kk;
             $kk->save();
 
-            // Update Anggota Keluarga
             if ($request->has('nia_anggota')) {
                 foreach ($request->nia_anggota as $index => $nia) {
-                    // Cari anggota berdasarkan NIA
                     $anggota = Jemaat::where('nia', $nia)->first();
 
                     if (!$anggota) {
-                        // Buat anggota baru jika tidak ditemukan
                         $anggota = new Jemaat();
                     }
 
-                    // Isi data anggota
                     $anggota->nia = $nia;
                     $anggota->nama_jemaat = $request->nama_jemaat[$index];
                     $anggota->gender = $request->p_l[$index];
@@ -140,7 +136,6 @@ class JemaatController extends Controller
                     $anggota->status_aktif = $request->status_aktif[$index];
                     $anggota->keterangan = $request->keterangan[$index];
 
-                    // Simpan data (update atau insert)
                     $anggota->save();
                     $idJemaat = $anggota->id_jemaat; // ID yang baru dibuat oleh database
 
@@ -414,6 +409,44 @@ class JemaatController extends Controller
         
         return $pdf->setPaper('a4', 'landscape')->download('Data-Jemaat-'.$jemaat->nama_jemaat.'.pdf');
 
+    }
+
+    public function search(Request $request)
+    {
+        $keyword = $request->get('keyword');
+
+        $results = Jemaat::where('nama_jemaat', 'like', '%' . $keyword . '%')
+            //->limit(10)
+            ->get();
+
+        return response()->json($results);
+    }
+
+    public function simpan(Request $request)
+    {
+        $kk = KkJemaat::where('id_jemaat', $request->id_kk_jemaat)->firstOrFail();
+        $kkW = KkJemaat::where('id_jemaat', $request->id_jemaat)->firstOrFail();
+
+        if($kkW){
+            $kkW = KkJemaat::where('id_jemaat', $request->id_jemaat)->firstOrFail();
+            $kkW->delete();
+        }
+
+        $cek = HubunganKeluarga::where('id_jemaat', $request->id_jemaat)
+        ->where('id_kk_jemaat', $request->id_kk_jemaat)
+        ->first();
+
+        if ($cek) {
+            return response()->json(['message' => 'Data sudah ada'], 409);
+        }
+        
+        $anggota = new HubunganKeluarga();
+        $anggota->id_kk_jemaat = $kk->id_kk_jemaat;
+        $anggota->id_jemaat = $request->id_jemaat;
+        $anggota->hubungan_keluarga = 'Tidak Diketahui';
+        $anggota->save();
+
+        return redirect()->back()->with('success', 'Anggota keluarga berhasil ditambah.');
     }
    
 }
