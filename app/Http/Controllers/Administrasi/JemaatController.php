@@ -433,8 +433,8 @@ class JemaatController extends Controller
         }
 
         $cek = HubunganKeluarga::where('id_jemaat', $request->id_jemaat)
-        ->where('id_kk_jemaat', $request->id_kk_jemaat)
-        ->first();
+            ->where('id_kk_jemaat', $request->id_kk_jemaat)
+            ->first();
 
         if ($cek) {
             return response()->json(['message' => 'Data sudah ada'], 409);
