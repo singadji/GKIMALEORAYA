@@ -255,7 +255,21 @@
                         <strong>Detail Anggota Keluarga</strong>
                     </div>
                     <div class="card-body table-responsive">
-                        <a href="#" id="addRow" class="btn btn-primary mb-2 btn-sm">Tambah Anggota Keluarga</a>
+                        <a href="#" id="addRow" class="btn btn-primary mb-2 btn-sm">Tambah Anggota Keluarga</a> <a href="#" id="ambil" class="btn btn-warning mb-2 btn-sm">Ambil dari Data Jemaat</a>
+                            <div class="modal fade" id="modalJemaat" tabindex="-1" aria-labelledby="modalJemaatLabel" aria-hidden="true">
+                                <div class="modal-dialog">
+                                    <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h5 class="modal-title" id="modalJemaatLabel">Pilih Data Jemaat</h5>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="text" id="searchJemaat" class="form-control mb-2" placeholder="Ketik nama jemaat...">
+                                        <ul class="list-group" id="listJemaat"></ul>
+                                    </div>
+                                    </div>
+                                </div>
+                            </div>
                         <table class="table table-hover data-table warping" id="tableBody">
                             <thead>
                                 <tr>
@@ -525,6 +539,7 @@
     $(document).ready(function () {
         $("#btl").hide();
         $("#addRow").hide();
+        $("#ambil").hide();
         $(".status-row1").hide(); 
         $(".removeRow").hide(); 
         $("#simpan").hide(); 
@@ -539,6 +554,7 @@
             $("#edt").hide();
             $("#btl").show();
             $("#addRow").show();
+            $("#ambil").show();
             $("#simpan").show();
         });
 
@@ -551,11 +567,129 @@
             $("input, select").prop("disabled", true);
             $("#btl").hide();
             $("#addRow").hide();
+            $("#ambil").hide();
             $("#edt").show();
             $("#simpan").hide();
         });
     });
 </script>
+
+<script>
+  // Debounce function
+  function debounce(func, delay) {
+    let timeout;
+    return function () {
+      const context = this;
+      const args = arguments;
+      clearTimeout(timeout);
+      timeout = setTimeout(() => func.apply(context, args), delay);
+    };
+  }
+
+  // Tampilkan modal saat tombol diklik
+  $('#ambil').on('click', function (e) {
+    e.preventDefault();
+    $('#modalJemaat').modal('show');
+    $('#searchJemaat').val('');
+    $('#listJemaat').empty();
+  });
+
+  // Fungsi untuk melakukan pencarian ke server
+  function cariJemaat() {
+    const keyword = $('#searchJemaat').val().trim();
+
+    if (keyword.length < 2) {
+      $('#listJemaat').html('<li class="list-group-item">Ketik minimal 2 huruf</li>');
+      return;
+    }
+
+    $.ajax({
+      url: './search-jemaat',
+      type: 'GET',
+      data: { keyword: keyword },
+      success: function (res) {
+        $('#listJemaat').empty();
+
+        if (res.length === 0) {
+          $('#listJemaat').append('<li class="list-group-item">Tidak ditemukan</li>');
+          return;
+        }
+
+        res.forEach(function (jemaat) {
+          $('#listJemaat').append(`
+            <li class="list-group-item list-group-item-action pilih-jemaat" data-id_jemaat="${jemaat.id_jemaat}" data-nama_jemaat="${jemaat.nama_jemaat}">
+              ${jemaat.nama_jemaat}
+            </li>
+          `);
+        });
+      },
+      error: function () {
+        $('#listJemaat').html('<li class="list-group-item text-danger">Gagal mengambil data</li>');
+      }
+    });
+  }
+  $('#searchJemaat').on('input', debounce(cariJemaat, 400));
+  
+  $(document).on('click', '.pilih-jemaat', function () {
+  const id_jemaat = $(this).data('id_jemaat');
+  const nama_jemaat = $(this).data('nama_jemaat');
+  const id_kk_jemaat = getIdFromUrl(); // ini dari URL
+
+  if (!id_kk_jemaat) {
+    alert('ID administrasi tidak ditemukan di URL.');
+    return;
+  }
+
+  $.ajax({
+    url: './simpan-jemaat',
+    type: 'POST',
+    data: {
+        id_jemaat: id_jemaat,
+        id_kk_jemaat: id_kk_jemaat,
+        _token: '{{ csrf_token() }}'
+    },
+    success: function (response) {
+        $('#modalJemaat').modal('hide');
+
+        Swal.fire({
+        icon: 'success',
+        title: 'Berhasil!',
+        text: 'Anggota keluarga berhasil ditambahkan.',
+        confirmButtonColor: '#3085d6',
+        confirmButtonText: 'OK'
+        }).then((result) => {
+        if (result.isConfirmed) {
+            location.reload();
+        }
+        });
+    },
+    error: function (xhr) {
+        let message = 'Gagal menyimpan data.';
+
+        if (xhr.status === 409) {
+        message = 'Data sudah pernah ditambahkan sebelumnya.';
+        }
+
+        Swal.fire({
+        icon: 'error',
+        title: 'Oops...',
+        text: message,
+        confirmButtonColor: '#d33'
+        });
+    }
+    });
+
+});
+
+function getIdFromUrl() {
+  const path = window.location.pathname;
+  const segments = path.split('/');
+  const lastSegment = segments.pop() || segments.pop();
+  return lastSegment;
+}
+
+</script>
+
 
 @endsection
 

@@ -92,6 +92,8 @@ Route::middleware(['auth', 'active', 'verify.otp'])->group(function () {
             Route::post('data-jemaat/import', [JemaatController::class, 'import'])->name('data-jemaat.import');
             Route::get('data-jemaat/cetak/{par1}', [JemaatController::class, 'cetakJemaat'])->name('data-jemaat.cetak');
             Route::get('anggota-baptisan', [BaptisanController::class, 'index'])->name('anggota-baptisan');
+            Route::get('data-jemaat/search-jemaat', [JemaatController::class, 'search']);
+            Route::post('data-jemaat/simpan-jemaat', [JemaatController::class, 'simpan']);
             Route::resource('data-jemaat', JemaatController::class);
         });
 
