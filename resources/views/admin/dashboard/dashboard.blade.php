@@ -31,7 +31,7 @@
         <strong>Oops, terjadi kesalahan. </strong>
         <ul style="font-size:12px;margin-top:5px;">
             @foreach ($errors->all() as $error)
-            <li> &nbsp; - {{ $error }}</li>
+            <li> &nbsp; - {!! $error !!}</li>
             @endforeach
         </ul>
     </div>

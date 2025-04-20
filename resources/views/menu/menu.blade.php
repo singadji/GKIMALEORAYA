@@ -1,29 +1,53 @@
-@extends('menu.template')
+@extends('template')
 
 @section('halaman')
 
-  <div class="page-title" data-aos="fade">
+<main id="main">
+  <section class="breadcrumbs">
+    <br />
       <div class="container">
-        <h1>{{$page->nama_menu}}</h1>
-      </div>
-  </div>
+        <div class="d-flex justify-content-between align-items-center">
+          <h2>{{$page->judul_menu}}</h2>
+        </div>
 
-  <section id="pricing" class="pricing section">
-    <div class="container" data-aos="zoom-in" data-aos-delay="100">
-      <div class="row g-4">
-        <div class="col-lg-12">
-          <div class="pricing-item">
-          	<div class="post-image ml-0">
-							<img src="{{ asset('images/menu/'.$page->gambar) }}"  width="1200px" class="img-fluid img-thumbnail img-thumbnail-no-borders rounded-0" alt=""  />
-						</div>
-					
-						<div class="post-content ml-0">
-							<p>{!! $page->isi_menu !!}</p>
-						</div>
-					</div>
-        </div><!-- End Pricing Item -->
       </div>
-    </div>
-  </section>
+    </section>
+    <section class="about" data-aos="fade-up">
+      <div class="container">
+        <div class="row">
+          <article class="entry">
+            @if($page->dokumen != '' && $page->gambar != '')
+            <div class="col-lg-col-lg-12 pt-1 pt-lg-0">
+                <h3>{{$page->gambar_cap}}</h3>
+                <img class="img-fluid w-100 text-center mb-4" src="{{ asset('images/menu/'.$page->gambar) }}" alt="">
+              </div>
+              <div class="row"><br></div>
+              <div class="col-lg-12 pt-1 pt-lg-0">
+              <h3>{{$page->dokumen_cap}}</h3>
+              <p><iframe src="{{ asset('files/'.$page->dokumen) }}" align="top" height="620" width="100%" frameborder="0" scrolling="auto"></iframe></p>
+            </div>
+            @elseif($page->dokumen != '')
+              <div class="col-lg-12 pt-1 pt-lg-0">
+              <h3>{{$page->dokumen_cap}}</h3>
+                <p><iframe src="{{ asset('files/'.$page->dokumen) }}" align="top" height="620" width="100%" frameborder="0" scrolling="auto"></iframe></p>
+              </div>
+            @elseif($page->gambar != '')
+              <div class="col-lg-col-lg-12 pt-1 pt-lg-0">
+                <img class="img-fluid w-100 text-center mb-4" src="{{ asset('images/menu/'.$page->gambar) }}" alt="">
+              </div>
+              <div class="col-lg-12 pt-1 pt-lg-0">
+              <p>{!! $page['isi_menu'] !!}</p>
+            </div>
+            
+            @else
+            <div class="col-lg-12 pt-1 pt-lg-0">
+              <p>{!! $page['isi_menu'] !!}</p>
+            </div>
+            @endif
+          </article>
+        </div>
 
+      </div>
+    </section>
+</main>
 @endsection

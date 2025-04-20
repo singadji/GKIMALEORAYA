@@ -1,23 +1,41 @@
 <div class="col-md-12">
-    @if (Session::has('success'))
+@if (Session::has('success'))
+    @php
+        $messages = explode('<br>', Session::get('success'));
+    @endphp
+
+    {{-- Pesan utama (alert hijau) --}}
     <div class="alert alert-success alert-dismissible text-white" role="alert">
-        <span>{{ Session::get('success') }}</span>
-        <!-- <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button> -->
+        <span>{{ $messages[0] }}</span>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+            <span aria-hidden="true">×</span>
+        </button>
     </div>
-    @endif
+
+    {{-- Tambahan status (alert biru misalnya) --}}
+    @foreach (array_slice($messages, 1) as $status)
+        <div class="alert alert-info alert-dismissible text-white" role="alert">
+            <span>{{ $status }}</span>
+            <button type="button" class="close" data-dismiss="alert" aria-label="Close">
+                <span aria-hidden="true">×</span>
+            </button>
+        </div>
+    @endforeach
+@endif
+
 
     @if (Session::has('failed'))
     <div class="alert alert-danger alert-dismissible text-white" role="alert">
         <strong>Oops, terjadi kesalahan. </strong>
-        <!-- <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button> -->
-        <span>{{ Session::get('failed') }}</span>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
+        <span>{!! Session::get('failed') !!}</span>
     </div>
     @endif
 
     @if (Session::has('error'))
     <div class="alert alert-danger alert-dismissible text-white" role="alert">
-        <span>{{ Session::get('error') }}</span>
-        <!-- <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button> -->
+        <span>{!! Session::get('error') !!}</span>
+        <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
     </div>
     @endif
 

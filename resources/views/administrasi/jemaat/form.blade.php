@@ -96,19 +96,19 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>Tanggal Baptis<span class="text-danger">*</span></th>
+                                    <th>Tanggal Baptis</th>
                                     <td>
                                         <input type="date" name="tanggal_baptis_kk" value="{{ old('tanggal_baptis') }}" placeholder="Tanggal Baptis" class="form-control form-control-sm">
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>Tanggal Sidi<span class="text-danger">*</span></th>
+                                    <th>Tanggal Sidi</th>
                                     <td>
                                         <input type="date"  name="tanggal_sidi_kk" value="{{ old('tanggal_sidi') }}" placeholder="Tanggal Sidi" class="form-control form-control-sm">
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>Status dan Tanggal Pernikahan<span class="text-danger">*</span></th>
+                                    <th>Status dan Tanggal Pernikahan</th>
                                     <td>
                                         <div class="row">
                                             <div class="col-md-6">
@@ -152,7 +152,8 @@
                                                 <select class="form-control-sm" required data-toggle="select" name="status_aktif_kk">
                                                     
                                                     <option value="Aktif">Aktif</option>
-                                                    <option value="Atestasi">Atestasi</option>
+                                                    <option value="Pasif">Pasif</option>
+                                                    <option value="Atestasi Keluar">Atestasi Keluar</option>
                                                     <option value="Meninggal Dunia">Meninggal Dunia</option>
                                                     <option value="Bukan Anggota">Bukan Anggota</option>
                                                 </select>
@@ -245,9 +246,10 @@
             <td>
                 <select class="form-control-sm" required name="status_aktif[]">
                     <option value="Aktif">Aktif</option>
-                    <option value="Atestasi">Atestasi</option>
+                    <option value="Pasif">Pasif</option>
+                    <option value="Atestasi Keluar">Atestasi Keluar</option>
                     <option value="Meninggal Dunia">Meninggal Dunia</option>
-                    <option value="Tidak Tahu">Tidak Tahu</option>
+                    <option value="Tidak Tahu">Bukan Anggota</option>
                 </select>
             </td>
             <td><input type="text" class="form-control form-control-sm" name="keterangan[]" placeholder="Keterangan"></td>

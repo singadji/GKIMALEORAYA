@@ -11,6 +11,7 @@ use App\Http\Controllers\Web\ManajemenUserController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Administrasi\JemaatController;
+use App\Http\Controllers\Administrasi\AtestasiKeluarController;
 use App\Http\Controllers\Administrasi\BaptisanController;
 use App\Http\Controllers\Master\WilayahController;
 use App\Http\Controllers\Auth\MfaController;
@@ -95,6 +96,10 @@ Route::middleware(['auth', 'active', 'verify.otp'])->group(function () {
             Route::get('data-jemaat/search-jemaat', [JemaatController::class, 'search']);
             Route::post('data-jemaat/simpan-jemaat', [JemaatController::class, 'simpan']);
             Route::resource('data-jemaat', JemaatController::class);
+            Route::get('atestasi-keluar/cetak/{par1}', [JemaatController::class, 'cetak'])->name('atestasi-keluar.cetak');
+            Route::resource('atestasi-keluar', AtestasiKeluarController::class);
+
+
         });
 
         Route::prefix('master')->name('master.')->middleware(['role:Administrator'])->group(function () {

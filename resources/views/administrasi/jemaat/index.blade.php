@@ -22,7 +22,27 @@
             </div>
         @endif
     @endsection
-         
+    <div class="modal fade" id="laporanModal" tabindex="-1" aria-labelledby="laporanModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="laporanModalLabel">Masukkan Judul Laporan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="judulLaporanInput" class="form-label">Judul Laporan</label>
+                    <input type="text" class="form-control judulLaporanInput" id="judulLaporanInput" placeholder="Contoh: Laporan Data Karyawan">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-success" id="btnConfirmExcel">Export Excel</button>
+                <button type="button" class="btn btn-primary" id="btnConfirmCetak">Cetak</button>
+            </div>
+        </div>
+    </div>
+</div>
     <div class="container-fluid mt--6">
         <div class="card mb-10">
             <div class="card-header mb-0">
@@ -41,8 +61,10 @@
                             <tr>
                                 <th class="text-uppercase font-weight-bolder" width="10">#</th>
                                 <th class="text-uppercase font-weight-bolder" width="30px">N I A</th>
+                                <th class="text-uppercase font-weight-bolder" width="30px">Tanggal<br>Terdaftar</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">Nama Jemaat</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">L/P</th>
+                                <th class="text-uppercase font-weight-bolder ps-2" style="display: none;">Tempat,<br>Tanggal Lahir</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">Alamat Domisili</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">Wil.</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">No. Telepon/HP</th>
@@ -61,17 +83,23 @@
                                     <td class="text-center font-weight-bold" width="30px" style="word-wrap: break-word; white-space: normal !important;">
                                         {!! $isKK ? '<strong>' . $item->nia . '</strong>' : $item->nia !!}
                                     </td>
+                                    <td class="align-left" style="display: none;"> 
+                                        {!! $isKK ? '<strong>' . \Carbon\Carbon::parse($item->tanggal_terdaftar)->translatedFormat('d F Y') . '</strong>' : \Carbon\Carbon::parse($item->tanggal_terdaftar)->translatedFormat('d F Y') !!}
+                                    </td>
                                     <td class="align-left">
                                         {!! $isKK ? '<strong>' . $item->nama_jemaat . '</strong>' : $item->nama_jemaat !!}
                                         @if($item->status_aktif == "Meninggal Dunia")
                                             <sup><i class="fa fa-solid fa-cross" style="color:purple;"></i></sup>
                                         @endif
-                                        @if($item->status_aktif == "Atestasi")
+                                        @if($item->status_aktif == "Atestasi Keluar")
                                             <sup><i class="fa fa-solid fa-share" style="color:red"></i></sup>
                                         @endif
                                     </td>
                                     <td class="align-left">
                                         {!! $isKK ? '<strong>' . $item->gender . '</strong>' : $item->gender !!}
+                                    </td>
+                                    <td class="align-left" style="display: none;"> 
+                                        {!! $isKK ? '<strong>' . $item->tempat_lahir . '</strong>' : $item->tempat !!}, {!! $isKK ? '<strong>' . \Carbon\Carbon::parse($item->tanggal_lahir)->translatedFormat('d F Y') . '</strong>' : \Carbon\Carbon::parse($item->tanggal_lahir)->translatedFormat('d F Y') !!}
                                     </td>
                                     <td class="text-left">
                                         @if ($isKK)

@@ -73,13 +73,13 @@
             </div>
           </div>
           @endif
-          <div class="row">
+          <!-- <div class="row">
             <div class="col-xl-12">
               <div id="alert">
                 @include('includes.alert')
               </div>
             </div>
-          </div>
+          </div> -->
       </div>
     </main>
   <div class="header bg-primary pb-6">

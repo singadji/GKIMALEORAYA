@@ -256,6 +256,8 @@ class JemaatController extends Controller
     {
         DB::beginTransaction(); // Mulai transaksi
 
+        $statusMessages = [];
+
         try {
             $kk = KkJemaat::where('id_kk_jemaat', $request->id_kk)->firstOrFail();
             
@@ -312,12 +314,19 @@ class JemaatController extends Controller
                         ]
                     );
 
-                    if($request->status_menikah[$index] == "Menikah" && !preg_match('/[WKA]/i', $nia) && $request->p_l[$index] == "L"){
-                        KkJemaat::updateOrCreate(
+                    if ($request->status_menikah[$index] == "Menikah" && !preg_match('/[WKA]/i', $nia) && $request->p_l[$index] == "L"){
+                        $kkBaru = KkJemaat::updateOrCreate(
                             ['id_jemaat' => $idJemaat],
-                            ['id_group_wilayah' => $request->group_wilayah_kk],
-                            ['alamat' => '-']
+                            [
+                                'id_group_wilayah' => $request->group_wilayah_kk,
+                                'alamat' => '-'
+                            ]
                         );
+    
+                        if ($kkBaru->wasRecentlyCreated) {
+                            $statusMessages[] = "NIA $nia: Status menikah, data kepala keluarga baru ditambahkan.";
+                            $idKepalaKeluargaBaru = $idJemaat;
+                        }
                     }
                 }                
             }
@@ -326,8 +335,25 @@ class JemaatController extends Controller
             $kk->id_group_wilayah = $request->group_wilayah_kk;
             $kk->save();
 
+            if ($request->status_menikah_kk === "Belum Menikah") {
+                $KKjemaatKK = KkJemaat::where('id_jemaat', $id)->first();
+                if ($KKjemaatKK) {
+                    $KKjemaatKK->delete();
+                }
+            }
+
             DB::commit(); 
-            return redirect()->back()->with('success', 'Data berhasil diupdate!');
+            $successMessage = 'Data berhasil diupdate!';
+            if (!empty($statusMessages)) {
+                $successMessage .= '<br>' . implode('<br>', $statusMessages);
+            }
+
+            if (isset($idKepalaKeluargaBaru)) {
+                return redirect('./administrasi/data-jemaat/' . $idKepalaKeluargaBaru)->with('success', $successMessage);
+            } else {
+                return redirect()->back()->with('success', $successMessage);
+            }
+            
         } catch (\Exception $e) {
             DB::rollBack();
             

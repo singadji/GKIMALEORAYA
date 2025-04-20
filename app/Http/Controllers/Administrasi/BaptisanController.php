@@ -40,15 +40,15 @@ class BaptisanController extends Controller
                ->where('tanggal_lahir', '!=', '1900-01-01')
                ->get();
 
-        return view('administrasi.baptisan.index',[
-            'item' => $item,
-            'btn'    => $btn,
-            'page'  => $page,
-            'judul'  => $judul,
-            'subjudul'  => $subjudul,
-            'tombol'  => $tombol,
-            'Hjudul' => $Hjudul,
-        ]);
+        return view('administrasi.baptisan.index', compact(
+            'item',
+            'btn',
+            'page',
+            'judul',
+            'subjudul',
+            'tombol',
+            'Hjudul',
+        ));
     }
    
 }
