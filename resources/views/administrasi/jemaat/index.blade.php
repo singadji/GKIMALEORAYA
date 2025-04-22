@@ -22,27 +22,7 @@
             </div>
         @endif
     @endsection
-    <div class="modal fade" id="laporanModal" tabindex="-1" aria-labelledby="laporanModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
-            <div class="modal-header">
-                <h5 class="modal-title" id="laporanModalLabel">Masukkan Judul Laporan</h5>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
-            </div>
-            <div class="modal-body">
-                <div class="mb-3">
-                    <label for="judulLaporanInput" class="form-label">Judul Laporan</label>
-                    <input type="text" class="form-control judulLaporanInput" id="judulLaporanInput" placeholder="Contoh: Laporan Data Karyawan">
-                </div>
-            </div>
-            <div class="modal-footer">
-                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                <button type="button" class="btn btn-success" id="btnConfirmExcel">Export Excel</button>
-                <button type="button" class="btn btn-primary" id="btnConfirmCetak">Cetak</button>
-            </div>
-        </div>
-    </div>
-</div>
+
     <div class="container-fluid mt--6">
         <div class="card mb-10">
             <div class="card-header mb-0">

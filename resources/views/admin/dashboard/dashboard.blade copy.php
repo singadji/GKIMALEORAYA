@@ -12,9 +12,6 @@
             height: 300px; /* Tinggi lebih kecil */
             margin: auto; /* Tengah */
         }
-        .dt-buttons .btn {
-    margin-left: 0.5rem;
-}
     </style>
 {{-- Pass the $btn variable to the topnav --}}
 @include('layouts.navbars.auth.topnav', [
@@ -43,13 +40,15 @@
 @endsection
 
 <div class="main-content" id="panel">
-
-<!-- Header -->
   <div class="header bg-primary pb-6">
-    <div class="container-fluid">
-      <div class="header-body">
-        <!-- Card stats -->
-        <div class="row">
+  
+  <div class="container-fluid">
+    <div class="header-body">
+          
+      <!-- Card stats -->
+      @if(\Auth::user()->role == 'Administrator')
+        
+      <div class="row">
         <div class="col-xl-3 col-md-6">
           <div class="card card-stats">
             <!-- Card body -->
@@ -57,7 +56,7 @@
             <div class="card-body">
               <div class="row">
                 <div class="col">
-                  <h5 class="card-title text-uppercase text-muted mb-0">Jumlah Jemaat Atestasi Keluar</h5>
+                  <h5 class="card-title text-uppercase text-muted mb-0">Jumlah Jemaat Atestasi</h5>
                   <span class="h1 font-weight-bold mb-0">{{ $Jatestasi }}</span> Jemaat
                 </div>
                 <div class="col-auto">
@@ -131,14 +130,15 @@
           </a>
           </div>
         </div>
-        </div>
       </div>
+      @endif
     </div>
   </div>
-  <!-- Page content -->
-  @if(isset($item))
-  <div class="container-fluid  mt--6">
-    <div class="row">
+</div>
+
+<!-- Page content -->
+<div class="container-fluid mt--6">
+  <div class="row">
     <div class="col-xl-12">
       <div class="card">
         <div class="card-body">
@@ -255,104 +255,6 @@
       </div>
     </div>
   </div>
-  @else
-  <div class="container-fluid mt--6">
-    <div class="row">
-    <div class="col-xl-8">
-        <div class="card">
-          <div class="card-header border-0">
-            <div class="row align-items-center">
-              <div class="col">
-                <h3 class="mb-0">Demografi Jemaat</h3>
-              </div>
-            </div>
-          </div>
-          <div class="table-responsive">
-            <!-- Projects table -->
-            <table class="table align-items-center table-flush table-hover" id="dataTableMin">
-              <thead class="thead-light">
-                    <tr>
-                        <th>Kategori Usia</th>
-                        @foreach ($tahun as $thn)
-                            <th class="text-center">Data<br>{{ $thn }}</th>
-                        @endforeach
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($data as $kategori => $tahunData)
-                        <tr>
-                            <td class="">{{ $kategori }}</td>
-                            @foreach ($tahun as $thn)
-                                <td class="text-center">{{ $tahunData["Data $thn"] ?? 0 }}</td>
-                            @endforeach
-                        </tr>
-                    @endforeach
-                    <tr class="fw-bold table-secondary">
-                      <th>TOTAL</th>
-                      @foreach ($tahun as $thn)
-                          <th class="text-center">{{ $totalPerTahun[$thn] ?? 0 }}</th>
-                      @endforeach
-                  </tr>
-                </tbody>
-            </table>
-          </div>
-        </div>
-      </div>
-      <div class="col-xl-4">
-        <div class="card">
-          <div class="card-header bg-transparent">
-            <div class="row align-items-center">
-              <div class="col">
-                <h6 class="text-uppercase text-muted ls-1 mb-1">Data Jemaat</h6>
-                <h5 class="h3 mb-0">Statistik Jemaat</h5>
-              </div>
-            </div>
-          </div>
-          <div class="card-body">
-            <!-- Chart -->
-            <div class="chart">
-            <div id="chartContainer">
-            <canvas id="grafik"></canvas>
-          </div>
-            <script>
-                var ctx = document.getElementById('grafik').getContext('2d');
-                var chart = new Chart(ctx, {
-                    type: 'bar',
-                    data: {
-                        labels: ['Aktif', 'Pasif', 'KK Aktif','Atestasi Keluar'],
-                        datasets: [{
-                            label: 'Jumlah Jemaat',
-                            data: [{{ $Jaktif }}, {{ $Jpasif }}, {{ $Jkk }}, {{$Jatestasi}}],
-                            backgroundColor: ['#36A2EB', '#FFCE56', '#0a9905', '#e71313'],
-                            borderWidth: 1
-                        }]
-                    },
-                    options: {
-                        responsive: true,
-                        maintainAspectRatio: false,
-                        plugins: {
-                            legend: {
-                                position: 'bottom', 
-                                labels: {
-                                    font: {
-                                        size: 10
-                                    }
-                                }
-                            }
-                        }
-                    }
-                });
-            </script>
-            </div>
-          </div>
-        </div>
-      </div>
-    </div>
-    @endif
-    <footer class="footer pt-0">
     @include('layouts.footers.auth.footer')
-    </footer>
-  </div>
-  </div>
-  
+</div>
 @endsection

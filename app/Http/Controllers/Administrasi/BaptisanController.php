@@ -36,7 +36,7 @@ class BaptisanController extends Controller
         $item = Jemaat::with(['kkJemaat', 'hubunganKeluarga.kkJemaat'])
                ->whereNull('tanggal_sidi')
                ->whereNotNull('tanggal_baptis')
-               ->whereIn('status_aktif', ['Aktif', 'Pasif', 'Bukan Anggota'])
+               ->whereIn('status_aktif', ['Bukan Anggota'])
                ->where('tanggal_lahir', '!=', '1900-01-01')
                ->get();
 

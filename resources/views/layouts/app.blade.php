@@ -1,6 +1,5 @@
 <?php
   $identitas = DB::table('identitaswebs')->first();
-  //$mods = DB::select('select m.*, Deriv1.Count from moduls m LEFT OUTER JOIN (SELECT moduls.par, COUNT(*) AS Count from moduls GROUP BY moduls.par) Deriv1 ON m.id_modul = Deriv1.par WHERE aktif="Y"');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -98,6 +97,27 @@
     @include('sweetalert::alert')
     @include('layouts.navbars.auth.sidenav')
     <main class="main-content border-radius-lg">
+    <div class="modal fade" id="laporanModal" tabindex="-1" aria-labelledby="laporanModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="laporanModalLabel">Masukkan Judul Laporan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="judulLaporanInput" class="form-label">Judul Laporan</label>
+                    <input type="text" class="form-control judulLaporanInput" id="judulLaporanInput" placeholder="">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-success" id="btnConfirmExcel">Export Excel</button>
+                <button type="button" class="btn btn-primary" id="btnConfirmCetak">Cetak</button>
+            </div>
+        </div>
+    </div>
+</div>
         @yield('content')
     </main>
     @include('components.fixed-plugin')
@@ -211,7 +231,9 @@ let table = $('#dataTable').DataTable({
     responsive: true,
     searching: true,
     fixedHeader: true,
-    dom: '<"top"<"length-and-buttons d-flex justify-content-between"lB>f>rt<"bottom"ip><"clear">',
+    dom: "<'row mb-2'<'col-sm-4'l><'col-sm-4 text-center'B><'col-sm-4'f>>" +
+     "<'row'<'col-sm-12'tr>>" +
+     "<'row'<'col-sm-6'i><'col-sm-6'p>>",
     buttons: [
         {
             extend: 'excel',
@@ -220,45 +242,6 @@ let table = $('#dataTable').DataTable({
                 return $('#judulLaporanInput').val() || 'Laporan';
             },
             className: 'd-none buttons-excel',
-            customize: function (xlsx) {
-                const judul = $('#judulLaporanInput').val() || 'Laporan Tanpa Judul';
-                const sheet = xlsx.xl.worksheets['sheet1.xml'];
-                const rows = sheet.getElementsByTagName('row');
-
-                // Tambah baris pertama (judul)
-                const newRow = sheet.createElement('row');
-                newRow.setAttribute('r', '1');
-
-                const newCell = sheet.createElement('c');
-                newCell.setAttribute('t', 'inlineStr');
-                newCell.setAttribute('r', 'A1');
-
-                const is = sheet.createElement('is');
-                const t = sheet.createElement('t');
-                t.textContent = judul;
-
-                is.appendChild(t);
-                newCell.appendChild(is);
-                newRow.appendChild(newCell);
-
-                const sheetData = sheet.getElementsByTagName('sheetData')[0];
-                sheetData.insertBefore(newRow, sheetData.firstChild);
-
-                // Geser seluruh baris ke bawah
-                for (let i = 0; i < rows.length; i++) {
-                    let r = parseInt(rows[i].getAttribute('r')) + 1;
-                    rows[i].setAttribute('r', r);
-                    const cells = rows[i].getElementsByTagName('c');
-                    for (let j = 0; j < cells.length; j++) {
-                        let cellRef = cells[j].getAttribute('r');
-                        if (cellRef) {
-                            const col = cellRef.replace(/[0-9]/g, '');
-                            const rowNum = parseInt(cellRef.replace(/[A-Z]/g, '')) + 1;
-                            cells[j].setAttribute('r', col + rowNum);
-                        }
-                    }
-                }
-            }
         },
         {
                 extend: 'print',
@@ -315,59 +298,55 @@ let table = $('#dataTable').DataTable({
     }
 });
 
-// ✅ Event: konfirmasi Export Excel
 $('#btnConfirmExcel').on('click', function () {
     $('#laporanModal').modal('hide');
     table.button('.buttons-excel').trigger();
 });
 
-// ✅ Event: konfirmasi Cetak
 $('#btnConfirmCetak').on('click', function () {
     $('#laporanModal').modal('hide');
     table.button('.buttons-print').trigger();
 });
 
 </script>
-
 <script>
-    document.addEventListener('DOMContentLoaded', function () {
-        const inputs = document.querySelectorAll('.tanggal-terformat');
-
-        inputs.forEach(function (input) {
-            const defaultValue = input.dataset.default;
-
-            input.addEventListener('focus', function () {
-                this.type = 'date';
-                this.value = defaultValue || '';
-            });
-
-            input.addEventListener('blur', function () {
-                if (this.value) {
-                    const tanggal = new Date(this.value);
-                    if (!isNaN(tanggal.getTime())) {
-                        const options = { day: 'numeric', month: 'long', year: 'numeric' };
-                        const formatted = tanggal.toLocaleDateString('id-ID', options);
-                        this.dataset.default = this.value;
-                        this.type = 'text';
-                        this.value = formatted;
-                    }
-                } else {
-                    // Kembalikan ke nilai awal jika tidak memilih tanggal baru
-                    if (defaultValue) {
-                        const tanggal = new Date(defaultValue);
-                        const options = { day: 'numeric', month: 'long', year: 'numeric' };
-                        const formatted = tanggal.toLocaleDateString('id-ID', options);
-                        this.type = 'text';
-                        this.value = formatted;
-                    } else {
-                        this.type = 'text';
-                        this.value = '';
-                    }
+$(document).ready(function () {
+    const table = $('#dataTableMin').DataTable({
+        paging: false,
+        searching: false,
+        info: false,
+        autoWidth: true,
+        responsive: true,
+        scrollX: false,
+        dom: 'Bfrtip',
+        buttons: [
+            {
+                extend: 'excelHtml5',
+                title: null,
+                filename: () => $('#judulLaporanInput').val() || 'Laporan',
+                className: 'd-none buttons-excel',
+            },
+            {
+                text: '<i class="fas fa-file-excel"></i> Export Excel',
+                className: 'btn btn-success btn-sm',
+                action: function () {
+                    $('#judulLaporanInput').val('');
+                    $('#btnConfirmCetak').hide();
+                    $('#btnConfirmExcel').show();
+                    $('#laporanModal').modal('show');
                 }
-            });
-        });
+            }
+        ]
     });
+
+    // Saat klik konfirmasi modal
+    $('#btnConfirmExcel').on('click', function () {
+        $('#laporanModal').modal('hide');
+        table.button('.buttons-excel').trigger();
+    });
+});
 </script>
+
 
 </body>
 </html>
