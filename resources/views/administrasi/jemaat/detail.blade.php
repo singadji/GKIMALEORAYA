@@ -46,10 +46,7 @@
                 </span>
             </div>
 
-                <!-- <span id="hapus">
-                    <a data-confirm-delete="true" href="{{ route('administrasi.data-jemaat.destroy', $id_kk) }}"
-                       class="btn btn-danger bg-gradient-danger btn-sm mt-3 ms-auto">Hapus</a>
-                </span> -->
+                
             @endif
         </div>
 

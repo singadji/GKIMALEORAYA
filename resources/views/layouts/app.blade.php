@@ -311,7 +311,7 @@ $('#btnConfirmCetak').on('click', function () {
 </script>
 <script>
 $(document).ready(function () {
-    const table = $('#dataTableMin').DataTable({
+    const table = $('.dataTableMin').DataTable({
         paging: false,
         searching: false,
         info: false,
@@ -347,6 +347,44 @@ $(document).ready(function () {
 });
 </script>
 
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+        const inputs = document.querySelectorAll('.tanggal-terformat');
 
+        inputs.forEach(function (input) {
+            const defaultValue = input.dataset.default;
+
+            input.addEventListener('focus', function () {
+                this.type = 'date';
+                this.value = defaultValue || '';
+            });
+
+            input.addEventListener('blur', function () {
+                if (this.value) {
+                    const tanggal = new Date(this.value);
+                    if (!isNaN(tanggal.getTime())) {
+                        const options = { day: 'numeric', month: 'long', year: 'numeric' };
+                        const formatted = tanggal.toLocaleDateString('id-ID', options);
+                        this.dataset.default = this.value;
+                        this.type = 'text';
+                        this.value = formatted;
+                    }
+                } else {
+                    // Kembalikan ke nilai awal jika tidak memilih tanggal baru
+                    if (defaultValue) {
+                        const tanggal = new Date(defaultValue);
+                        const options = { day: 'numeric', month: 'long', year: 'numeric' };
+                        const formatted = tanggal.toLocaleDateString('id-ID', options);
+                        this.type = 'text';
+                        this.value = formatted;
+                    } else {
+                        this.type = 'text';
+                        this.value = '';
+                    }
+                }
+            });
+        });
+    });
+</script>
 </body>
 </html>

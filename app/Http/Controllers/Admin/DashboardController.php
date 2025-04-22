@@ -17,8 +17,16 @@ class DashboardController extends Controller
 
 
     // Index
-    public function index()
+    public function index(Request $request)
     {
+        $tahunAwal = $request->input('tahun_awal', now()->year - 5);
+        $tahunAkhir = $request->input('tahun_akhir', now()->year);
+
+        $laporan = DB::select('CALL laporan_keanggotaan(?, ?)', [
+            $tahunAwal,
+            $tahunAkhir,
+        ]);
+        
         $Jaktif = Jemaat::where('status_aktif', 'Aktif')->count();
         $Jatestasi = Jemaat::where('status_aktif', 'Atestasi Keluar')->count();
         $Jpasif = Jemaat::where('status_aktif', 'Pasif')->count();
@@ -32,12 +40,12 @@ class DashboardController extends Controller
                ->count();
 
                $tahunSekarang = date('Y');
-               $tahunAwal = $tahunSekarang - 5;
+               $tahunAwal1 = $tahunSekarang - 5;
            
                $data = [];
                $totalPerTahun = [];
            
-               for ($tahun = $tahunAwal; $tahun <= $tahunSekarang; $tahun++) {
+               for ($tahun = $tahunAwal1; $tahun <= $tahunSekarang; $tahun++) {
                    $jemaat = DB::table('jemaat')
                         ->selectRaw("
                            CASE 
@@ -96,7 +104,41 @@ class DashboardController extends Controller
             }
         }
 
-        return view('admin.dashboard.dashboard', compact('Jkk', 'Jaktif', 'Jatestasi', 'baptisan', 'data', 'tahun', 'totalPerTahun', 'Jpasif'));
+        $tahunG = [];
+        $dataG = [];
+        
+        foreach ($laporan as $row) {
+            foreach ($row as $key => $value) {
+                if ($key === 'kategori') {
+                    $kategori = $value;
+                    if (!isset($data[$kategori])) {
+                        $dataG[$kategori] = [];
+                    }
+                } elseif (preg_match('/Data (\d{4})/', $key, $matches)) {
+                    $thn = $matches[1];
+                    $tahunG[$thn] = true; // Gunakan associative array untuk menghindari duplikat
+                    $dataG[$kategori][$key] = $value;
+                }
+            }
+        }
+        
+        $tahunG = array_keys($tahunG);
+        sort($tahunG);         
+
+        return view('admin.dashboard.dashboard', compact('Jkk', 
+            'Jaktif', 
+            'Jatestasi', 
+            'baptisan', 
+            'data', 
+            'tahun', 
+            'totalPerTahun', 
+            'Jpasif', 
+            'laporan', 
+            'tahunAwal',
+            'tahunAkhir', 
+            'dataG',
+            'tahunG'
+        ));
     }
 
     public function detail($detail)
@@ -131,38 +173,4 @@ class DashboardController extends Controller
 
         return view('admin.dashboard.dashboard', compact('Jkk', 'Jaktif', 'Jatestasi', 'item', 'Hjudul', 'baptisan'));
     }
-
-    public function statistikUsia()
-{
-    $tahunSekarang = date('Y');
-    $tahunAwal = $tahunSekarang - 5;
-
-    $data = [];
-
-    for ($tahun = $tahunAwal; $tahun <= $tahunSekarang; $tahun++) {
-        $jemaat = DB::table('jemaat')
-            ->selectRaw("
-                CASE 
-                    WHEN TIMESTAMPDIFF(YEAR, tanggal_lahir, DATE(CONCAT($tahun, '-12-31'))) BETWEEN 0 AND 12 THEN 'Anak'
-                    WHEN TIMESTAMPDIFF(YEAR, tanggal_lahir, DATE(CONCAT($tahun, '-12-31'))) BETWEEN 13 AND 17 THEN 'Remaja'
-                    WHEN TIMESTAMPDIFF(YEAR, tanggal_lahir, DATE(CONCAT($tahun, '-12-31'))) BETWEEN 18 AND 29 THEN 'Pemuda'
-                    WHEN TIMESTAMPDIFF(YEAR, tanggal_lahir, DATE(CONCAT($tahun, '-12-31'))) BETWEEN 30 AND 40 THEN 'Dewasa Muda'
-                    WHEN TIMESTAMPDIFF(YEAR, tanggal_lahir, DATE(CONCAT($tahun, '-12-31'))) BETWEEN 41 AND 60 THEN 'Dewasa'
-                    ELSE 'Lansia'
-                END AS kategori_usia,
-                COUNT(*) AS jumlah
-            ")
-            ->groupBy('kategori_usia')
-            ->get();
-
-        foreach ($jemaat as $item) {
-            $data[$item->kategori_usia]["Data $tahun"] = $item->jumlah;
-        }
-    }
-
-    return view('admin.dashboard.dashboard', [
-        'data' => $data,
-        'tahun' => range($tahunAwal, $tahunSekarang)
-    ]);
-}
 }

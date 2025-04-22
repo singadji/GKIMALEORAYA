@@ -49,6 +49,7 @@ Route::middleware('auth')->group(function () {
 
 Route::middleware(['auth', 'active', 'verify.otp'])->group(function () {
     Route::get('admin/home', [DashboardController::class, 'index']);
+    Route::post('admin/home', [DashboardController::class, 'index']);
     Route::get('admin/{detail}', [DashboardController::class, 'detail'])->name('admin.detail');
     //Route::get('admin/home', function() {
        // return view('admin/dashboard/dashboard');
