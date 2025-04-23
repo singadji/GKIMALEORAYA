@@ -41,7 +41,7 @@
                             <tr>
                                 <th class="text-uppercase font-weight-bolder" width="10">#</th>
                                 <th class="text-uppercase font-weight-bolder" width="30px">N I A</th>
-                                <th class="text-uppercase font-weight-bolder" width="30px">Tanggal<br>Terdaftar</th>
+                                <th class="text-uppercase font-weight-bolder" width="30px" style="display: none;">Tanggal<br>Terdaftar</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">Nama Jemaat</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">L/P</th>
                                 <th class="text-uppercase font-weight-bolder ps-2" style="display: none;">Tempat,<br>Tanggal Lahir</th>

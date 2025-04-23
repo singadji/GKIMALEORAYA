@@ -151,7 +151,7 @@
           </div>
           <div class="table-responsive">
             <!-- Projects table -->
-            <table class="table align-items-center table-flush table-hover dataTableMin" id="">
+            <table class="table align-items-center table-flush table-hover" id="">
               <thead class="thead-light">
                     <tr>
                         <th>No.</th>
