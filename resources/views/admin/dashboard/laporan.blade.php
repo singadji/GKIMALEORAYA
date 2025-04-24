@@ -125,7 +125,7 @@
             </div>
           </div>
           <div class="table-responsive">
-            <table class="table align-items-center wrap table-flush table-hover dataTableMin" id="">
+            <table class="table align-items-center wrap table-flush table-hover" style="line-height: 1.3;" id="">
                 <thead class="thead-light">
                     <tr>
                         <th class="text-center">No.</th>

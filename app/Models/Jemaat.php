@@ -49,6 +49,16 @@ class Jemaat extends Model
         return $this->hasOne(HubunganKeluarga::class, 'id_jemaat', 'id_jemaat');
     }
 
+    public function atestasiJemaat()
+    {
+        return $this->hasOne(Atestasi::class, 'id_jemaat', 'id_jemaat');
+    }
+   
+    public function pindahJemaat()
+    {
+        return $this->hasOne(PindahGereja::class, 'id_jemaat', 'id_jemaat');
+    }
+
     protected static function boot()
     {
         parent::boot();

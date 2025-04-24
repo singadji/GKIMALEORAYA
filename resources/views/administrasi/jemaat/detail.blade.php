@@ -232,6 +232,7 @@
                                                     <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Aktif') selected @endif value="Aktif">Aktif</option>
                                                     <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Pasif') selected @endif value="Pasif">Pasif</option>
                                                     <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Atestasi Keluar') selected @endif value="Atestasi Keluar">Atestasi Keluar</option>
+                                                    <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Pindah Gereja') selected @endif value="pindah Gereja">Pindah Gereja </option>
                                                     <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Meninggal Dunia') selected @endif value="Meninggal Dunia">Meninggal Dunia</option>
                                                     <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Bukan Anggota') selected @endif value="Bukan Anggota">Bukan Anggota</option>
                                                 </select>
@@ -423,6 +424,7 @@
                                                         <option @if($anggota->jemaat->status_aktif == 'Aktif') selected @endif value="Aktif">Aktif</option>
                                                         <option @if($anggota->jemaat->status_aktif == 'Pasif') selected @endif value="Pasif">Pasif</option>
                                                         <option @if($anggota->jemaat->status_aktif == 'Atestasi Keluar') selected @endif value="Atestasi Keluar">Atestasi Keluar</option>
+                                                        <option @if($anggota->jemaat->status_aktif == 'Pindah Gereja') selected @endif value="Pindah Gereja">Pindah Gereja</option>
                                                         <option @if($anggota->jemaat->status_aktif == 'Meninggal Dunia') selected @endif value="Meninggal Dunia">Meninggal Dunia</option>
                                                         <option @if($anggota->jemaat->status_aktif == 'Bukan Anggota') selected @endif value="Bukan Anggota">Bukan Anggota</option>
                                                     </select>
@@ -498,6 +500,7 @@
                     <option value="Aktif">Aktif</option>
                     <option value="Atestasi">Pasif</option>
                     <option value="Atestasi Keluar">Atestasi Keluar</option>
+                    <option value="Pindah Gereja">Pindah Gereja</option>
                     <option value="Meninggal Dunia">Meninggal Dunia</option>
                     <option value="Bukan Anggota">Bukan Anggota</option>
                 </select>
