@@ -232,6 +232,7 @@ class JemaatController extends Controller
             $KKjemaat->tanggal_terdaftar = parseTanggalIndo($request->tanggal_terdaftar_kk);
             $KKjemaat->status_aktif      = $request->status_aktif_kk;
             $KKjemaat->keterangan        = $request->keterangan_kk;
+            
             $KKjemaat->save();
 
             //atastasi keluar
