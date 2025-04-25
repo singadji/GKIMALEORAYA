@@ -139,7 +139,7 @@ class DashboardController extends Controller
             'dataG',
             'tahunG'
         ));
-    }
+    } //
 
     public function detail($detail)
     {
