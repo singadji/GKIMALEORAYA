@@ -8,7 +8,7 @@
               </div>
             </div>
           </div>
-          <div class="card-body">
+          <div class="card-body" style="height:495px">
             <!-- Chart -->
             <div class="chart">
                 <div id="chartContainer">
