@@ -1,6 +1,5 @@
 <?php
   $identitas = DB::table('identitaswebs')->first();
-  //$mods = DB::select('select m.*, Deriv1.Count from moduls m LEFT OUTER JOIN (SELECT moduls.par, COUNT(*) AS Count from moduls GROUP BY moduls.par) Deriv1 ON m.id_modul = Deriv1.par WHERE aktif="Y"');
 ?>
 <!DOCTYPE html>
 <html lang="en">
@@ -57,6 +56,17 @@
             z-index: 4;
         }
 @keyframes chartjs-render-animation{from{opacity:.99}to{opacity:1}}.chartjs-render-monitor{animation:chartjs-render-animation 1ms}.chartjs-size-monitor,.chartjs-size-monitor-expand,.chartjs-size-monitor-shrink{position:absolute;direction:ltr;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1}.chartjs-size-monitor-expand>div{position:absolute;width:1000000px;height:1000000px;left:0;top:0}.chartjs-size-monitor-shrink>div{position:absolute;width:200%;height:200%;left:0;top:0}
+
+.dt-custom-buttons {
+    justify-content: start; /* pastikan tombol ke kiri */
+}
+
+.dataTables_filter label {
+    white-space: nowrap;
+}
+.dataTables_length {
+  display: block !important;
+}
 </style>
 </head>
 
@@ -87,6 +97,27 @@
     @include('sweetalert::alert')
     @include('layouts.navbars.auth.sidenav')
     <main class="main-content border-radius-lg">
+    <div class="modal fade" id="laporanModal" tabindex="-1" aria-labelledby="laporanModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="laporanModalLabel">Masukkan Judul Laporan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <label for="judulLaporanInput" class="form-label">Judul Laporan</label>
+                    <input type="text" class="form-control judulLaporanInput" id="judulLaporanInput" placeholder="">
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                <button type="button" class="btn btn-success" id="btnConfirmExcel">Export Excel</button>
+                <button type="button" class="btn btn-primary" id="btnConfirmCetak">Cetak</button>
+            </div>
+        </div>
+    </div>
+</div>
         @yield('content')
     </main>
     @include('components.fixed-plugin')
@@ -194,117 +225,125 @@
   <script src="{{ asset('argon/plugins/custom/datatables/demo.min.js') }}"></script>
 
 <script>
-$(document).ready(function() {
-    var tableElement = $('#dataTable');
+let table = $('#dataTable').DataTable({
+    scrollX: false,
+    autoWidth: true,
+    responsive: true,
+    searching: true,
+    fixedHeader: true,
+    dom: "<'row mb-2'<'col-sm-4'l><'col-sm-4 text-center'B><'col-sm-4'f>>" +
+     "<'row'<'col-sm-12'tr>>" +
+     "<'row'<'col-sm-6'i><'col-sm-6'p>>",
+    buttons: [
+        {
+            extend: 'excel',
+            title: null,
+            filename: function () {
+                return $('#judulLaporanInput').val() || 'Laporan';
+            },
+            className: 'd-none buttons-excel',
+        },
+        {
+                extend: 'print',
+                title: '',
+                className: 'd-none buttons-print',
+                customize: function (win) {
+                    let judul = $('#judulLaporanInput').val() || 'Laporan Tanpa Judul';
+                    $(win.document.body).prepend(
+                        '<h2 style="text-align:center; margin-top:20px;">' + judul + '</h2>'
+                    );
+                }
+        },
+        {
+            extend: 'copy',
+            text: '<i class="fas fa-copy"></i> Copy',
+            className: 'btn btn-warning btn-sm',
+            title: ''
+        },
+        {
+            text: '<i class="fas fa-file-excel"></i> Export Excel',
+            className: 'btn btn-success btn-sm',
+            action: function () {
+                $('#judulLaporanInput').val('');
+                $('#btnConfirmCetak').hide();
+                $('#btnConfirmExcel').show();
+                $('#laporanModal').modal('show');
+            }
+        },
+        {
+            text: '<i class="fas fa-print"></i> Cetak',
+            className: 'btn btn-primary btn-sm',
+            action: function () {
+                $('#judulLaporanInput').val('');
+                $('#btnConfirmExcel').hide();
+                $('#btnConfirmCetak').show();
+                $('#laporanModal').modal('show');
+            }
+        }
+    ],
+    lengthMenu: [[10, 50, 100, -1], [10, 50, 100, "Semua"]],
+    pageLength: 10,
+    language: {
+        lengthMenu: "Tampilkan _MENU_ data per halaman",
+        zeroRecords: "Tidak ada data ditemukan",
+        info: "Menampilkan _START_ sampai _END_ dari _TOTAL_ data",
+        infoEmpty: "Menampilkan 0 sampai 0 dari 0 data",
+        infoFiltered: "(disaring dari total _MAX_ data)",
+        search: "Cari:",
+        paginate: {
+            previous: "←",
+            next: "→"
+        },
+        emptyTable: "Data tidak ada."
+    }
+});
 
-    // Ambil nilai dari atribut data-excluded-columns
-    var excludedColumns = tableElement.data('excluded-columns')
-        ? tableElement.data('excluded-columns').split(',').map(Number)
-        : []; // Jika tidak ada, gunakan array kosong
+$('#btnConfirmExcel').on('click', function () {
+    $('#laporanModal').modal('hide');
+    table.button('.buttons-excel').trigger();
+});
 
-    var table = tableElement.DataTable({
-        scrollX: false,
-        info: true,
+$('#btnConfirmCetak').on('click', function () {
+    $('#laporanModal').modal('hide');
+    table.button('.buttons-print').trigger();
+});
+
+</script>
+<script>
+$(document).ready(function () {
+    const table = $('.dataTableMin').DataTable({
+        paging: false,
+        searching: false,
+        info: false,
         autoWidth: true,
         responsive: true,
-        searching: true,
-        fixedHeader: true,
-        dom: '<"top"<"length-and-buttons d-flex justify-content-between align-items-center"lB>f>rt<"bottom"ip><"clear">',
-
+        scrollX: false,
+        dom: 'Bfrtip',
         buttons: [
             {
-                extend: 'excel',
+                extend: 'excelHtml5',
+                title: null,
+                filename: () => $('#judulLaporanInput').val() || 'Laporan',
+                className: 'd-none buttons-excel',
+            },
+            {
                 text: '<i class="fas fa-file-excel"></i> Export Excel',
                 className: 'btn btn-success btn-sm',
-                title:''
-            },
-            {
-                extend: 'print',
-                text: '<i class="fas fa-print"></i> Cetak',
-                className: 'btn btn-primary btn-sm',
-                title: '', // Kosongkan
-                messageTop: function () {
-                    const userTitle = prompt("Masukkan judul laporan:", "Laporan Data Anggota Jemaat");
-                    // Simpan ke variable global untuk akses di customize
-                    window.dynamicPrintTitle = userTitle ?? 'Laporan Tanpa Judul';
-                    return 'Dicetak: ' + new Date().toLocaleDateString();
-                },
-                customize: function (win) {
-                    const title = window.dynamicPrintTitle ?? 'Laporan';
-                    $(win.document.body).css('font-size', '14pt')
-                        .prepend('<h2 style="text-align:center; margin-bottom: 20px;">' + title + '</h2>');
-
-                    $(win.document.body).find('table')
-                        .addClass('compact')
-                        .css('font-size', 'inherit');
+                action: function () {
+                    $('#judulLaporanInput').val('');
+                    $('#btnConfirmCetak').hide();
+                    $('#btnConfirmExcel').show();
+                    $('#laporanModal').modal('show');
                 }
-            },
-            {
-                extend: 'copy',
-                text: '<i class="fas fa-copy"></i> Copy',
-                className: 'btn btn-warning btn-sm',
-                title:''
             }
-        ],
-        lengthMenu: [ [10, 50, 100, -1], [10, 50, 100, "semua"] ],
-        pageLength: 10,
-        language: {  
-            paginate: {  
-                previous: "←",
-                next: "→",
-            },
-            emptyTable: "Data tidak ada."
-        },
-        orderCellsTop: true,
-        initComplete: function() {
-            var table = this.api();
-
-            // Target specific columns dynamically
-            table.columns().every(function(index) {
-                var column = this;
-
-                // Lewati kolom yang dikecualikan
-                if (excludedColumns.includes(index)) return;
-
-                // Pastikan baris kedua untuk filter ada
-                var headerCell = $(column.header()).closest('thead').find('tr:eq(1) td').eq(index);
-
-                 // Buat dan tambahkan dropdown
-                //   var select = $('<select class="form-control form-control-sm"><option value="">All</option></select>')
-                //       .appendTo(headerCell)
-                //       .on('change', function() {
-                //           var val = $.fn.dataTable.util.escapeRegex($(this).val());
-                //           column
-                //               .search(val ? '^' + val + '$' : '', true, false) // Regex filter
-                //               .draw();
-                //       });
-
-                //   // Isi dropdown dengan data unik
-                //   column.data().unique().sort().each(function(d) {
-                //       if (d) {
-                //           select.append('<option value="' + d + '">' + d + '</option>');
-                //       }
-                //   });
-                var input = $('<input type="text" class="form-control form-control-sm" placeholder="Cari...">')
-                    .appendTo(headerCell)
-                    .on('keyup change clear', function() {
-                        var val = $.fn.dataTable.util.escapeRegex($(this).val());
-                        column
-                            .search(val, true, false) // Non-strict search
-                            .draw();
-                });
-            });
-        }
+        ]
     });
 
-    // Pastikan baris kedua pada thead tersedia
-    var thead = $('#dataTable thead');
-    if (thead.find('tr').length < 2) {
-        var secondRow = $('<tr>').appendTo(thead);
-        thead.find('tr:eq(0) th').each(function() {
-            secondRow.append('<td></td>');
-        });
-    }
+    // Saat klik konfirmasi modal
+    $('#btnConfirmExcel').on('click', function () {
+        $('#laporanModal').modal('hide');
+        table.button('.buttons-excel').trigger();
+    });
 });
 </script>
 
@@ -347,6 +386,5 @@ $(document).ready(function() {
         });
     });
 </script>
-
 </body>
 </html>

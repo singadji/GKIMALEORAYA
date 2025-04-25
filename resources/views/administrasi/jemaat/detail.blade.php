@@ -15,7 +15,7 @@
                     <strong>Oops, terjadi kesalahan. </strong> 
                     <ul style="font-size:12px;margin-top:5px;">
                         @foreach ($errors->all() as $error)
-                        <li> &nbsp; - {{ $error }}</li>
+                        <li> &nbsp; - {!! $error !!}</li>
                         @endforeach
                     </ul>
                 </div>
@@ -46,10 +46,7 @@
                 </span>
             </div>
 
-                <!-- <span id="hapus">
-                    <a data-confirm-delete="true" href="{{ route('administrasi.data-jemaat.destroy', $id_kk) }}"
-                       class="btn btn-danger bg-gradient-danger btn-sm mt-3 ms-auto">Hapus</a>
-                </span> -->
+                
             @endif
         </div>
 
@@ -233,8 +230,9 @@
                                             <div class="col-md-6">
                                                 <select class="form-control form-control-sm" required  name="status_aktif_kk" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                                     <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Aktif') selected @endif value="Aktif">Aktif</option>
-                                                    <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Atestasi') selected @endif value="Atestasi">Atestasi</option>
                                                     <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Pasif') selected @endif value="Pasif">Pasif</option>
+                                                    <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Atestasi Keluar') selected @endif value="Atestasi Keluar">Atestasi Keluar</option>
+                                                    <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Pindah Gereja') selected @endif value="pindah Gereja">Pindah Gereja </option>
                                                     <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Meninggal Dunia') selected @endif value="Meninggal Dunia">Meninggal Dunia</option>
                                                     <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Bukan Anggota') selected @endif value="Bukan Anggota">Bukan Anggota</option>
                                                 </select>
@@ -424,8 +422,9 @@
                                                 <div class="col-md-12">
                                                     <select class="form-control form-control-sm" required required name="status_aktif[]" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                                         <option @if($anggota->jemaat->status_aktif == 'Aktif') selected @endif value="Aktif">Aktif</option>
-                                                        <option @if($anggota->jemaat->status_aktif == 'Atestasi') selected @endif value="Atestasi">Atestasi</option>
                                                         <option @if($anggota->jemaat->status_aktif == 'Pasif') selected @endif value="Pasif">Pasif</option>
+                                                        <option @if($anggota->jemaat->status_aktif == 'Atestasi Keluar') selected @endif value="Atestasi Keluar">Atestasi Keluar</option>
+                                                        <option @if($anggota->jemaat->status_aktif == 'Pindah Gereja') selected @endif value="Pindah Gereja">Pindah Gereja</option>
                                                         <option @if($anggota->jemaat->status_aktif == 'Meninggal Dunia') selected @endif value="Meninggal Dunia">Meninggal Dunia</option>
                                                         <option @if($anggota->jemaat->status_aktif == 'Bukan Anggota') selected @endif value="Bukan Anggota">Bukan Anggota</option>
                                                     </select>
@@ -499,8 +498,9 @@
             <td>
                 <select class="form-control form-control-sm" required name="status_aktif[]">
                     <option value="Aktif">Aktif</option>
-                    <option value="Atestasi">Atestasi</option>
                     <option value="Atestasi">Pasif</option>
+                    <option value="Atestasi Keluar">Atestasi Keluar</option>
+                    <option value="Pindah Gereja">Pindah Gereja</option>
                     <option value="Meninggal Dunia">Meninggal Dunia</option>
                     <option value="Bukan Anggota">Bukan Anggota</option>
                 </select>

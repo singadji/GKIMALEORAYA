@@ -17,6 +17,13 @@ use Barryvdh\DomPDF\Facade\Pdf;
 use App\Models\Jemaat;
 use App\Models\KKJemaat;
 use App\Models\HubunganKeluarga;
+use App\Models\Atestasi;
+use App\Models\PindahGereja;
+use App\Models\MeninggalDunia;
+use App\Services\JemaatService;
+use App\ViewModels\JemaatViewModel;
+use App\ViewModels\JemaatDetailViewModel;
+
 
 use Carbon\Carbon;
 use App\Halpers\DateHelper;
@@ -26,13 +33,15 @@ use Alert;
 
 class JemaatController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     */
+    protected $jemaatService;
+
+    public function __construct(JemaatService $jemaatService)
+    {
+        $this->jemaatService = $jemaatService;
+    }
+
     public function index()
     {
-        $title  = 'Hapus Data!';
-        $text   = "Data akan dihapus, Anda Yakin?";
         $btn    = '<a href="#" class="btn btn-warning bg-gradient-warning btn-sm mt-3 ms-auto dropdown" id="navbar-default_dropdown_1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Upload Excel</a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbar-default_dropdown_1">
                         <a class="dropdown-item" href="'. route('download.template.excel.import', ['filename' => 'Template_Data_Jemaat.xlsx']) .'">Download Template</a>
@@ -48,16 +57,13 @@ class JemaatController extends Controller
         $subjudul = 'Administrasi Jemaat';
         $tombol = $btn; 
 
-        confirmDelete($title, $text);
+        $jemaatList = $this->jemaatService->getJemaatList();
+        $viewModel = new JemaatViewModel($jemaatList);
+        $jemaatList = $viewModel->formatted();
 
-        $item   = Jemaat::with(['kkJemaat', 'hubunganKeluarga.kkJemaat'])->get();
-
-        return view('administrasi.jemaat.index',compact('item', 'btn', 'page', 'judul', 'subjudul', 'tombol'));
+        return view('administrasi.jemaat.index',compact('jemaatList', 'btn', 'page', 'judul', 'subjudul', 'tombol'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $btn    = '<a href="' .route('administrasi.data-jemaat.index') . '" class="btn btn-secondary bg-gradient-secondary btn-sm mt-3 ms-auto">Kembali</a>';
@@ -89,7 +95,6 @@ class JemaatController extends Controller
 
         try {
             $kk = new KkJemaat();
-            //$kk = KkJemaat::where('id_kk_jemaat', $request->id_kk)->firstOrFail();
             
             // Simpan data kepala keluarga
             $KKjemaat = new Jemaat();
@@ -105,13 +110,32 @@ class JemaatController extends Controller
             $KKjemaat->status_menikah =   $request->status_menikah_kk;
             $KKjemaat->asal_gereja    =   $request->asal_gereja_kk;
             $KKjemaat->tanggal_terdaftar = $request->tanggal_terdaftar_kk;
-            $KKjemaat->status_aktif   =   $request->status_aktif_kk;
-            $KKjemaat->keterangan     =   $request->keterangan_kk;
+            $KKjemaat->status_aktif   =   'Aktif';
+            //$KKjemaat->keterangan     =   $request->keterangan_kk;
             $KKjemaat->save();
 
-            $idJemaat = $KKjemaat->id_jemaat; 
+            if ($request->status_aktif_kk === 'Atestasi Masuk') {
+                $ates = new Atestasi();
+                $ates->id_jemaat = $KKjemaat->id_jemaat;
+                $ates->tanggal   = now();
+                $ates->masuk     = 1;
+                $ates->gereja    = $request->asal_gereja_kk;
+                $ates->setuju    = 1;
+                $ates->save();
+            }
 
-            $kk->id_jemaat = $idJemaat;
+            //pindah gereja
+            if ($request->status_aktif_kk === 'Pindah Gereja') {
+                $pindah = new PindahGereja();
+                $pindah->id_jemaat = $KKjemaat->id_jemaat;
+                $pindah->tanggal   = now();
+                $pindah->dari        = 1;
+                $pindah->gereja    = $request->asal_gereja_kk;
+                $pindah->setuju    = 1;
+                $pindah->save();
+            }
+
+            $kk->id_jemaat = $KKjemaat->id_jemaat;
             $kk->alamat = $request->alamat;    
             $kk->id_group_wilayah = $request->group_wilayah_kk;
             $kk->save();
@@ -167,100 +191,50 @@ class JemaatController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show($id)
+    public function show(int $id, JemaatService $service)
     {
-        $title  = 'Hapus Data!';
-        $text   = "Data akan dihapus, Anda Yakin?";
         $btn    = '<a href="' . route('administrasi.data-jemaat.index') . '" class="btn btn-secondary bg-gradient-secondary btn-sm mt-3 ms-auto">Kembali</a>';
-        $page   = 'Administrasi';
-        $judul  = 'Data Jemaat';
-        $subjudul = 'Administrasi Jemaat';
-        $tombol = $btn;
         
-        confirmDelete($title, $text);
-    
-        // Ambil data jemaat berdasarkan ID
-        $jemaat = Jemaat::with(['kkJemaat', 'hubunganKeluarga'])->where('id_jemaat', $id)->firstOrFail();
-        
-        // Cek apakah jemaat adalah kepala keluarga atau anggota keluarga
-        $kk = KkJemaat::where('id_jemaat', $jemaat->id_jemaat)->first();
-        $kk_jemaat = KkJemaat::select('id_jemaat')->get();
+        confirmDelete('Hapus Data!', 'Data akan dihapus, Anda Yakin?');
 
-        
-        if ($kk) {
-            // Jemaat adalah kepala keluarga
-            $kepalaKeluarga = $kk;
-            $id_kk = $kk->id_kk_jemaat;
-        } else {
-            // Jemaat adalah anggota keluarga
-            $hubungan = HubunganKeluarga::where('id_jemaat', $id)->with('kkJemaat')->first();
-            $kepalaKeluarga = $hubungan?->kkJemaat;
-            $id_kk = $hubungan?->id_kk_jemaat;
-        }
-    
-        // Ambil semua anggota keluarga be  rdasarkan ID KK
-        $anggotaKeluarga = HubunganKeluarga::where('id_kk_jemaat', $id_kk)->with('jemaat')->get();
-        
         $aksi = '' .route('administrasi.data-jemaat.update', $id).'';
-    
-        return view('administrasi.jemaat.detail', compact(
-            'kepalaKeluarga', 
-            'anggotaKeluarga', 
-            'jemaat', 
-            'btn',
-            'page',
-            'judul',
-            'subjudul',
-            'tombol',
-            'id_kk',
-            'aksi',
-            'kk_jemaat',
-            'id'
-        ));
+        
+        $data = $service->getJemaatDetail($id);
+        $viewModel = new JemaatDetailViewModel(...$data);
+
+        return view('administrasi.jemaat.detail', [
+            'page' => 'Administrasi',
+            'judul' => 'Data Jemaat',
+            'subjudul' => 'Administrasi Jemaat',
+            'btn' => $viewModel->backButton(),
+            'tombol' => $viewModel->backButton(),
+            'aksi' => $viewModel->aksiUrl(),
+            'jemaat' => $viewModel->jemaat,
+            'kepalaKeluarga' => $viewModel->kepalaKeluarga,
+            'anggotaKeluarga' => $viewModel->anggotaKeluarga,
+            'id_kk' => $viewModel->id_kk,
+            'kk_jemaat' => $viewModel->kk_jemaat,
+            'id' => $id
+        ]);
     }
     
 
     public function edit($Jemaat)
     {
-        $item = Jemaat::with([
-            'kkJemaat',
-            'hubunganKeluarga.kkJemaat.jemaatKK'
-        ])->where('id_jemaat', $Jemaat)->firstOrFail();
-        
-        $btn    = '<a href="' .route('administrasi.data-jemaat.index') . '" class="btn btn-secondary bg-gradient-secondary btn-sm mt-3 ms-auto">Kembali</a>';
-        $page   = 'Content Management';
-        $judul  = 'Adminsitrasi Jemaat';
-        $subjudul = 'Update Data Jemaat';
-        $tombol = $btn; 
-
-        $aksi = '';
-        $kk = KKJemaat::with('jemaatKK')->get();
-
-        //dd($item);
-        return view('administrasi.jemaat.form', compact('item',
-            'btn',
-            'page',
-            'judul',
-            'subjudul',
-            'tombol', 
-            'item',
-            'aksi',
-            'kk',
-        ));
+        //
     }
 
-    /**
-     * Update the specified resource in storage.
-     */
     public function update(Request $request, $id)
     {
-        DB::beginTransaction(); // Mulai transaksi
+        DB::beginTransaction();
+
+        $statusMessages = [];
 
         try {
             $kk = KkJemaat::where('id_kk_jemaat', $request->id_kk)->firstOrFail();
-            
+
             // Simpan data kepala keluarga
-            $KKjemaat = Jemaat::where('id_jemaat', $id)->firstOrFail();
+            $KKjemaat = Jemaat::where('id_jemaat', $kk->id_jemaat)->firstOrFail();
             $KKjemaat->nama_jemaat       = $request->kepala_keluarga;
             $KKjemaat->gender            = $request->p_l_kk;
             $KKjemaat->telepon           = $request->telepon_kk;
@@ -274,14 +248,52 @@ class JemaatController extends Controller
             $KKjemaat->tanggal_terdaftar = parseTanggalIndo($request->tanggal_terdaftar_kk);
             $KKjemaat->status_aktif      = $request->status_aktif_kk;
             $KKjemaat->keterangan        = $request->keterangan_kk;
+            
             $KKjemaat->save();
+
+            //atastasi keluar
+            if ($request->status_aktif_kk === 'Atestasi Keluar') {
+                $sudahAtestasi = Atestasi::where('id_jemaat', $kk->id_jemaat)->where('keluar', 1)->exists();
+                if (!$sudahAtestasi) {
+                    $ates = new Atestasi();
+                    $ates->id_jemaat = $KKjemaat->id_jemaat;
+                    $ates->tanggal   = now();
+                    $ates->keluar    = 1;
+                    $ates->gereja    = $request->keterangan_kk;
+                    $ates->setuju    = 1;
+                    $ates->save();
+                }
+            }
+
+            //pindah gereja
+            if ($request->status_aktif_kk === 'Pindah Gereja') {
+                $sudahPindah = PindahGereja::where('id_jemaat', $kk->id_jemaat)->where('ke', 1)->exists();
+                if (!$sudahPindah) {
+                    $pindah = new PindahGereja();
+                    $pindah->id_jemaat = $KKjemaat->id_jemaat;
+                    $pindah->tanggal   = now();
+                    $pindah->ke        = 1;
+                    $pindah->gereja    = $request->keterangan_kk;
+                    $pindah->setuju    = 1;
+                    $pindah->save();
+                }
+            }
+
+            if ($request->status_aktif_kk === 'Meninggal Dunia') {
+                $sudahMeninggal = Meningal::where('id_jemaat', $kk->id_jemaat)->exists();
+                if (!$sudahMeninggal) {
+                    $md = new MeninggalDunia();
+                    $md->id_jemaat  = $KKjemaat->id_jemaat;
+                    $md->tanggal    = now();
+                    $md->alamat     = '-';
+                    $md->save();
+                }
+            }
 
             // Update Anggota Keluarga
             if ($request->has('id_anggota')) {
                 foreach ($request->nia_anggota as $index => $nia) {
-                    // Kalau ada id_anggota pada index ini, pakai sebagai acuan
                     $idAnggota = $request->id_anggota[$index] ?? null;
-                
                     if ($idAnggota) {
                         $anggota = Jemaat::find($idAnggota);
                     } else {
@@ -302,6 +314,35 @@ class JemaatController extends Controller
                     $anggota->keterangan        = $request->keterangan[$index];
                 
                     $anggota->save();
+
+                    if ($anggota->status_aktif === 'Atestasi Keluar') {
+                        $sudahAtestasi = Atestasi::where('id_jemaat', $anggota->id_jemaat)->where('keluar', 1)->exists();
+                        if (!$sudahAtestasi) {
+                            $ates = new Atestasi();
+                            $ates->id_jemaat = $anggota->id_jemaat;
+                            $ates->tanggal   = now();
+                            $ates->keluar    = 1;
+                            $ates->gereja    = $request->keterangan;
+                            $ates->setuju    = 1;
+                            $ates->save();
+                        }
+                    }
+
+                    if ($anggota->status_aktif === 'Pindah Gereja') {
+                        $sudahPindah = PindahGereja::where('id_jemaat', $anggota->id_jemaat)->where('ke', 1)->exists();
+                        if (!$sudahPindah) {
+                            $pindah = new PindahGereja();
+                            $pindah->id_jemaat = $anggota->id_jemaat;
+                            $pindah->tanggal   = now();
+                            $pindah->ke        = 1;
+                            $pindah->gereja    = $anggota->keterangan;
+                            $pindah->setuju    = 1;
+                            $pindah->save();
+                        }
+                    }
+
+                    
+
                     $idJemaat = $anggota->id_jemaat;
                 
                     HubunganKeluarga::updateOrCreate(
@@ -312,12 +353,19 @@ class JemaatController extends Controller
                         ]
                     );
 
-                    if($request->status_menikah[$index] == "Menikah" && !preg_match('/[WKA]/i', $nia) && $request->p_l[$index] == "L"){
-                        KkJemaat::updateOrCreate(
+                    if ($request->status_menikah[$index] == "Menikah" && !preg_match('/[WKA]/i', $nia) && $request->p_l[$index] == "L"){
+                        $kkBaru = KkJemaat::updateOrCreate(
                             ['id_jemaat' => $idJemaat],
-                            ['id_group_wilayah' => $request->group_wilayah_kk],
-                            ['alamat' => '-']
+                            [
+                                'id_group_wilayah' => $request->group_wilayah_kk,
+                                'alamat' => '-'
+                            ]
                         );
+    
+                        if ($kkBaru->wasRecentlyCreated) {
+                            $statusMessages[] = "NIA $nia: Status menikah, data kepala keluarga baru ditambahkan.";
+                            $idKepalaKeluargaBaru = $idJemaat;
+                        }
                     }
                 }                
             }
@@ -326,8 +374,25 @@ class JemaatController extends Controller
             $kk->id_group_wilayah = $request->group_wilayah_kk;
             $kk->save();
 
+            if ($request->status_menikah_kk === "Belum Menikah") {
+                $KKjemaatKK = KkJemaat::where('id_jemaat', $id)->first();
+                if ($KKjemaatKK) {
+                    $KKjemaatKK->delete();
+                }
+            }
+
             DB::commit(); 
-            return redirect()->back()->with('success', 'Data berhasil diupdate!');
+            $successMessage = 'Data berhasil diupdate!';
+            if (!empty($statusMessages)) {
+                $successMessage .= '<br>' . implode('<br>', $statusMessages);
+            }
+
+            if (isset($idKepalaKeluargaBaru)) {
+                return redirect('./administrasi/data-jemaat/' . $idKepalaKeluargaBaru)->with('success', $successMessage);
+            } else {
+                return redirect()->back()->with('success', $successMessage);
+            }
+            
         } catch (\Exception $e) {
             DB::rollBack();
             
@@ -336,9 +401,6 @@ class JemaatController extends Controller
         }
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
     public function destroy($id)
     {
         try {
@@ -433,8 +495,8 @@ class JemaatController extends Controller
         }
 
         $cek = HubunganKeluarga::where('id_jemaat', $request->id_jemaat)
-        ->where('id_kk_jemaat', $request->id_kk_jemaat)
-        ->first();
+            ->where('id_kk_jemaat', $request->id_kk_jemaat)
+            ->first();
 
         if ($cek) {
             return response()->json(['message' => 'Data sudah ada'], 409);
