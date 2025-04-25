@@ -322,7 +322,7 @@ class JemaatController extends Controller
                             $ates->id_jemaat = $anggota->id_jemaat;
                             $ates->tanggal   = now();
                             $ates->keluar    = 1;
-                            $ates->gereja    = $request->keterangan;
+                            $ates->gereja    = $request->keterangan[$index];
                             $ates->setuju    = 1;
                             $ates->save();
                         }
@@ -335,7 +335,7 @@ class JemaatController extends Controller
                             $pindah->id_jemaat = $anggota->id_jemaat;
                             $pindah->tanggal   = now();
                             $pindah->ke        = 1;
-                            $pindah->gereja    = $anggota->keterangan;
+                            $pindah->gereja    = $request->keterangan[$index];
                             $pindah->setuju    = 1;
                             $pindah->save();
                         }
