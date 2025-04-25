@@ -51,14 +51,17 @@ class JemaatImport
 
     private function saveOrUpdateJemaat($nia, $row)
     {
+        $tanggalTerdaftar = $this->convertExcelDate($row[6]);
+        $asalGereja = trim($row[5]);
+
         DB::table('jemaat')->updateOrInsert(
             ['nia' => $nia],
             [
                 'nama_jemaat'       => $row[1],
                 'gender'            => $row[2],
                 'telepon'           => $row[3] ?? null,
-                'asal_gereja'       => $row[5],
-                'tanggal_terdaftar' => $this->convertExcelDate($row[6]),
+                'asal_gereja'       => $asalGereja,
+                'tanggal_terdaftar' => $tanggalTerdaftar,
                 'tempat_lahir'      => $row[8],
                 'tanggal_lahir'     => $this->convertExcelDate($row[9]),
                 'tanggal_baptis'    => $this->convertExcelDate($row[10]),
@@ -71,7 +74,44 @@ class JemaatImport
                 'created_at'        => now(),
             ]
         );
+
+        $idJemaat = DB::table('jemaat')->where('nia', $nia)->value('id_jemaat');
+
+        if ($tanggalTerdaftar) {
+            $sudahAtestasi = DB::table('atestasi')
+                ->where('id_jemaat', $idJemaat)
+                ->where('masuk', 1)
+                ->exists();
+        
+            $sudahPindah = DB::table('pindah_gereja')
+                ->where('id_jemaat', $idJemaat)
+                ->where('dari', 1)
+                ->exists();
+        
+            if ($asalGereja && !$sudahAtestasi) {
+                // Atestasi Masuk
+                DB::table('atestasi')->insert([
+                    'id_jemaat' => $idJemaat,
+                    'tanggal'   => $tanggalTerdaftar,
+                    'masuk'     => 1,
+                    'setuju'    => 1,
+                    'created_at'=> now(),
+                    'updated_at'=> now(),
+                ]);
+            } elseif (!$asalGereja && !$sudahAtestasi && !$sudahPindah) {
+                // Pindah Gereja Masuk (hanya jika belum masuk di atestasi & belum ada data pindah)
+                DB::table('pindah_gereja')->insert([
+                    'id_jemaat' => $idJemaat,
+                    'tanggal'   => $tanggalTerdaftar,
+                    'dari'      => 1,
+                    'setuju'    => 1,
+                    'created_at'=> now(),
+                    'updated_at'=> now(),
+                ]);
+            }
+        }
     }
+
 
     private function handleKeluarga($row, $idJemaat)
     {

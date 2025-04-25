@@ -44,7 +44,8 @@
                                 <th class="text-uppercase font-weight-bolder" width="30px" style="display: none;">Tanggal<br>Terdaftar</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">Nama Jemaat</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">L/P</th>
-                                <th class="text-uppercase font-weight-bolder ps-2" style="display: none;">Tempat,<br>Tanggal Lahir</th>
+                                <th class="text-uppercase font-weight-bolder ps-2" style="display: none;">Tempat</th>
+                                <th class="text-uppercase font-weight-bolder ps-2" style="display: none;"><br>Tanggal Lahir</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">Alamat Domisili</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">Wil.</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">No. Telepon/HP</th>

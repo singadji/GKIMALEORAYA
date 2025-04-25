@@ -24,7 +24,8 @@
     </td>
 
     <td class="align-left">{{ $item->gender }}</td>
-    <td style="display: none;">{{ $item->tempat_tanggal_lahir }}</td>
+    <td style="display: none;">{{ $item->tempat_lahir }}</td>
+    <td style="display: none;">{{ $item->tanggal_lahir }}</td>
 
     <td class="text-left">
         {{ optional($item->kkJemaat)->alamat 

@@ -46,6 +46,17 @@
                     <div class="card-body table-responsive">
                             <table class="table table-hover data-table wrap">
                                 <tr>
+                                    <th>Anggota Baru<span class="text-danger">*</span></th>
+                                    <td>
+                                        <select class="form-control-sm" required data-toggle="select" name="status_aktif_kk">
+                                            <option value="">--pilih--</option>
+                                            <option value="Atestasi Masuk">Atestasi Masuk</option>
+                                            <option value="Pindah Gereja">Pindah Gereja</option>
+                                            <option value="Penerimaan Khusus">Penerimaan Khusus</option>
+                                        </select>
+                                    </td>
+                                </tr>
+                                <tr>
                                     <th>Nomor Induk Anggota <span class="text-danger">*</span></th>
                                     <td>
                                         <input type="text" required id="nia" name="nia_kk" value="{{ old('nia_kk') }}" placeholder="N I A" class="form-control form-control-sm">
@@ -144,26 +155,6 @@
                                         <input type="text" required name="group_wilayah_kk" value="{{ old('id_group_wilayah') }}" placeholder="" class="form-control form-control-sm">
                                     </td>
                                 </tr>
-                                <tr>
-                                    <th>Status Keanggotaan<span class="text-danger">*</span></th>
-                                    <td>
-                                        <div class="row" id="status-row">
-                                            <div class="col-md-6">
-                                                <select class="form-control-sm" required data-toggle="select" name="status_aktif_kk">
-                                                    
-                                                    <option value="Aktif">Aktif</option>
-                                                    <option value="Pasif">Pasif</option>
-                                                    <option value="Atestasi Keluar">Atestasi Keluar</option>
-                                                    <option value="Meninggal Dunia">Meninggal Dunia</option>
-                                                    <option value="Bukan Anggota">Bukan Anggota</option>
-                                                </select>
-                                            </div>
-                                            <div class="col-md-6">
-                                                <input type="text" placeholder="Atestasi ke Gereja tujuan" name="keterangan_kk" value="{{ old('keterangan') }}" class="form-control form-control-sm">
-                                            </div>
-                                        </div>
-                                    </td>
-                                </tr>
                             </table>
                     </div>
                 </div>
@@ -187,9 +178,6 @@
                                     <th class="text-center">Tanggal<br>Lahir<span class="text-danger">*</span></th>
                                     <th class="text-center">Tanggal<br>Baptis</th>
                                     <th class="text-center">Tanggal<br>Sidi</th>
-                                    <th class="text-center">Gereja Asal</th>
-                                    <th class="text-center">Tanggal<br>Terdaftar</th>
-                                    <th class="text-center">Status<br>Keanggotaan<span class="text-danger">*</span></th>
                                     <th class="text-center">Keterangan</th>
                                     <th class="text-center" hidden></th>
                                 </tr>
@@ -230,7 +218,7 @@
             </td>
             <td>
                 <select class="form-control form-control-sm" data-toggle="select" required name="hubungan_keluarga[]">
-                    <option value="Kepala Keluarga">Kepala Keluarga</option>
+                    <option value="">-pilih-</option>
                     <option value="Pasangan">Pasangan</option>
                     <option value="Anak">Anak</option>
                     <option value="Kerabat">Kerabat</option>
@@ -241,17 +229,6 @@
             <td><input type="date" required class="form-control form-control-sm" name="tanggal_lahir[]"></td>
             <td><input type="date" class="form-control form-control-sm" name="tanggal_baptis[]"></td>
             <td><input type="date" class="form-control form-control-sm" name="tanggal_sidi[]"></td>
-            <td><input type="text" required class="form-control form-control-sm" name="asal_gereja[]" placeholder="Gereja Asal"></td>
-            <td><input type="date" class="form-control form-control-sm" name="tanggal_terdaftar[]"></td>
-            <td>
-                <select class="form-control-sm" required name="status_aktif[]">
-                    <option value="Aktif">Aktif</option>
-                    <option value="Pasif">Pasif</option>
-                    <option value="Atestasi Keluar">Atestasi Keluar</option>
-                    <option value="Meninggal Dunia">Meninggal Dunia</option>
-                    <option value="Tidak Tahu">Bukan Anggota</option>
-                </select>
-            </td>
             <td><input type="text" class="form-control form-control-sm" name="keterangan[]" placeholder="Keterangan"></td>
             <td><button class="btn btn-danger btn-sm removeRow"><i class="fa fa-times"></i></button></td>
         </tr>`;

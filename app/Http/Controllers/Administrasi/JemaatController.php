@@ -19,6 +19,7 @@ use App\Models\KKJemaat;
 use App\Models\HubunganKeluarga;
 use App\Models\Atestasi;
 use App\Models\PindahGereja;
+use App\Models\MeninggalDunia;
 use App\Services\JemaatService;
 use App\ViewModels\JemaatViewModel;
 use App\ViewModels\JemaatDetailViewModel;
@@ -63,9 +64,6 @@ class JemaatController extends Controller
         return view('administrasi.jemaat.index',compact('jemaatList', 'btn', 'page', 'judul', 'subjudul', 'tombol'));
     }
 
-    /**
-     * Show the form for creating a new resource.
-     */
     public function create()
     {
         $btn    = '<a href="' .route('administrasi.data-jemaat.index') . '" class="btn btn-secondary bg-gradient-secondary btn-sm mt-3 ms-auto">Kembali</a>';
@@ -97,7 +95,6 @@ class JemaatController extends Controller
 
         try {
             $kk = new KkJemaat();
-            //$kk = KkJemaat::where('id_kk_jemaat', $request->id_kk)->firstOrFail();
             
             // Simpan data kepala keluarga
             $KKjemaat = new Jemaat();
@@ -113,13 +110,32 @@ class JemaatController extends Controller
             $KKjemaat->status_menikah =   $request->status_menikah_kk;
             $KKjemaat->asal_gereja    =   $request->asal_gereja_kk;
             $KKjemaat->tanggal_terdaftar = $request->tanggal_terdaftar_kk;
-            $KKjemaat->status_aktif   =   $request->status_aktif_kk;
-            $KKjemaat->keterangan     =   $request->keterangan_kk;
+            $KKjemaat->status_aktif   =   'Aktif';
+            //$KKjemaat->keterangan     =   $request->keterangan_kk;
             $KKjemaat->save();
 
-            $idJemaat = $KKjemaat->id_jemaat; 
+            if ($request->status_aktif_kk === 'Atestasi Masuk') {
+                $ates = new Atestasi();
+                $ates->id_jemaat = $KKjemaat->id_jemaat;
+                $ates->tanggal   = now();
+                $ates->masuk     = 1;
+                $ates->gereja    = $request->asal_gereja_kk;
+                $ates->setuju    = 1;
+                $ates->save();
+            }
 
-            $kk->id_jemaat = $idJemaat;
+            //pindah gereja
+            if ($request->status_aktif_kk === 'Pindah Gereja') {
+                $pindah = new PindahGereja();
+                $pindah->id_jemaat = $KKjemaat->id_jemaat;
+                $pindah->tanggal   = now();
+                $pindah->dari        = 1;
+                $pindah->gereja    = $request->asal_gereja_kk;
+                $pindah->setuju    = 1;
+                $pindah->save();
+            }
+
+            $kk->id_jemaat = $KKjemaat->id_jemaat;
             $kk->alamat = $request->alamat;    
             $kk->id_group_wilayah = $request->group_wilayah_kk;
             $kk->save();
@@ -216,9 +232,9 @@ class JemaatController extends Controller
 
         try {
             $kk = KkJemaat::where('id_kk_jemaat', $request->id_kk)->firstOrFail();
-            
+
             // Simpan data kepala keluarga
-            $KKjemaat = Jemaat::where('id_jemaat', $id)->firstOrFail();
+            $KKjemaat = Jemaat::where('id_jemaat', $kk->id_jemaat)->firstOrFail();
             $KKjemaat->nama_jemaat       = $request->kepala_keluarga;
             $KKjemaat->gender            = $request->p_l_kk;
             $KKjemaat->telepon           = $request->telepon_kk;
@@ -237,27 +253,42 @@ class JemaatController extends Controller
 
             //atastasi keluar
             if ($request->status_aktif_kk === 'Atestasi Keluar') {
-                $ates = new Atestasi();
-                $ates->id_jemaat = $KKjemaat->id_jemaat;
-                $ates->tanggal   = now();
-                $ates->keluar    = 1;
-                $ates->gereja    = $request->keterangan_kk;
-                $ates->setuju    = 1;
-                $ates->save();
+                $sudahAtestasi = Atestasi::where('id_jemaat', $kk->id_jemaat)->where('keluar', 1)->exists();
+                if (!$sudahAtestasi) {
+                    $ates = new Atestasi();
+                    $ates->id_jemaat = $KKjemaat->id_jemaat;
+                    $ates->tanggal   = now();
+                    $ates->keluar    = 1;
+                    $ates->gereja    = $request->keterangan_kk;
+                    $ates->setuju    = 1;
+                    $ates->save();
+                }
             }
 
             //pindah gereja
             if ($request->status_aktif_kk === 'Pindah Gereja') {
-                $pindah = new PindahGereja();
-                $pindah->id_jemaat = $KKjemaat->id_jemaat;
-                $pindah->tanggal   = now();
-                $pindah->ke        = 1;
-                $pindah->gereja    = $request->keterangan_kk;
-                $pindah->setuju    = 1;
-                $pindah->save();
+                $sudahPindah = PindahGereja::where('id_jemaat', $kk->id_jemaat)->where('ke', 1)->exists();
+                if (!$sudahPindah) {
+                    $pindah = new PindahGereja();
+                    $pindah->id_jemaat = $KKjemaat->id_jemaat;
+                    $pindah->tanggal   = now();
+                    $pindah->ke        = 1;
+                    $pindah->gereja    = $request->keterangan_kk;
+                    $pindah->setuju    = 1;
+                    $pindah->save();
+                }
             }
 
-    
+            if ($request->status_aktif_kk === 'Meninggal Dunia') {
+                $sudahMeninggal = Meningal::where('id_jemaat', $kk->id_jemaat)->exists();
+                if (!$sudahMeninggal) {
+                    $md = new MeninggalDunia();
+                    $md->id_jemaat  = $KKjemaat->id_jemaat;
+                    $md->tanggal    = now();
+                    $md->alamat     = '-';
+                    $md->save();
+                }
+            }
 
             // Update Anggota Keluarga
             if ($request->has('id_anggota')) {
@@ -284,15 +315,33 @@ class JemaatController extends Controller
                 
                     $anggota->save();
 
-                    if ($request->status_aktif[$index] === 'Atestasi Keluar') {
-                        Atestasi::create([
-                            'id_jemaat' => $anggota->id_jemaat,
-                            'tanggal_keluar' => now(),
-                            'asal_gereja' => $request->asal_gereja[$index],
-                            'setuju' => 'Ya',
-                            'masuk' => 1
-                        ]);
+                    if ($anggota->status_aktif === 'Atestasi Keluar') {
+                        $sudahAtestasi = Atestasi::where('id_jemaat', $anggota->id_jemaat)->where('keluar', 1)->exists();
+                        if (!$sudahAtestasi) {
+                            $ates = new Atestasi();
+                            $ates->id_jemaat = $anggota->id_jemaat;
+                            $ates->tanggal   = now();
+                            $ates->keluar    = 1;
+                            $ates->gereja    = $request->keterangan;
+                            $ates->setuju    = 1;
+                            $ates->save();
+                        }
                     }
+
+                    if ($anggota->status_aktif === 'Pindah Gereja') {
+                        $sudahPindah = PindahGereja::where('id_jemaat', $anggota->id_jemaat)->where('ke', 1)->exists();
+                        if (!$sudahPindah) {
+                            $pindah = new PindahGereja();
+                            $pindah->id_jemaat = $anggota->id_jemaat;
+                            $pindah->tanggal   = now();
+                            $pindah->ke        = 1;
+                            $pindah->gereja    = $anggota->keterangan;
+                            $pindah->setuju    = 1;
+                            $pindah->save();
+                        }
+                    }
+
+                    
 
                     $idJemaat = $anggota->id_jemaat;
                 
