@@ -1,4 +1,58 @@
-<div class="col-xl-5">
+
+      
+    <div class="col-xl-7">
+        <div class="card">
+          <div class="card-header border-0">
+            <div class="row align-items-center">
+              <div class="col">
+                <h3 class="mb-0">Penambahan dan Pengurangan Jumlah Keanggotaan per Tahun PURJ</h3>
+                <div class="mb-0"><br>
+                <form method="get" class="row g-3 mb-4" action="">
+                    <div class="col-auto">
+                        <label class="form-control-label">Tahun Awal</label>
+                        <input type="number" name="tahun_awal" value="{{ $tahunAwal }}" class="form-control form-control-sm" />
+                    </div>
+                    <div class="col-auto">
+                        <label class="form-control-label">Tahun Akhir</label>
+                        <input type="number" name="tahun_akhir" value="{{ $tahunAkhir }}" class="form-control form-control-sm" />
+                    </div>
+                    <div class="col-auto align-self-end">
+                        <button class="btn btn-primary btn-sm" type="submit">Tampilkan</button>
+                    </div>
+                </form>
+            </div>
+              </div>
+            </div>
+          </div>
+          <div class="table-responsive">
+            <table class="table align-items-center wrap table-flush table-hover" style="line-height: 1.3;" id="">
+                <thead class="thead-light">
+                    <tr>
+                        <th class="text-center">No.</th>
+                        <th class="text-left">Entitas Informasi Penambahan dan <br>Pengurangan Jumlah Keanggotaan</th>
+                        @for ($tahun = $tahunAwal; $tahun <= $tahunAkhir; $tahun++)
+                            <th class="text-center">Data<br>{{ $tahun }}</th>
+                        @endfor
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach ($laporan as $index => $item)
+                        <tr>
+                            <td>{{ $index + 1 }}</td>
+                            <td>{{ $item->kategori }}</td>
+                            @for ($tahun = $tahunAwal; $tahun <= $tahunAkhir; $tahun++)
+                                @php $field = "Data $tahun"; @endphp
+                                <td class="text-center">{{ $item->$field ?? 0 }}</td>
+                            @endfor
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-xl-5">
         <div class="card">
           <div class="card-header bg-transparent">
             <div class="row align-items-center">
@@ -96,58 +150,6 @@
                     });
                 </script>
             </div>
-          </div>
-        </div>
-      </div>
-      
-    <div class="col-xl-7">
-        <div class="card">
-          <div class="card-header border-0">
-            <div class="row align-items-center">
-              <div class="col">
-                <h3 class="mb-0">Penambahan dan Pengurangan Jumlah Keanggotaan per Tahun PURJ</h3>
-                <div class="mb-0"><br>
-                <form method="get" class="row g-3 mb-4" action="">
-                    <div class="col-auto">
-                        <label class="form-control-label">Tahun Awal</label>
-                        <input type="number" name="tahun_awal" value="{{ $tahunAwal }}" class="form-control form-control-sm" />
-                    </div>
-                    <div class="col-auto">
-                        <label class="form-control-label">Tahun Akhir</label>
-                        <input type="number" name="tahun_akhir" value="{{ $tahunAkhir }}" class="form-control form-control-sm" />
-                    </div>
-                    <div class="col-auto align-self-end">
-                        <button class="btn btn-primary btn-sm" type="submit">Tampilkan</button>
-                    </div>
-                </form>
-            </div>
-              </div>
-            </div>
-          </div>
-          <div class="table-responsive">
-            <table class="table align-items-center wrap table-flush table-hover" style="line-height: 1.3;" id="">
-                <thead class="thead-light">
-                    <tr>
-                        <th class="text-center">No.</th>
-                        <th class="text-left">Entitas Informasi Penambahan dan <br>Pengurangan Jumlah Keanggotaan</th>
-                        @for ($tahun = $tahunAwal; $tahun <= $tahunAkhir; $tahun++)
-                            <th class="text-center">Data<br>{{ $tahun }}</th>
-                        @endfor
-                    </tr>
-                </thead>
-                <tbody>
-                    @foreach ($laporan as $index => $item)
-                        <tr>
-                            <td>{{ $index + 1 }}</td>
-                            <td>{{ $item->kategori }}</td>
-                            @for ($tahun = $tahunAwal; $tahun <= $tahunAkhir; $tahun++)
-                                @php $field = "Data $tahun"; @endphp
-                                <td class="text-center">{{ $item->$field ?? 0 }}</td>
-                            @endfor
-                        </tr>
-                    @endforeach
-                </tbody>
-            </table>
           </div>
         </div>
       </div>

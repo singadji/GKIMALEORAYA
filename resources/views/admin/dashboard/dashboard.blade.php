@@ -8,11 +8,11 @@
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Chart.js -->
 <style>
         #chartContainer {
-            height: 100%; /* Tinggi lebih kecil */
-            margin: auto; /* Tengah */
+            height: 100%;
+            margin: auto;
         }
         .dt-buttons .btn {
-    margin-left: 0.5rem;
+    margin-left: 0.5rem; 
 }
     </style>
 {{-- Pass the $btn variable to the topnav --}}
@@ -57,7 +57,7 @@
               <div class="row">
                 <div class="col">
                   <h5 class="card-title text-uppercase text-muted mb-0">Jumlah Jemaat Atestasi Keluar</h5>
-                  <span class="h1 font-weight-bold mb-0">{{ $Jatestasi }}</span> Jemaat
+                  <span class="h1 font-weight-bold mb-0">{{ $jJ['atestasi_keluar'] }}</span> Jemaat
                 </div>
                 <div class="col-auto">
                   <div class="icon icon-shape bg-gradient-red text-white rounded-circle shadow">
@@ -78,7 +78,7 @@
               <div class="row">
                 <div class="col">
                   <h5 class="card-title text-uppercase text-muted mb-0">Jumlah Jemaat Aktif</h5>
-                  <span class="h1 font-weight-bold mb-0">{{ $Jaktif }}</span> Jemaat
+                  <span class="h1 font-weight-bold mb-0">{{ $jJ['total_jemaat'] }}</span> Jemaat
                 </div>
                 <div class="col-auto">
                   <div class="icon icon-shape bg-gradient-green text-white rounded-circle shadow">
@@ -98,7 +98,7 @@
               <div class="row">
                 <div class="col">
                   <h5 class="card-title text-uppercase text-muted mb-0">Jumlah Anggota Baptisan</h5>
-                  <span class="h1 font-weight-bold mb-0">{{ $baptisan }}</span> Jemaat
+                  <span class="h1 font-weight-bold mb-0">{{ $jJ['baptisan'] }}</span> Jemaat
                 </div>
                 <div class="col-auto">
                   <div class="icon icon-shape bg-gradient-warning text-white rounded-circle shadow">
@@ -118,7 +118,7 @@
               <div class="row">
                 <div class="col">
                   <h5 class="card-title text-uppercase text-muted mb-0">Jumlah Kepala Keluarga</h5>
-                  <span class="h1 font-weight-bold mb-0">{{ $Jkk }}</span> Kepala Keluarga
+                  <span class="h1 font-weight-bold mb-0">{{ $jJ['jemaat_kk'] }}</span> Kepala Keluarga
                 </div>
                 <div class="col-auto">
                   <div class="icon icon-shape bg-gradient-info text-white rounded-circle shadow">
