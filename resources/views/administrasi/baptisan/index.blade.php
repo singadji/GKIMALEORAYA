@@ -45,7 +45,8 @@
                                 <th class="text-uppercase font-weight-bolder" width="30px">N I A</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">Nama Anak</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">L/P</th>
-                                <th class="text-uppercase font-weight-bolder ps-2">Tempat,<br>Tanggal Lahir</th>
+                                <th class="text-uppercase font-weight-bolder ps-2">Tempat</th>
+                                <th class="text-uppercase font-weight-bolder ps-2">Tanggal Lahir</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">Umur</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">Wil.</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">No. Telepon/HP</th>
@@ -65,20 +66,23 @@
                                     <td class="align-left">
                                         {!!  $item->nama_jemaat !!}
                                     </td>
-                                    <td class="align-left">
+                                    <td class="text-center">
                                         {!!  $item->gender !!}
                                     </td>
                                     <td class="text-left">
-                                        {{ $item->tempat_lahir ?? ' - '}},  {{ Carbon::parse($item->tanggal_lahir)->translatedFormat('d F Y') }}
+                                        {{ $item->tempat_lahir ?? ' - '}}
                                     </td>
-                                    <td class="text-left">
+                                    <td class="text-center">
+                                        {{ Carbon::parse($item->tanggal_lahir)->translatedFormat('d F Y') }}
+                                    </td>
+                                    <td class="text-center">
                                         @php
                                             $tanggalLahir = Carbon::parse($item->tanggal_lahir);
                                             $umur = $tanggalLahir->age;
                                         @endphp
                                         {{ $umur }} tahun
                                     </td>
-                                    <td class="align-left">
+                                    <td class="text-center">
                                     {{ $item->hubunganKeluarga?->kkJemaat?->id_group_wilayah ?? '0' }}
                                     </td>
                                     <td class="text-center">

@@ -131,7 +131,12 @@ class DashboardController extends Controller
         {
             $Hjudul = "<h1>Data Jemaat Aktif</h1><hr>";
         $tahunAkhir = date('Y') . '-12-31';
-            $item = Jemaat::where('status_aktif', 'Aktif')->where('tanggal_terdaftar', '<=', $tahunAkhir)->get();
+            $item = Jemaat::where('status_aktif', 'Aktif')
+                ->where('tanggal_terdaftar', '<=', $tahunAkhir)
+                ->whereNotNull('tanggal_terdaftar')
+                ->whereNotNull('tanggal_sidi')
+                ->whereNotNull('tanggal_baptis')
+                ->get();
         }
         if($detail == 'kepala-keluarga')
         {

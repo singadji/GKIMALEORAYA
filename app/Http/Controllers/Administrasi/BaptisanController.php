@@ -36,12 +36,12 @@ class BaptisanController extends Controller
         $tanggal_akhir = date('Y') . '-12-31';
 
         $item = Jemaat::with(['kkJemaat', 'hubunganKeluarga.kkJemaat'])
-               ->whereNull('tanggal_sidi')
-               ->whereNotNull('tanggal_baptis')
-               ->whereIn('status_aktif', ['Bukan Anggota'])
-               ->where('tanggal_lahir', '!=', '1900-01-01')
-               ->where('tanggal_terdaftar', '<=', $tanggal_akhir)
-               ->get();
+              ->whereNull('tanggal_sidi')
+            ->whereNotNull('tanggal_baptis')
+            ->whereIn('status_aktif', ['Bukan Anggota'])
+            ->where('tanggal_lahir', '!=', '1900-01-01')
+            ->where('tanggal_baptis', '!=', '1900-01-01')
+            ->get();
 
         return view('administrasi.baptisan.index', compact(
             'item',
