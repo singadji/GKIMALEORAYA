@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\DB;
 use App\Models\Identitas;
 use App\Models\Jemaat;
 use App\Models\KKJemaat;
+use App\Services\JemaatService;
 
 use Image;
 use PDF;
@@ -15,9 +16,15 @@ use PDF;
 class DashboardController extends Controller
 {
 
+    protected $jemaatService;
+
+    public function __construct(JemaatService $jemaatService)
+    {
+        $this->jemaatService = $jemaatService;
+    }
 
     // Index
-    public function index(Request $request)
+    public function index(Request $request, JemaatService $jemaatService)
     {
         $tahunAwal = $request->input('tahun_awal', now()->year - 5);
         $tahunAkhir = $request->input('tahun_akhir', now()->year);
@@ -27,7 +34,49 @@ class DashboardController extends Controller
             $tahunAkhir,
         ]);
 
-        $tahunG = [];
+        $lapUmur = DB::select('CALL laporan_umur(?, ?)', [
+            $tahunAwal,
+            $tahunAkhir,
+        ]);
+
+        $lapGender = DB::select('SELECT * FROM temp_rekap_gender ORDER BY kategori, tahun');
+        $lapStatus = DB::select('SELECT * FROM temp_rekap_status ORDER BY kategori, tahun');
+
+        $lapUmurRaw = DB::select('SELECT * FROM temp_rekap_usia ORDER BY kategori, tahun');
+
+        $lapUmur = collect($lapUmurRaw)->groupBy('kategori')->take(6);
+
+        $grouped = collect($lapUmurRaw)->groupBy('kategori');
+
+        $tahunList = range($tahunAwal, $tahunAkhir);
+
+        $lapUmurG = [];
+        foreach ($grouped as $kategori => $data) {
+            $row = [];
+            foreach ($tahunList as $tahun) {
+                $jumlah = collect($data)->firstWhere('tahun', $tahun)->jumlah ?? 0;
+                $row["Data $tahun"] = $jumlah;
+            }
+            $lapUmurG[$kategori] = $row;
+        }
+
+        $totalGender = [];
+        foreach ($lapGender as $row) {
+            $totalGender[$row->tahun] = ($totalGender[$row->tahun] ?? 0) + $row->jumlah;
+        }
+
+        $totalAll = [];
+        foreach ($lapStatus as $row) {
+            $totalAll[$row->tahun] = ($totalGender[$row->tahun] ?? 0) + ($row->jumlah ?? 0);
+        }
+
+        $totalTahun = [];
+        foreach (array_keys($totalGender) as $tahun) {
+            $totalTahun[$tahun] = $totalGender[$tahun] ?? 0;
+        }
+
+
+        $tahunG = []; 
         $dataG = [];
         
         foreach ($laporan as $row) {
@@ -48,129 +97,52 @@ class DashboardController extends Controller
         $tahunG = array_keys($tahunG);
         sort($tahunG);
         
-        $Jaktif = Jemaat::where('status_aktif', 'Aktif')->count();
-        $Jatestasi = Jemaat::where('status_aktif', 'Atestasi Keluar')->count();
-        $Jpasif = Jemaat::where('status_aktif', 'Pasif')->count();
-        $Jkk = Jemaat::where('status_aktif', 'Aktif')->whereHas('kkJemaat')->count();
-        $baptisan = Jemaat::with(['kkJemaat', 'hubunganKeluarga.kkJemaat'])
-               ->whereNull('tanggal_sidi')
-               ->whereNotNull('tanggal_baptis')
-               ->whereIn('status_aktif', ['Bukan Anggota'])
-               ->where('tanggal_lahir', '!=', '1900-01-01')
-               ->where('tanggal_baptis', '!=', '1900-01-01')
-               ->count();
-
-        $tahun_Awal = $request->input('tahunawal', now()->year - 5);
-        $tahun_Akhir = $request->input('tahunakhir', now()->year);
+        $jJ = $jemaatService->JumlahJemaat($tahunAkhir);
         
-        $data = [];
-        $totalPerTahun = [];
-        for ($tahun = $tahun_Awal; $tahun <= $tahun_Akhir; $tahun++) {
-            $jemaat = DB::table('jemaat')
-                 ->selectRaw("
-                    CASE 
-                        WHEN TIMESTAMPDIFF(YEAR, tanggal_lahir, tanggal_terdaftar) BETWEEN 0 AND 12  THEN 'Jumlah Anggota Berusia 0-12 thn (Anak)'
-                        WHEN TIMESTAMPDIFF(YEAR, tanggal_lahir, tanggal_terdaftar) BETWEEN 13 AND 17 THEN 'Jumlah Anggota Berusia 13-17 thn (Remaja)'
-                        WHEN TIMESTAMPDIFF(YEAR, tanggal_lahir, tanggal_terdaftar) BETWEEN 18 AND 29 THEN 'Jumlah Anggota Berusia 18-29 thn (Pemuda)'
-                        WHEN TIMESTAMPDIFF(YEAR, tanggal_lahir, tanggal_terdaftar) BETWEEN 30 AND 40 THEN 'Jumlah Anggota Berusia 30-40 thn (Dewasa Muda)'
-                        WHEN TIMESTAMPDIFF(YEAR, tanggal_lahir, tanggal_terdaftar) BETWEEN 41 AND 60 THEN 'Jumlah Anggota Berusia 41-60 thn (Dewasa)'
-                        ELSE 'Jumlah Anggota Berusia 61 thn ke atas (Lansia)'
-                    END AS kategori_usia,
-                    COUNT(*) AS jumlah
-                ")
-                 //->whereNotNull('tanggal_terdaftar')
-                 //->where('tanggal_sidi', '!=', '1900-01-01')
-                 //->where('status_aktif', 'Aktif')
-                 //->whereYear('tanggal_terdaftar', $tahun)
-                 //->groupBy('kategori_usia')
-                 //->get()
-                 //->keyBy('kategori_usia');
-                 ->whereNotNull('tanggal_terdaftar')
-                 ->whereNotNull('tanggal_sidi')
-                 ->where('tanggal_sidi', '!=', '1900-01-01')
-                 ->whereIn('status_aktif', ['Aktif', 'Pasif'])
-                 ->whereDate('tanggal_terdaftar', '<=', "$tahun-12-31")
-                 ->groupBy('kategori_usia')
-                 ->get()
-                 ->keyBy('kategori_usia');
-                 // Inisialisasi 0 dulu untuk semua kategori
-            $kategoriList = ['Jumlah Anggota Berusia 0-12 thn (Anak)', 
-                 'Jumlah Anggota Berusia 13-17 thn (Remaja)', 
-                 'Jumlah Anggota Berusia 18-29 thn (Pemuda)', 
-                 'Jumlah Anggota Berusia 30-40 thn (Dewasa Muda)', 
-                 'Jumlah Anggota Berusia 41-60 thn (Dewasa)', 
-                 'Jumlah Anggota Berusia 61 thn ke atas (Lansia)'
-             ];
-            foreach ($kategoriList as $kategori) {
-                 $jumlah = $jemaat[$kategori]->jumlah ?? 0;
-                 $data[$kategori]["Data $tahun"] = $jumlah;
-                 $totalPerTahun[$tahun] = ($totalPerTahun[$tahun] ?? 0) + $jumlah;
-             }
-                 foreach ($jemaat as $item) {
-                $data[$item->kategori_usia]["Data $tahun"] = $item->jumlah;
-                $totalPerTahun[$tahun] = ($totalPerTahun[$tahun] ?? 0) + $item->jumlah;
-            }
-        }
+        $tahun = range($tahunAwal, $tahunAkhir);
 
-        $tahun = range($tahun_Awal, $tahun_Akhir);
-
-        $totalPerTahun = [];
-
-        foreach ($data as $kategori => $tahunData) {
-            foreach ($tahun as $thn) {
-                $jumlah = $tahunData["Data $thn"] ?? 0;
-                $totalPerTahun[$thn] = ($totalPerTahun[$thn] ?? 0) + $jumlah;
-            }
-        }         
-
-        return view('admin.dashboard.dashboard', compact('Jkk', 
-            'Jaktif', 
-            'Jatestasi', 
-            'baptisan', 
-            'data', 
-            'tahun', 
-            'totalPerTahun', 
-            'Jpasif', 
-            'laporan', 
+        return view('admin.dashboard.dashboard', compact('jJ',
+            'laporan',
             'tahunAwal',
-            'tahunAkhir', 
-            'tahun_Awal',
-            'tahun_Akhir', 
+            'tahunAkhir',  
             'dataG',
-            'tahunG'
+            'tahunG',
+            'lapUmur',
+            'lapUmurG',
+            'lapGender',
+            'lapStatus',
+            'totalGender',
+            'totalAll',
+            'totalTahun',
+            'tahun'
         ));
     } //
 
-    public function detail($detail)
+    public function detail($detail, JemaatService $jemaatService)
     {
+        $tahunAkhir = date('Y') . '-12-31';
+
         if($detail == 'atestasi')
         {
-            $item = Jemaat::where('status_aktif', 'Atestasi Keluar')->get();
+            $item = Jemaat::where('status_aktif', 'Atestasi Keluar')->where('tanggal_terdaftar', '<=', $tahunAkhir)->get();
             $Hjudul = "<h1>Data Jemaat Atestasi</h1><hr>";
         }
         if($detail == 'aktif')
         {
             $Hjudul = "<h1>Data Jemaat Aktif</h1><hr>";
-            $item = Jemaat::where('status_aktif', 'Aktif')->get();
+        $tahunAkhir = date('Y') . '-12-31';
+            $item = Jemaat::where('status_aktif', 'Aktif')->where('tanggal_terdaftar', '<=', $tahunAkhir)->get();
         }
         if($detail == 'kepala-keluarga')
         {
             $Hjudul = "<h1>Data Kepala Keluarga</h1><hr>";
-            $item = Jemaat::where('status_aktif', 'Aktif')->whereHas('kkJemaat')->get();
+            $item = Jemaat::where('status_aktif', 'Aktif')->whereHas('kkJemaat')->where('tanggal_terdaftar', '<=', $tahunAkhir)->get();
         }
-        
-        $Jaktif = Jemaat::where('status_aktif', 'Aktif')->count();
-        $Jatestasi = Jemaat::where('status_aktif', 'Atestasi Keluar')->count();
-        $Jkk = Jemaat::where('status_aktif', 'Aktif')->whereHas('kkJemaat')->count();
-        $baptisan = Jemaat::with(['kkJemaat', 'hubunganKeluarga.kkJemaat'])
-               ->whereNull('tanggal_sidi')
-               ->whereNotNull('tanggal_baptis')
-               ->whereIn('status_aktif', ['Bukan Anggota'])
-               ->where('tanggal_lahir', '!=', '1900-01-01')
-               ->count();
 
         $Hjudul = strtoupper($Hjudul);
 
-        return view('admin.dashboard.dashboard', compact('Jkk', 'Jaktif', 'Jatestasi', 'item', 'Hjudul', 'baptisan'));
+        $jJ = $jemaatService->JumlahJemaat($tahunAkhir);
+
+        return view('admin.dashboard.dashboard', compact('item', 'Hjudul', 'jJ'));
     }
 }

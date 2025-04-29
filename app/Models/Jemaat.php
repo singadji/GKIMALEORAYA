@@ -34,7 +34,8 @@ class Jemaat extends Model
         'tanggal_sidi', 
         'tanggal_nikah', 
         'status_aktif', 
-        'status_menikah'
+        'status_menikah',
+        'keterangan'
     ];
 
     // Hubungan langsung ke KK Jemaat (jika jemaat adalah kepala keluarga)

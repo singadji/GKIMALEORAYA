@@ -291,7 +291,7 @@ class JemaatController extends Controller
             }
 
             // Update Anggota Keluarga
-            if ($request->has('id_anggota')) {
+            if ($request->has('nia_anggota')) {
                 foreach ($request->nia_anggota as $index => $nia) {
                     $idAnggota = $request->id_anggota[$index] ?? null;
                     if ($idAnggota) {
@@ -340,8 +340,6 @@ class JemaatController extends Controller
                             $pindah->save();
                         }
                     }
-
-                    
 
                     $idJemaat = $anggota->id_jemaat;
                 

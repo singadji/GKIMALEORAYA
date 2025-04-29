@@ -40,9 +40,9 @@
                   var usiaChart = new Chart(ctx, {
                       type: 'bar',
                       data: {
-                          labels: @json($tahun), // Tahun sebagai label sumbu X
+                          labels: @json($tahun),
                           datasets: [
-                              @foreach ($data as $kategori => $values)
+                              @foreach ($lapUmurG as $kategori => $values)
                               {
                                   label: '{{ $kategori }}',
                                   data: [
