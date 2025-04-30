@@ -225,8 +225,8 @@
                                     <td>
                                         <span id="status-keanggotaan-row" class="badge {{ $badgeClass }} text-white" style="font-size:9pt">
                                             @if(in_array($kepalaKeluarga->jemaatKK->status_aktif, ['Pindah Gereja', 'Atestasi Keluar']))
-                                                {{ $kepalaKeluarga->jemaatKK->status_aktif }} ke {{ optional($kepalaKeluarga->jemaatKK->atestasiJemaat)->gereja ?? '-' }},
-                                                tanggal {{ optional($kepalaKeluarga->jemaatKK->atestasiJemaat)->tanggal ? \Carbon\Carbon::parse($kepalaKeluarga->jemaatKK->atestasiJemaat->tanggal)->translatedFormat('d F Y') : '' }}
+                                                {{ $kepalaKeluarga->jemaatKK->status_aktif }} ke {{ optional($kepalaKeluarga->jemaatKK->atestasiJemaatKeluar)->gereja ?? '-' }},
+                                                tanggal {{ optional($kepalaKeluarga->jemaatKK->atestasiJemaatKeluar)->tanggal ? \Carbon\Carbon::parse($kepalaKeluarga->jemaatKK->atestasiJemaatKeluar->tanggal)->translatedFormat('d F Y') : '' }}
                                             @else
                                                 {{ $kepalaKeluarga->jemaatKK->status_aktif ?? '-' }}
                                             @endif
