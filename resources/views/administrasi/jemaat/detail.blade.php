@@ -224,21 +224,27 @@
                                     @endphp
                                     <td>
                                         <span id="status-keanggotaan-row" class="badge {{ $badgeClass }} text-white" style="font-size:9pt">
-                                            {{ $kepalaKeluarga->jemaatKK->status_aktif ?? '-' }} - {{ $kepalaKeluarga->jemaatKK->keterangan ?? '' }}
+                                            @if(in_array($kepalaKeluarga->jemaatKK->status_aktif, ['Pindah Gereja', 'Atestasi Keluar']))
+                                                {{ $kepalaKeluarga->jemaatKK->status_aktif }} ke {{ optional($kepalaKeluarga->jemaatKK->atestasiJemaat)->gereja ?? '-' }},
+                                                tanggal {{ optional($kepalaKeluarga->jemaatKK->atestasiJemaat)->tanggal ? \Carbon\Carbon::parse($kepalaKeluarga->jemaatKK->atestasiJemaat->tanggal)->translatedFormat('d F Y') : '' }}
+                                            @else
+                                                {{ $kepalaKeluarga->jemaatKK->status_aktif ?? '-' }}
+                                            @endif
                                         </span>
                                         <div class="row" id="status-row" style="display: none;">
                                             <div class="col-md-6">
-                                                <select class="form-control form-control-sm" required  name="status_aktif_kk" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                                <select class="form-control form-control-sm  status-aktif-select" required  name="status_aktif_kk" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                                     <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Aktif') selected @endif value="Aktif">Aktif</option>
                                                     <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Pasif') selected @endif value="Pasif">Pasif</option>
                                                     <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Atestasi Keluar') selected @endif value="Atestasi Keluar">Atestasi Keluar</option>
-                                                    <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Pindah Gereja') selected @endif value="pindah Gereja">Pindah Gereja </option>
+                                                    <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Pindah Gereja') selected @endif value="Pindah Gereja">Pindah Gereja </option>
                                                     <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Meninggal Dunia') selected @endif value="Meninggal Dunia">Meninggal Dunia</option>
                                                     <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Bukan Anggota') selected @endif value="Bukan Anggota">Bukan Anggota</option>
                                                 </select>
                                             </div>
                                             <div class="col-md-6">
-                                                <input type="text" placeholder="Atestasi ke Gereja tujuan" name="keterangan_kk" value="{{ $kepalaKeluarga->jemaatKK->keterangan ?? '' }}" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                                <input type="hidden" name="tanggal_pindah_kk" id="tanggal_pindah_kk">
+                                                <input type="hidden" name="gereja_tujuan_kk" id="gereja_tujuan_kk">
                                             </div>
                                         </div>
                                     </td>
@@ -284,8 +290,6 @@
                                     <th class="text-center">Gereja Asal</th>
                                     <th class="text-center">Tanggal<br>Terdaftar</th>
                                     <th class="text-center">Status<br>Keanggotaan<span class="text-danger">*</span></th>
-                                    <th class="text-center">Keterangan</th>
-                                    <th class="text-center" hidden></th>
                                 </tr>
                             </thead>
                             <tbody>
@@ -431,14 +435,6 @@
                                                 </div>
                                             </div>
                                         </td>
-                                        <td>
-                                            <input type="text" id="ubahdata" style="width:150px;"  name="keterangan[]" value="{{ $anggota->jemaat->keterangan ?? '' }}" placeholder="" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
-                                        </td>
-                                        <!-- <td class="">
-                                        <a class="btn btn-link text-danger text-gradient px-1 mb-0" data-confirm-delete="true" href="{{ route('administrasi.data-jemaat.destroy', $anggota->jemaat->id_jemaat) }}">
-                                            <i class="far fa-trash-alt me-1"></i>
-                                        </a>
-                                        </td> -->
                                     </tr>
                                 @endforeach
                             </tbody>
@@ -453,6 +449,30 @@
             </div>
         </div>
     </div>
+
+    <div class="modal fade" id="popupStatus" tabindex="-1" aria-labelledby="popupLabel" aria-hidden="true">
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h5 class="modal-title" id="popupLabel">Detail Perpindahan</h5>
+      </div>
+      <div class="modal-body">
+        <div class="form-group">
+          <label for="tanggalPerpindahan">Tanggal</label>
+          <input type="date" class="form-control" id="tanggalPindah">
+        </div>
+        <div class="form-group">
+          <label for="gerejaTujuan">Gereja Tujuan</label>
+          <input type="text" class="form-control" id="gerejaTujuan">
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn btn-primary" id="savePopup">Lanjut</button>
+      </div>
+    </div>
+  </div>
+</div>
+
     @include('layouts.footers.auth.footer')
 </div>
 
@@ -688,6 +708,44 @@ function getIdFromUrl() {
   return lastSegment;
 }
 
+</script>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function () {
+    const selects = document.querySelectorAll('.status-aktif-select');
+
+    selects.forEach(select => {
+        select.addEventListener('change', function () {
+        const value = this.value;
+
+        if (value === 'Atestasi Keluar' || value === 'Pindah Gereja') {
+            window.activeSelect = this;
+            $('#popupStatus').modal('show');
+        }
+        });
+    });
+
+    document.getElementById('savePopup').addEventListener('click', function () {
+        const tanggal = document.getElementById('tanggalPindah').value;
+        const gereja = document.getElementById('gerejaTujuan').value;
+
+        // Cek apakah select yang aktif adalah kepala keluarga
+        if (window.activeSelect.name === 'status_aktif_kk') {
+            document.getElementById('tanggal_pindah_kk').value = tanggal;
+            document.getElementById('gereja_tujuan_kk').value = gereja;
+        } else {
+            // untuk anggota keluarga
+            const formGroup = window.activeSelect.closest('td');
+            formGroup.insertAdjacentHTML('beforeend', `
+                <input type="hidden" name="tanggal_pindah_kk" value="${tanggal}">
+                <input type="hidden" name="gereja_tujuan_kk" value="${gereja}">
+            `);
+        }
+
+        $('#popupStatus').modal('hide');
+    });
+
+    });
 </script>
 
 

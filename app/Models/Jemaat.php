@@ -54,6 +54,11 @@ class Jemaat extends Model
     {
         return $this->hasOne(Atestasi::class, 'id_jemaat', 'id_jemaat');
     }
+
+    public function atestasiJemaatKeluar()
+    {
+        return $this->hasOne(Atestasi::class, 'id_jemaat', 'id_jemaat')->where('keluar', 1);
+    }
    
     public function pindahJemaat()
     {

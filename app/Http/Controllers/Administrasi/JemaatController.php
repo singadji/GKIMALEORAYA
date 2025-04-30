@@ -257,9 +257,9 @@ class JemaatController extends Controller
                 if (!$sudahAtestasi) {
                     $ates = new Atestasi();
                     $ates->id_jemaat = $KKjemaat->id_jemaat;
-                    $ates->tanggal   = now();
+                    $ates->tanggal   = $request->tanggal_pindah_kk;
                     $ates->keluar    = 1;
-                    $ates->gereja    = $request->keterangan_kk;
+                    $ates->gereja    = $request->gereja_tujuan_kk;
                     $ates->setuju    = 1;
                     $ates->save();
                 }
@@ -271,9 +271,9 @@ class JemaatController extends Controller
                 if (!$sudahPindah) {
                     $pindah = new PindahGereja();
                     $pindah->id_jemaat = $KKjemaat->id_jemaat;
-                    $pindah->tanggal   = now();
+                    $pindah->tanggal   = $request->tanggal_pindah_kk;
                     $pindah->ke        = 1;
-                    $pindah->gereja    = $request->keterangan_kk;
+                    $pindah->gereja    = $request->gereja_tujuan_kk;
                     $pindah->setuju    = 1;
                     $pindah->save();
                 }
@@ -375,7 +375,7 @@ class JemaatController extends Controller
             if ($request->status_menikah_kk === "Belum Menikah") {
                 $KKjemaatKK = KkJemaat::where('id_jemaat', $id)->first();
                 if ($KKjemaatKK) {
-                    $KKjemaatKK->delete();
+                    //$KKjemaatKK->delete();
                 }
             }
 
