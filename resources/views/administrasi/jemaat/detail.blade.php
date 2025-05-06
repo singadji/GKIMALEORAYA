@@ -233,7 +233,7 @@
                                         </span>
                                         <div class="row" id="status-row" style="display: none;">
                                             <div class="col-md-6">
-                                                <select class="form-control form-control-sm  status-aktif-select" required  name="status_aktif_kk" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                                <select class="form-control form-control-sm status-aktif-select" required  name="status_aktif_kk" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                                     <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Aktif') selected @endif value="Aktif">Aktif</option>
                                                     <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Pasif') selected @endif value="Pasif">Pasif</option>
                                                     <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Atestasi Keluar') selected @endif value="Atestasi Keluar">Atestasi Keluar</option>
@@ -424,7 +424,7 @@
                                             </span>
                                             <div class="row status-row1" id="status-row1" style="display: none;">
                                                 <div class="col-md-12">
-                                                    <select class="form-control form-control-sm" required required name="status_aktif[]" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                                    <select class="form-control form-control-sm status-aktif-select" required required name="status_aktif[]" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                                         <option @if($anggota->jemaat->status_aktif == 'Aktif') selected @endif value="Aktif">Aktif</option>
                                                         <option @if($anggota->jemaat->status_aktif == 'Pasif') selected @endif value="Pasif">Pasif</option>
                                                         <option @if($anggota->jemaat->status_aktif == 'Atestasi Keluar') selected @endif value="Atestasi Keluar">Atestasi Keluar</option>
@@ -433,6 +433,10 @@
                                                         <option @if($anggota->jemaat->status_aktif == 'Bukan Anggota') selected @endif value="Bukan Anggota">Bukan Anggota</option>
                                                     </select>
                                                 </div>
+                                                <div class="col-md-6">
+                                                    <input type="hidden" name="tanggal_pindah_kk" id="tanggal_pindah[]">
+                                                    <input type="hidden" name="gereja_tujuan_kk" id="gereja_tujuan[]">
+                                            </div>
                                             </div>
                                         </td>
                                     </tr>
@@ -739,6 +743,18 @@ function getIdFromUrl() {
             formGroup.insertAdjacentHTML('beforeend', `
                 <input type="hidden" name="tanggal_pindah_kk" value="${tanggal}">
                 <input type="hidden" name="gereja_tujuan_kk" value="${gereja}">
+            `);
+        }
+
+        if (window.activeSelect.name === 'status_aktif[]') {
+            document.getElementById('tanggal_pindah[]').value = tanggal;
+            document.getElementById('gereja_tujuan[]').value = gereja;
+        } else {
+            // untuk anggota keluarga
+            const formGroup = window.activeSelect.closest('td');
+            formGroup.insertAdjacentHTML('beforeend', `
+                <input type="hidden" name="tanggal_pindah[]" value="${tanggal}">
+                <input type="hidden" name="gereja_tujuan[]" value="${gereja}">
             `);
         }
 

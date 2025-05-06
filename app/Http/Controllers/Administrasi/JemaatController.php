@@ -280,7 +280,7 @@ class JemaatController extends Controller
             }
 
             if ($request->status_aktif_kk === 'Meninggal Dunia') {
-                $sudahMeninggal = Meningal::where('id_jemaat', $kk->id_jemaat)->exists();
+                $sudahMeninggal = MeninggalDunia::where('id_jemaat', $kk->id_jemaat)->exists();
                 if (!$sudahMeninggal) {
                     $md = new MeninggalDunia();
                     $md->id_jemaat  = $KKjemaat->id_jemaat;

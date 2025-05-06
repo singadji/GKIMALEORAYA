@@ -61,28 +61,28 @@
                             @foreach($item as $item)
                             <tr>
                                 <td class="align-middle text-left">{{$no}}.</td>
-                                <td class="align-middle text-left">{{$item->nama_menu}} - ({{$item->id_menu}})</td>
+                                <td class="align-middle text-left">{{$item->nama_menu}} - ({{$item->id}})</td>
                                 <td class="align-middle text-center">{{$item->id_parent}}</td>
                                 <td class="align-middle text-center">{{ $item->posisi}}</td>
                                 <td class="align-middle text-left">{{ $item->link_menu }}</td>
                                 <td class="align-middle text-center">
                                     @if($item->publish == "Y")
-                                        <a href="{{ asset('web/menu/notpublish/'.$item->id_menu) }}" data-confirm-update="Data akan disembunyikan, yakin?" class="icon icon-shape icon-sm bg-gradient-success text-white shadow text-center border-radius-sm">
+                                        <a href="{{ asset('web/menu/notpublish/'.$item->id) }}" data-confirm-update="Data akan disembunyikan, yakin?" class="icon icon-shape icon-sm bg-gradient-success text-white shadow text-center border-radius-sm">
                                         <i class="fas fa-check"></i>
                                         </a>
                                         @endif
                                         
                                         @if($item->publish == "T")
-                                        <a href="{{ asset('web/menu/publish/'.$item->id_menu) }}" data-confirm-update="Data akan ditampilkan, yakin?" class="icon icon-shape icon-sm bg-gradient-danger text-white shadow text-center border-radius-sm">
+                                        <a href="{{ asset('web/menu/publish/'.$item->id) }}" data-confirm-update="Data akan ditampilkan, yakin?" class="icon icon-shape icon-sm bg-gradient-danger text-white shadow text-center border-radius-sm">
                                         <i class="fas fa-times"></i>
                                         </a>
                                     @endif
                                 </td>
                                 <td class="align-middle text-center">
-                                    <a class="btn btn-link text-dark px-1 mb-0" href="{{route('web.menu.edit', $item->id_menu)}}">
+                                    <a class="btn btn-link text-dark px-1 mb-0" href="{{route('web.menu.edit', $item->id)}}">
                                         <i class="fas fa-pencil-alt text-dark me-1" aria-hidden="true"></i>
                                     </a>
-                                    <a class="btn btn-link text-danger text-gradient px-1 mb-0" data-confirm-delete="true" href="{{route('web.menu.destroy', $item->id_menu)}}">
+                                    <a class="btn btn-link text-danger text-gradient px-1 mb-0" data-confirm-delete="true" href="{{route('web.menu.destroy', $item->id)}}">
                                         <i class="far fa-trash-alt me-1"></i>
                                     </a>
                                 </td>

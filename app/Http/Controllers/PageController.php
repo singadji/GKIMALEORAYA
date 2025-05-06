@@ -28,11 +28,14 @@ class PageController extends Controller
 
     public function detail($slug)
     {
-        $page = menu::where('link_menu',$slug)->first();
+        $page = Menu::where('slug',$slug)->first();
+
+        $menu = Menu::where('id', $page->id_parent)->first();
+        $nama_menu = 'nama_menu';
+
 
         if($page){
-            return view('menu.menu')
-                ->with('page', $page);
+            return view('menu.menu', compact('page', 'menu', 'nama_menu'));
         }else{
             return abort(404);
         }

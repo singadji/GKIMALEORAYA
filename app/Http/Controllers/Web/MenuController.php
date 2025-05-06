@@ -164,7 +164,7 @@ class MenuController extends Controller
 
     public function edit($menu)
     {
-        $item =  Menu::where('id_menu', $menu)->firstOrFail();
+        $item =  Menu::where('id', $menu)->firstOrFail();
         
         $btn    = '<a href="' .route('web.menu.index') . '" class="btn btn-secondary bg-gradient-secondary btn-sm mt-3 ms-auto">Kembali</a>';
         $page   = 'Content Management';
@@ -172,7 +172,7 @@ class MenuController extends Controller
         $subjudul = 'Update Menu';
         $tombol = $btn; 
 
-        $aksi = '' .route('web.menu.update', $item->id_menu).'';
+        $aksi = '' .route('web.menu.update', $item->id).'';
 
         $parent = Menu::where('link_menu', '#')
             ->orderby('posisi', 'ASC')
@@ -195,7 +195,7 @@ class MenuController extends Controller
      */
     public function update(Request $request, $id)
     {
-        $menu = Menu::where('id_menu', $id)->firstOrFail();
+        $menu = Menu::where('id', $id)->firstOrFail();
 
         if($request->aktif != ''){
             $aktif = 'Y';
@@ -295,7 +295,7 @@ class MenuController extends Controller
     public function destroy($id)
     {
         try {
-            $menu = menu::where('id_menu', $id)->firstOrFail();
+            $menu = menu::where('id', $id)->firstOrFail();
             $menu->delete();
 
             if($menu->gambar != ""){
@@ -318,7 +318,7 @@ class MenuController extends Controller
 
     public function publish($id)
     {
-        DB::table('menus')->where('id_menu', $id)->update([
+        DB::table('menus')->where('id', $id)->update([
             'publish'  => 'Y'
         ]);
 
@@ -328,7 +328,7 @@ class MenuController extends Controller
     
     public function notpublish($id)
     {
-        DB::table('menus')->where('id_menu', $id)->update([
+        DB::table('menus')->where('id', $id)->update([
             'publish'  => 'T'
         ]);
 
