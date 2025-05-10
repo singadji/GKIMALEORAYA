@@ -51,7 +51,7 @@
           <div class="card-header border-0">
             <div class="row align-items-center">
               <div class="col">
-                <h3 class="mb-0">Data Jemaat</h3>
+                <h3 class="mb-0">Akumulasi Data Jemaat</h3>
                 <div class="mb-0"><br>
                 <form method="get" class="row g-3 mb-4" action="">
                     <div class="col-auto">

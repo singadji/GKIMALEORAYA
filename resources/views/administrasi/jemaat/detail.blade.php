@@ -169,8 +169,7 @@
                                                     
                                                     <option @if($kepalaKeluarga->jemaatKK->status_menikah == 'Belum Menikah') selected @endif value="Belum Menikah">Belum Menikah </option>
                                                     <option @if($kepalaKeluarga->jemaatKK->status_menikah == 'Menikah') selected @endif value="Menikah">Menikah</option>
-                                                    <option @if($kepalaKeluarga->jemaatKK->status_menikah == 'Duda') selected @endif value="Duda">Duda</option>
-                                                    <option @if($kepalaKeluarga->jemaatKK->status_menikah == 'Janda') selected @endif value="Janda">Janda</option>
+                                                    <option @if($kepalaKeluarga->jemaatKK->status_menikah == 'Lainnya') selected @endif value="Lainnya">Lainnya</option>
                                                 </select>
                                             </div>
                                             <div class="col-md-6">
@@ -396,8 +395,7 @@
                                             <select class="form-control form-control-sm" required name="status_menikah[]" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                                 <option @if($anggota->jemaat->status_menikah == 'Menikah') selected @endif value="Menikah">Menikah</option>
                                                 <option @if($anggota->jemaat->status_menikah == 'Belum Menikah') selected @endif value="Belum Menikah">Belum Menikah</option>
-                                                <option @if($anggota->jemaat->status_menikah == 'Duda') selected @endif value="Duda">Duda</option>
-                                                <option @if($anggota->jemaat->status_menikah == 'Janda') selected @endif value="Janda">Jandaa</option>
+                                                <option @if($anggota->jemaat->status_menikah == 'Lainnya') selected @endif value="Lainnya">Lainnya</option>
                                             </select>    
                                         </td>
                                         <td class="text-center">
@@ -513,8 +511,7 @@
                 <select class="form-control form-control-sm" required name="status_menikah[]">
                     <option value="Menikah">Menikah</option>
                     <option value="Belum Menikah">Belum Menikah</option>
-                    <option value="Duda">Duda</option>
-                    <option value="Janda">Janda</option>
+                    <option value="Lainnya">Lainnya</option>
                 </select>
             </td>
             <td><input type="text" required class="form-control form-control-sm" name="asal_gereja[]" placeholder="Gereja Asal"></td>

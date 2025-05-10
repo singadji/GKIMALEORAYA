@@ -2,7 +2,7 @@
 
 @section('content')
     <main class="main-content main-content-bg mt-0">
-        <div class="page-header min-vh-100" style="background-color:#009EFF;">
+        <div class="page-header min-vh-100" style="background-image: ./images/backg.png'); background-color:#009EFF;">
             <span class="mask bg-gradient-dark opacity-6"></span>
             <div class="container">
                 <div class="row mt-lg-n10 mt-md-n11 mt-n10 justify-content-center">

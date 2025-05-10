@@ -126,8 +126,7 @@
                                                 <select class="form-control-sm" required data-toggle="select" name="status_menikah_kk">
                                                     <option value="Belum Menikah">Belum Menikah </option>
                                                     <option value="Menikah">Menikah</option>
-                                                    <option value="Duda">Duda</option>
-                                                    <option value="Janda">Janda</option>
+                                                    <option value="Lainnya">Lainnya</option>
                                                 </select>
                                             </div>
                                             <div class="col-md-6">

@@ -243,17 +243,7 @@ let table = $('#dataTable').DataTable({
             },
             className: 'd-none buttons-excel',
         },
-        {
-                extend: 'print',
-                title: '',
-                className: 'd-none buttons-print',
-                customize: function (win) {
-                    let judul = $('#judulLaporanInput').val() || 'Laporan Tanpa Judul';
-                    $(win.document.body).prepend(
-                        '<h2 style="text-align:center; margin-top:20px;">' + judul + '</h2>'
-                    );
-                }
-        },
+        
         {
             extend: 'copy',
             text: '<i class="fas fa-copy"></i> Copy',
@@ -265,21 +255,10 @@ let table = $('#dataTable').DataTable({
             className: 'btn btn-success btn-sm',
             action: function () {
                 $('#judulLaporanInput').val('');
-                $('#btnConfirmCetak').hide();
                 $('#btnConfirmExcel').show();
                 $('#laporanModal').modal('show');
             }
         },
-        {
-            text: '<i class="fas fa-print"></i> Cetak',
-            className: 'btn btn-primary btn-sm',
-            action: function () {
-                $('#judulLaporanInput').val('');
-                $('#btnConfirmExcel').hide();
-                $('#btnConfirmCetak').show();
-                $('#laporanModal').modal('show');
-            }
-        }
     ],
     lengthMenu: [[10, 50, 100, -1], [10, 50, 100, "Semua"]],
     pageLength: 10,
@@ -301,11 +280,6 @@ let table = $('#dataTable').DataTable({
 $('#btnConfirmExcel').on('click', function () {
     $('#laporanModal').modal('hide');
     table.button('.buttons-excel').trigger();
-});
-
-$('#btnConfirmCetak').on('click', function () {
-    $('#laporanModal').modal('hide');
-    table.button('.buttons-print').trigger();
 });
 
 </script>
@@ -331,7 +305,6 @@ $(document).ready(function () {
                 className: 'btn btn-success btn-sm',
                 action: function () {
                     $('#judulLaporanInput').val('');
-                    $('#btnConfirmCetak').hide();
                     $('#btnConfirmExcel').show();
                     $('#laporanModal').modal('show');
                 }
