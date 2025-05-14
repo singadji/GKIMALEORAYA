@@ -10,28 +10,35 @@ use PhpOffice\PhpSpreadsheet\Shared\Date;
 class JemaatImport
 {
     public function import($file)
-    {
-        $path = $file->getRealPath();
-        $data = Excel::toArray([], $path, null, \Maatwebsite\Excel\Excel::XLSX);
+{
+    $path = $file->getRealPath();
+    $data = \Maatwebsite\Excel\Facades\Excel::toArray([], $path, null, \Maatwebsite\Excel\Excel::XLSX);
 
-        $rows = $data[0];
+    $rows = $data[0];
 
-        $requiredHeaders = [
-            'NIA', 'NAMA JEMAAT', 'GENDER', 'TELEPON', 'ALAMAT', 'ASAL GEREJA', 'TANGGAL TERDAFTAR',
-            'WILAYAH', 'TEMPAT LAHIR', 'TANGGAL LAHIR', 'TANGGAL BAPTIS', 'TANGGAL SIDI',
-            'STATUS PERNIKAHAN', 'TANGGAL PERNIKAHAN', 'STATUS ANGGOTA', 'KETERANGAN',
-            'KEPALA KELUARGA', 'HUBUNGAN KELUARGA'
-        ];
+    $requiredHeaders = [
+        'NIA', 'NAMA JEMAAT', 'GENDER', 'TELEPON', 'ALAMAT', 'ASAL GEREJA', 'TANGGAL TERDAFTAR',
+        'WILAYAH', 'TEMPAT LAHIR', 'TANGGAL LAHIR', 'TANGGAL BAPTIS', 'TANGGAL SIDI',
+        'STATUS PERNIKAHAN', 'TANGGAL PERNIKAHAN', 'STATUS ANGGOTA', 'KETERANGAN',
+        'KEPALA KELUARGA', 'HUBUNGAN KELUARGA'
+    ];
 
-        $headers = array_slice($rows[0], 0, count($requiredHeaders));
+    $headers = array_slice($rows[0], 0, count($requiredHeaders));
 
-        if (array_diff($requiredHeaders, $headers)) {
-            throw new \Exception('Format file tidak valid.');
-        }
+    if (array_diff($requiredHeaders, $headers)) {
+        throw new \Exception('Format file tidak valid.');
+    }
 
+    // Hilangkan header dari array
+    $dataRows = array_slice($rows, 1);
+
+    // Proses per 100 baris
+    $chunks = array_chunk($dataRows, 100);
+
+    foreach ($chunks as $chunkIndex => $chunkRows) {
         DB::beginTransaction();
         try {
-            foreach (array_slice($rows, 1) as $row) {
+            foreach ($chunkRows as $rowIndex => $row) {
                 $nia = trim((string) $row[0]);
                 if (empty($nia)) continue;
 
@@ -42,12 +49,14 @@ class JemaatImport
             }
 
             DB::commit();
-            return 'Data jemaat berhasil diunggah.';
         } catch (\Exception $e) {
             DB::rollBack();
-            throw $e;
+            throw new \Exception("Gagal pada baris ke-" . ($chunkIndex + 1) . ": " . $e->getMessage());
         }
     }
+
+    return 'Data jemaat berhasil diunggah.';
+}
 
     private function saveOrUpdateJemaat($nia, $row)
     {
@@ -95,6 +104,7 @@ class JemaatImport
                     'tanggal'   => $tanggalTerdaftar,
                     'masuk'     => 1,
                     'setuju'    => 1,
+                    'gereja'    => $row[5],
                     'created_at'=> now(),
                     'updated_at'=> now(),
                 ]);
@@ -105,10 +115,35 @@ class JemaatImport
                     'tanggal'   => $tanggalTerdaftar,
                     'dari'      => 1,
                     'setuju'    => 1,
+                    'gereja'    => $row[5],
                     'created_at'=> now(),
                     'updated_at'=> now(),
                 ]);
             }
+        }
+
+        if(trim($row[14]) === 'Atestasi Keluar')
+        {
+            DB::table('atestasi')->Insert(
+                ['id_jemaat' => $idJemaat,
+                    'tanggal'   => now(),
+                    'keluar'    => 1,
+                    'setuju'    => 1,
+                    'created_at'=> now(),
+                    'updated_at'=> now(),
+                ]);
+        }
+
+        if(trim($row[14]) === 'Tidak Aktif' && trim($row[15]) === 'Meninggal Dunia')
+        {
+            DB::table('meninggal_dunia')->updateOrInsert(
+                ['id_jemaat' => $idJemaat],
+                [
+                    'tanggal'   => now(),
+                    'alamat'    => '',
+                    'created_at'=> now(),
+                    'updated_at'=> now(),
+                ]);
         }
     }
 
@@ -119,7 +154,7 @@ class JemaatImport
         $idGroupWilayah = $this->getIdGroupWilayah($wilayah);
         $kepalaKeluargaCol = strtolower(trim($row[17]));
 
-        if ($kepalaKeluargaCol === 'kk') {
+        if($kepalaKeluargaCol === 'kk') {
             // Jemaat ini adalah kepala keluarga
             DB::table('kk_jemaat')->updateOrInsert(
                 ['id_jemaat' => $idJemaat],
@@ -153,29 +188,43 @@ class JemaatImport
             $hubungan = isset($row[17]) && !empty(trim($row[17])) ? trim($row[17]) : 'Tidak Diketahui';
 
             // Insert tanpa overwrite agar bisa multi-relasi
-            $existing = DB::table('hubungan_keluarga')
-                ->where('id_jemaat', $idJemaat)
-                ->where('id_kk_jemaat', $idKk)
-                ->exists();
+            //if($kepalaKeluargaCol != 'KK')
+            //{
+                $existing = DB::table('hubungan_keluarga')
+                    ->where('id_jemaat', $idJemaat)
+                    ->where('id_kk_jemaat', $idKk)
+                    ->exists();
 
-            if (!$existing) {
-                DB::table('hubungan_keluarga')->insert([
-                    'id_jemaat'         => $idJemaat,
-                    'id_kk_jemaat'      => $idKk,
-                    'hubungan_keluarga' => $hubungan,
-                    'created_at'        => now(),
-                    'updated_at'        => now(),
-                ]);
-            }
+                if (!$existing) {
+                    DB::table('hubungan_keluarga')->insert([
+                        'id_jemaat'         => $idJemaat,
+                        'id_kk_jemaat'      => $idKk,
+                        'hubungan_keluarga' => $hubungan,
+                        'created_at'        => now(),
+                        'updated_at'        => now(),
+                    ]);
+                }
+            //}
         }
     }
 
-    private function convertExcelDate($excelDate)
+   private function convertExcelDate($excelDate)
     {
         if (is_numeric($excelDate)) {
-            return Date::excelToDateTimeObject($excelDate)->format('Y-m-d');
+            return \PhpOffice\PhpSpreadsheet\Shared\Date::excelToDateTimeObject($excelDate)->format('Y-m-d');
         }
-        return $excelDate ?: null;
+
+        // Jika kosong atau string kosong, kembalikan tanggal default
+        if (empty($excelDate)) {
+            return '1900-01-01';
+        }
+
+        try {
+            // Coba parse string tanggal biasa
+            return \Carbon\Carbon::parse($excelDate)->format('Y-m-d');
+        } catch (\Exception $e) {
+            return '1900-01-01'; // fallback jika parsing gagal
+        }
     }
 
     private function getIdGroupWilayah($wilayah)

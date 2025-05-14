@@ -20,7 +20,7 @@ class JemaatService
             'atestasiJemaat.jemaatAtestasi',
             'pindahJemaat',
             'pindahJemaat.jemaatPindah'
-        ])->get();
+        ])->orderby('nia')->get();
     }
 
     public function getJemaatDetail($id)

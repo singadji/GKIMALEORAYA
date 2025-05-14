@@ -39,6 +39,10 @@ class DashboardController extends Controller
             $tahunAkhir,
         ]);
 
+        if (empty($lapUmur)) {
+            return back()->with('message', 'Data belum ada untuk tahun yang dipilih.');
+        }
+
         $lapGender = DB::select('SELECT * FROM temp_rekap_gender ORDER BY kategori, tahun');
         $lapStatus = DB::select('SELECT * FROM temp_rekap_status ORDER BY kategori, tahun');
 
