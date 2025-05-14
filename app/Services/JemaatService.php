@@ -19,7 +19,8 @@ class JemaatService
             'atestasiJemaat',
             'atestasiJemaat.jemaatAtestasi',
             'pindahJemaat',
-            'pindahJemaat.jemaatPindah'
+            'pindahJemaat.jemaatPindah',
+            'meninggalJemaat.jemaatMeninggaal'
         ])->orderby('nia')->get();
     }
 

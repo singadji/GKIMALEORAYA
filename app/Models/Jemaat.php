@@ -70,6 +70,11 @@ class Jemaat extends Model
         return $this->hasOne(PindahGereja::class, 'id_jemaat', 'id_jemaat')->where('ke', 1  );
     }
 
+    public function meninggalJemaat()
+    {
+        return $this->hasOne(MeninggalDunia::class, 'id_jemaat', 'id_jemaat');
+    }
+
     protected static function boot()
     {
         parent::boot();
