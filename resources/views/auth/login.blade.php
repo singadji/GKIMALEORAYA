@@ -2,10 +2,10 @@
 
 @section('content')
     <main class="main-content main-content-bg mt-0">
-        <div class="page-header min-vh-100" style="background-image: ./images/backg.png'); background-color:#009EFF;">
-            <span class="mask bg-gradient-dark opacity-6"></span>
-            <div class="container">
-                <div class="row mt-lg-n10 mt-md-n11 mt-n10 justify-content-center">
+        <div class="page-header min-vh-100 d-flex align-items-center justify-content-center"  style="background-image: url('./images/backg.png'); background-color:#009EFF; background-repeat: no-repeat; background-size: cover; background-position: center;">
+            <span class="mask bg-gradient-dark opacity-6 position-absolute w-100 h-100"></span>
+            <div class="container position-relative z-index-1">
+                <div class="row justify-content-center">
                     <div class="col-xl-5 col-lg-7 col-md-7 mx-auto">
                         <div class="card mt-5">
                             <div class="card-header pb-0 text-start">
