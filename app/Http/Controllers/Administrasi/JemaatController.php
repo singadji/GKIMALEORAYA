@@ -191,7 +191,7 @@ class JemaatController extends Controller
     /**
      * Display the specified resource.
      */
-    public function show(int $id, JemaatService $service)
+    public function show($id, JemaatService $service)
     {
         $btn    = '<a href="' . route('administrasi.data-jemaat.index') . '" class="btn btn-secondary bg-gradient-secondary btn-sm mt-3 ms-auto">Kembali</a>';
         
@@ -498,10 +498,9 @@ class JemaatController extends Controller
     public function simpan(Request $request)
     {
         $kk = KkJemaat::where('id_jemaat', $request->id_kk_jemaat)->firstOrFail();
-        $kkW = KkJemaat::where('id_jemaat', $request->id_jemaat)->firstOrFail();
+        $kkW = KkJemaat::where('id_jemaat', $request->id_jemaat)->first();
 
-        if($kkW){
-            $kkW = KkJemaat::where('id_jemaat', $request->id_jemaat)->firstOrFail();
+        if ($kkW) {
             $kkW->delete();
         }
 
@@ -512,14 +511,15 @@ class JemaatController extends Controller
         if ($cek) {
             return response()->json(['message' => 'Data sudah ada'], 409);
         }
-        
+
         $anggota = new HubunganKeluarga();
         $anggota->id_kk_jemaat = $kk->id_kk_jemaat;
         $anggota->id_jemaat = $request->id_jemaat;
         $anggota->hubungan_keluarga = 'Tidak Diketahui';
         $anggota->save();
 
-        return redirect()->back()->with('success', 'Anggota keluarga berhasil ditambah.');
+        return response()->json(['message' => 'Anggota keluarga berhasil ditambahkan.'], 200);
     }
+
    
 }

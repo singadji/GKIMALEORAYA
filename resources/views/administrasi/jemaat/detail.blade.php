@@ -662,7 +662,7 @@
   }
 
   $.ajax({
-    url: './simpan-jemaat',
+    url: '{{ route("administrasi.data-jemaat.simpan") }}',
     type: 'POST',
     data: {
         id_jemaat: id_jemaat,

@@ -95,12 +95,10 @@ Route::middleware(['auth', 'active', 'verify.otp'])->group(function () {
             Route::get('data-jemaat/cetak/{par1}', [JemaatController::class, 'cetakJemaat'])->name('data-jemaat.cetak');
             Route::get('anggota-baptisan', [BaptisanController::class, 'index'])->name('anggota-baptisan');
             Route::get('data-jemaat/search-jemaat', [JemaatController::class, 'search']);
-            Route::post('data-jemaat/simpan-jemaat', [JemaatController::class, 'simpan']);
+            Route::post('data-jemaat/simpan-jemaat', [JemaatController::class, 'simpan'])->name('data-jemaat.simpan');
             Route::resource('data-jemaat', JemaatController::class);
             Route::get('atestasi-keluar/cetak/{par1}', [JemaatController::class, 'cetak'])->name('atestasi-keluar.cetak');
             Route::resource('atestasi-keluar', AtestasiKeluarController::class);
-
-
         });
 
         Route::prefix('master')->name('master.')->middleware(['role:Administrator'])->group(function () {
