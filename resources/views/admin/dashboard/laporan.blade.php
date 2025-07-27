@@ -69,7 +69,6 @@
                     <canvas id="grafikKeanggotaan"></canvas>
                 </div>
                 @php
-                    // Warna untuk setiap kategori
                     $warnaKategori = [
                         'Anggota Baptis' => 'rgba(52, 152, 219, 0.8)',    // Biru cerah
                         'Anggota Sidi' => 'rgba(41, 128, 185, 0.8)',      // Biru medium
@@ -80,7 +79,6 @@
                         'Jumlah Anggota yang Meninggal' => 'rgba(231, 76, 60, 0.8)', // Merah
                     ];
 
-                    // Mengolah kategori menjadi nama pendek untuk referensi warna
                     $namaKategoriPendek = [
                         'Anggota Baptis' => 'Anggota Baptis',
                         'Anggota Sidi' => 'Anggota Sidi',

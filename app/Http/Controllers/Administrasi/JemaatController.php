@@ -23,7 +23,9 @@ use App\Models\MeninggalDunia;
 use App\Services\JemaatService;
 use App\ViewModels\JemaatViewModel;
 use App\ViewModels\JemaatDetailViewModel;
-
+use App\Services\JemaatStatusService;
+use App\Services\KepalaKeluargaService;
+use App\Services\AnggotaKeluargaService;
 
 use Carbon\Carbon;
 use App\Halpers\DateHelper;
@@ -224,193 +226,52 @@ class JemaatController extends Controller
         //
     }
 
-    public function update(Request $request, $id)
+   public function update(Request $request, $id)
     {
         DB::beginTransaction();
-
         $statusMessages = [];
+        $idKepalaKeluargaBaru = null;
 
         try {
-            $kk = KkJemaat::where('id_kk_jemaat', $request->id_kk)->firstOrFail();
+            $statusService = new JemaatStatusService();
+            $kkService = new KepalaKeluargaService();
+            $anggotaService = new AnggotaKeluargaService();
 
-            // Simpan data kepala keluarga
-            $KKjemaat = Jemaat::where('id_jemaat', $kk->id_jemaat)->firstOrFail();
-            $KKjemaat->nama_jemaat       = $request->kepala_keluarga;
-            $KKjemaat->gender            = $request->p_l_kk;
-            $KKjemaat->telepon           = $request->telepon_kk;
-            $KKjemaat->tempat_lahir      = $request->tempat_lahir_kk;
-            $KKjemaat->tanggal_lahir     = parseTanggalIndo($request->tanggal_lahir_kk);
-            $KKjemaat->tanggal_baptis    = parseTanggalIndo($request->tanggal_baptis_kk);
-            $KKjemaat->tanggal_sidi      = parseTanggalIndo($request->tanggal_sidi_kk);
-            $KKjemaat->tanggal_nikah     = parseTanggalIndo($request->tanggal_nikah_kk);
-            $KKjemaat->status_menikah    = $request->status_menikah_kk;
-            $KKjemaat->asal_gereja       = $request->asal_gereja_kk;
-            $KKjemaat->tanggal_terdaftar = parseTanggalIndo($request->tanggal_terdaftar_kk);
-            $KKjemaat->status_aktif      = $request->status_aktif_kk;
-            $KKjemaat->keterangan        = $request->keterangan_kk;
-            
-            $KKjemaat->save();
+            $KKjemaat = $kkService->update($request);
 
-            //atastasi keluar
-            if ($request->status_aktif_kk === 'Atestasi Keluar') {
-                $sudahAtestasi = Atestasi::where('id_jemaat', $kk->id_jemaat)->where('keluar', 1)->exists();
-                if (!$sudahAtestasi) {
-                    $ates = new Atestasi();
-                    $ates->id_jemaat = $KKjemaat->id_jemaat;
-                    $ates->tanggal   = $request->tanggal_pindah_kk;
-                    $ates->keluar    = 1;
-                    $ates->gereja    = $request->gereja_tujuan_kk;
-                    $ates->setuju    = 1;
-                    $ates->save();
-                }
-            }
+            // Proses status aktif KK
+            $status = $request->status_aktif_kk;
+            $tanggal = in_array($status, ['Atestasi Keluar', 'Pindah Gereja', 'Meninggal Dunia']) ? $request->tanggal_pindah_kk : null;
+            $gereja = in_array($status, ['Atestasi Keluar', 'Pindah Gereja']) ? $request->gereja_tujuan_kk : null;
 
-            //pindah gereja
-            if ($request->status_aktif_kk === 'Pindah Gereja') {
-                $sudahPindah = PindahGereja::where('id_jemaat', $kk->id_jemaat)->where('ke', 1)->exists();
-                if (!$sudahPindah) {
-                    $pindah = new PindahGereja();
-                    $pindah->id_jemaat = $KKjemaat->id_jemaat;
-                    $pindah->tanggal   = $request->tanggal_pindah_kk;
-                    $pindah->ke        = 1;
-                    $pindah->gereja    = $request->gereja_tujuan_kk;
-                    $pindah->setuju    = 1;
-                    $pindah->save();
-                }
-            }
+            $statusService->handle($KKjemaat, $status, $tanggal, $gereja);
 
-            if ($request->status_aktif_kk === 'Meninggal Dunia') {
-                $sudahMeninggal = MeninggalDunia::where('id_jemaat', $kk->id_jemaat)->exists();
-                if (!$sudahMeninggal) {
-                    $md = new MeninggalDunia();
-                    $md->id_jemaat  = $KKjemaat->id_jemaat;
-                    $md->tanggal    = now();
-                    $md->alamat     = '-';
-                    $md->save();
-                }
-            }
+            // Anggota
+            $messages = $anggotaService->updateAll(
+                $request,
+                $request->id_kk,
+                $request->group_wilayah_kk,
+                $statusService
+            );
 
-            // Update Anggota Keluarga
-            if (is_array($request->nia_anggota)) {
-                foreach ($request->nia_anggota as $index => $nia) {
-                    // Skip jika data penting tidak ada
-                    if (
-                        !isset($request->nama_jemaat[$index]) ||
-                        !isset($request->status_aktif[$index]) ||
-                        !isset($request->status_menikah[$index]) ||
-                        !isset($request->p_l[$index])
-                    ) {
-                        continue;
-                    }
-            
-                    $idAnggota = $request->id_anggota[$index] ?? null;
-                    $anggota = $idAnggota ? Jemaat::find($idAnggota) : new Jemaat();
-            
-                    $anggota->nia               = $nia;
-                    $anggota->nama_jemaat       = $request->nama_jemaat[$index];
-                    $anggota->gender            = $request->p_l[$index];
-                    $anggota->tempat_lahir      = $request->tempat_lahir[$index] ?? null;
-                    $anggota->tanggal_lahir     = parseTanggalIndo($request->tanggal_lahir[$index] ?? null);
-                    $anggota->tanggal_baptis    = parseTanggalIndo($request->tanggal_baptis[$index] ?? null);
-                    $anggota->tanggal_sidi      = parseTanggalIndo($request->tanggal_sidi[$index] ?? null);
-                    $anggota->asal_gereja       = $request->asal_gereja[$index] ?? null;
-                    $anggota->tanggal_terdaftar = parseTanggalIndo($request->tanggal_terdaftar[$index] ?? null);
-                    $anggota->status_aktif      = $request->status_aktif[$index];
-                    $anggota->status_menikah    = $request->status_menikah[$index];
-                    $anggota->keterangan        = $request->keterangan[$index] ?? null;
-            
-                    $anggota->save();
-            
-                    // Atestasi Keluar
-                    if ($anggota->status_aktif === 'Atestasi Keluar') {
-                        $sudahAtestasi = Atestasi::where('id_jemaat', $anggota->id_jemaat)->where('keluar', 1)->exists();
-                        if (!$sudahAtestasi) {
-                            Atestasi::create([
-                                'id_jemaat' => $anggota->id_jemaat,
-                                'tanggal'   => now(),
-                                'keluar'    => 1,
-                                'gereja'    => $request->keterangan[$index] ?? '-',
-                                'setuju'    => 1
-                            ]);
-                        }
-                    }
-            
-                    // Pindah Gereja
-                    if ($anggota->status_aktif === 'Pindah Gereja') {
-                        $sudahPindah = PindahGereja::where('id_jemaat', $anggota->id_jemaat)->where('ke', 1)->exists();
-                        if (!$sudahPindah) {
-                            PindahGereja::create([
-                                'id_jemaat' => $anggota->id_jemaat,
-                                'tanggal'   => now(),
-                                'ke'        => 1,
-                                'gereja'    => $request->keterangan[$index] ?? '-',
-                                'setuju'    => 1
-                            ]);
-                        }
-                    }
-            
-                    // Update hubungan keluarga
-                    HubunganKeluarga::updateOrCreate(
-                        ['id_jemaat' => $anggota->id_jemaat],
-                        [
-                            'id_kk_jemaat'       => $request->id_kk,
-                            'hubungan_keluarga' => $request->hubungan_keluarga[$index] ?? '-'
-                        ]
-                    );
-            
-                    // Buat KK baru jika pria menikah
-                    if (
-                        $request->status_menikah[$index] === "Menikah" &&
-                        !preg_match('/[WKA]/i', $nia) &&
-                        $request->p_l[$index] === "L"
-                    ) {
-                        $kkBaru = KkJemaat::updateOrCreate(
-                            ['id_jemaat' => $anggota->id_jemaat],
-                            [
-                                'id_group_wilayah' => $request->group_wilayah_kk,
-                                'alamat'           => '-'
-                            ]
-                        );
-            
-                        if ($kkBaru->wasRecentlyCreated) {
-                            $statusMessages[] = "NIA $nia: Status menikah, data kepala keluarga baru ditambahkan.";
-                            $idKepalaKeluargaBaru = $anggota->id_jemaat;
-                        }
-                    }
-                }
-            }
-            
-            
-            $kk->alamat = $request->alamat_kk;
-            $kk->id_group_wilayah = $request->group_wilayah_kk;
-            $kk->save();
+            $statusMessages = array_merge($statusMessages, $messages);
 
-            if ($request->status_menikah_kk === "Belum Menikah") {
-                $KKjemaatKK = KkJemaat::where('id_jemaat', $id)->first();
-               // if ($KKjemaatKK) {
-                    //$KKjemaatKK->delete();
-              //  }
-            }
+            DB::commit();
 
-            DB::commit(); 
-            $successMessage = 'Data berhasil diupdate!';
+            $successMessage = 'Data berhasil diperbarui!';
             if (!empty($statusMessages)) {
                 $successMessage .= '<br>' . implode('<br>', $statusMessages);
             }
 
-            if (isset($idKepalaKeluargaBaru)) {
-                return redirect('./administrasi/data-jemaat/' . $idKepalaKeluargaBaru)->with('success', $successMessage);
-            } else {
-                return redirect()->back()->with('success', $successMessage);
-            }
-            
+            return redirect($idKepalaKeluargaBaru ?? './administrasi/data-jemaat/' . $id)
+                ->with('success', $successMessage);
+
         } catch (\Exception $e) {
             DB::rollBack();
-            
-            // Tampilkan error ke dalam session flash message
             return redirect()->back()->with('error', 'Terjadi kesalahan: ' . $e->getMessage());
         }
     }
+
 
     public function destroy($id)
     {

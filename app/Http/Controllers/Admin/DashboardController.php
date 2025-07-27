@@ -128,7 +128,11 @@ class DashboardController extends Controller
 
         if($detail == 'atestasi')
         {
-            $item = Jemaat::where('status_aktif', 'Atestasi Keluar')->where('tanggal_terdaftar', '<=', $tahunAkhir)->get();
+            $item = Jemaat::where('status_aktif', 'Atestasi Keluar')
+                ->where('tanggal_terdaftar', '<=', $tahunAkhir)
+                ->whereHas('atestasiJemaatKeluar')
+                ->with('atestasiJemaatKeluar')
+                ->get();
             $Hjudul = "<h1>Data Jemaat Atestasi</h1><hr>";
         }
         if($detail == 'aktif')
@@ -152,6 +156,6 @@ class DashboardController extends Controller
 
         $jJ = $jemaatService->JumlahJemaat($tahunAkhir);
 
-        return view('admin.dashboard.dashboard', compact('item', 'Hjudul', 'jJ'));
+        return view('admin.dashboard.dashboard', compact('item', 'Hjudul', 'jJ', 'detail'));
     }
 }
