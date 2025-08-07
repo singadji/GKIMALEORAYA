@@ -26,6 +26,11 @@ class MeninggalDunia extends Model
         return $this->belongsTo(Jemaat::class, 'id_jemaat', 'id_jemaat');
     }
 
+    public function jemaat()
+    {
+        return $this->belongsTo(Jemaat::class, 'id_jemaat', 'id_jemaat');
+    }
+
     protected static function boot()
     {
         parent::boot();

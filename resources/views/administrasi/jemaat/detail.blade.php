@@ -40,24 +40,28 @@
                         id="edt" name="edit" value="Ubah Data"><i class="fas fa-pencil-alt"></i> Ubah Data</a>
                     </span>
                     &nbsp;<span>
-                    <a href="{{ route('administrasi.data-jemaat.cetak', $id) }}" class="btn btn-danger btn-sm">
+                    <a href="{{ route('administrasi.data-jemaat.cetak', $id) }}" class="btn btn-primary btn-sm">
                         <i class="fas fa-file-pdf"></i> Export PDF
                     </a>
                     </span>
+                    &nbsp;<span>
+                        <form id="delete-form" action="{{ route('administrasi.data-kk.destroy', $id_kk) }}" method="POST" style="display: inline;">
+                            @csrf
+                            @method('DELETE')
+                            <button type="button" class="btn btn-danger btn-sm" onclick="confirmDelete()">
+                                <i class="far fa-trash-alt me-1"></i> Hapus Data
+                            </button>
+                        </form>
+                    </span>
                 </div>
-
-                    
                 @endif
             </div>
-
             <br>
-
             <div>
                 <div id="alert">
                     @include('includes.alert')
                 </div>
             </div>
-
             <div class="card-body px-0 pt-0 pb-2">
                 <div class="table-responsive p-4" style="overflow-x:auto; overflow-y:auto;" id="DW">
                     <form role="form" method="POST" action="{{ $aksi }}" enctype="multipart/form-data">
@@ -177,7 +181,7 @@
                                                     id="ubahdata"
                                                     name="tanggal_nikah_kk"
                                                     class="form-control form-control-sm tanggal-terformat"
-                                                    placeholder="Tanggal Sidi"
+                                                    placeholder="Tanggal Nikah"
                                                     value="{{ optional($kepalaKeluarga->jemaatKK)->tanggal_nikah 
                                                         ? \Carbon\Carbon::parse($kepalaKeluarga->jemaatKK->tanggal_nikah)->translatedFormat('d F Y') 
                                                         : '' }}"
@@ -199,7 +203,7 @@
                                                         id="ubahdata"
                                                         name="tanggal_terdaftar_kk"
                                                         class="form-control form-control-sm tanggal-terformat"
-                                                        placeholder="Tanggal Sidi"
+                                                        placeholder="Tanggal Terdaftar"
                                                         value="{{ optional($kepalaKeluarga->jemaatKK)->tanggal_terdaftar 
                                                             ? \Carbon\Carbon::parse($kepalaKeluarga->jemaatKK->tanggal_terdaftar)->translatedFormat('d F Y') 
                                                             : '' }}"
@@ -224,8 +228,7 @@
                                         <td>
                                             <span id="status-keanggotaan-row" class="badge {{ $badgeClass }} text-white" style="font-size:9pt">
                                                 @if(in_array($kepalaKeluarga->jemaatKK->status_aktif, ['Pindah Gereja', 'Atestasi Keluar']))
-                                                    {{ $kepalaKeluarga->jemaatKK->status_aktif }} ke {{ optional($kepalaKeluarga->jemaatKK->atestasiJemaatKeluar)->gereja ?? '-' }},
-                                                    tanggal {{ optional($kepalaKeluarga->jemaatKK->atestasiJemaatKeluar)->tanggal ? \Carbon\Carbon::parse($kepalaKeluarga->jemaatKK->atestasiJemaatKeluar->tanggal)->translatedFormat('d F Y') : '' }}
+                                                    {{ $kepalaKeluarga->jemaatKK->status_aktif }}
                                                 @else
                                                     {{ $kepalaKeluarga->jemaatKK->status_aktif ?? '-' }}
                                                 @endif
@@ -244,10 +247,27 @@
                                                 <div class="col-md-6">
                                                     <input type="hidden" id="tanggal_pindah_kk" name="tanggal_pindah_kk">
                                                     <input type="hidden" id="gereja_tujuan_kk" name="gereja_tujuan_kk">
+                                                    <input type="hidden" id="tanggal_meninggal_kk" name="tanggal_meninggal_kk">
                                                 </div>
                                             </div>
                                         </td>
                                     </tr>
+                                    <tr>
+                                        <th>Keterangan</th>
+                                        <td>
+                                            @if(in_array($kepalaKeluarga->jemaatKK->status_aktif, ['Pindah Gereja', 'Atestasi Keluar']))
+                                                Ke {{ optional($kepalaKeluarga->jemaatKK->atestasiJemaatKeluar)->gereja ?? '-' }},
+                                                tanggal {{ optional($kepalaKeluarga->jemaatKK->atestasiJemaatKeluar)->tanggal ? \Carbon\Carbon::parse($kepalaKeluarga->jemaatKK->atestasiJemaatKeluar->tanggal)->translatedFormat('d F Y') : '' }}
+                                            @elseif($kepalaKeluarga->jemaatKK->status_aktif === 'Meninggal Dunia')
+                                                Meninggal Dunia pada tanggal
+                                                {{ $kepalaKeluarga->jemaatKK->meninggalJemaat->tanggal 
+                                                    ? \Carbon\Carbon::parse($kepalaKeluarga->jemaatKK->meninggalJemaat->tanggal)->translatedFormat('d F Y') 
+                                                    : '-' }}
+                                            @else
+                                                {{ $kepalaKeluarga->jemaatKK->status_aktif ?? '-' }}
+                                            @endif
+
+                                        </td>
                                 </table>
                         </div>
                     </div>
@@ -289,6 +309,8 @@
                                         <th class="text-center">Gereja Asal</th>
                                         <th class="text-center">Tanggal<br>Terdaftar</th>
                                         <th class="text-center">Status<br>Keanggotaan<span class="text-danger">*</span></th>
+                                        <th class="text-center">Keterangan</th>
+                                        <th class="text-center">Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -305,10 +327,16 @@
                                             </td>
                                             <td>
                                                 @php
-                                                    // Cek apakah id_jemaat dari anggota ini ada di dalam kk_jemaat
                                                     $isKK = in_array($anggota->jemaat->id_jemaat, $kk_jemaat->pluck('id_jemaat')->toArray());
-                                                @endphp
+                                                    $isPasangan = strtolower(optional($anggota)->hubungan_keluarga) === 'pasangan';
 
+                                                    $isEligibleToCreateKK = (
+                                                        $anggota->jemaat->status_menikah === 'Menikah' &&
+                                                        $anggota->jemaat->gender === 'P' &&
+                                                        !$isPasangan &&
+                                                        !$isKK
+                                                    );
+                                                @endphp
                                                 <div class="d-flex align-items-center gap-1">
                                                 <input type="text"
                                                         required
@@ -326,6 +354,14 @@
                                                         title="Lihat Detail">&nbsp;
                                                             <i class="ni ni-zoom-split-in fs-5" style="font-size:15pt"></i>
                                                         </a>
+                                                    @endif
+                                                    @if ($isEligibleToCreateKK)
+                                                        <button type="button"
+                                                            class="btn btn-sm btn-success"
+                                                            title="Jadikan Kepala Keluarga"
+                                                            onclick="buatKK('{{ $anggota->jemaat->id_jemaat }}')">&nbsp;
+                                                            <i class="fas fa-plus"></i>
+                                                        </button>
                                                     @endif
                                                 </div>
                                             </td>
@@ -400,6 +436,7 @@
                                             </td>
                                             <td class="text-center">
                                                 <input type="text" id="ubahdata" style="width:150px;"  name="asal_gereja[]" value="{{ $anggota->jemaat->asal_gereja ?? 'Tidak Diketahui' }}" placeholder="" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                            </td>
                                             <td class="text-center">
                                                 <input type="text"
                                                         id="ubahdata"
@@ -416,6 +453,7 @@
                                                 $badgeClass = $anggota->jemaat->status_aktif == 'Aktif' ? 'bg-gradient-success' :
                                                         ($anggota->jemaat->status_aktif == 'Meninggal Dunia' ? 'bg-gradient-primary' : 'bg-gradient-danger');
                                                 @endphp
+                                                
                                             <td class="text-center" style="width:200px">
                                                 <span id="status-keanggotaan-row1" class="badge {{ $badgeClass }} text-white status-keanggotaan-row1">
                                                     {{ $anggota->jemaat->status_aktif ?? '-' }}
@@ -434,8 +472,27 @@
                                                     <div class="col-md-6">
                                                         <input type="hidden" name="tanggal_pindah[]" class="tanggal-pindah">
                                                         <input type="hidden" name="gereja_tujuan[]" class="gereja-tujuan">
+                                                        <input type="hidden" name="tanggal_meninggal[]" class="tanggal-meninggal">
+                                                    </div>
                                                 </div>
-                                                </div>
+                                            </td>
+                                            <td class="text-center">
+                                                 @if(in_array($anggota->jemaat->status_aktif, ['Pindah Gereja', 'Atestasi Keluar']))
+                                                ke {{ optional($anggota->jemaat->atestasiJemaatKeluar)->gereja ?? '-' }}<br>
+                                                tanggal {{ optional($anggota->jemaat->atestasiJemaatKeluar)->tanggal ? \Carbon\Carbon::parse($anggota->jemaat->atestasiJemaatKeluar->tanggal)->translatedFormat('d F Y') : '' }}
+                                            @elseif($anggota->jemaat->status_aktif === 'Meninggal Dunia')
+                                                Meninggal Dunia pada tanggal
+                                                {{ $anggota->jemaat->meninggalJemaat->tanggal 
+                                                    ? \Carbon\Carbon::parse($anggota->jemaat->meninggalJemaat->tanggal)->translatedFormat('d F Y') 
+                                                    : '-' }}
+                                            @else
+                                                {{ $anggota->jemaat->status_aktif ?? '-' }}
+                                            @endif
+                                            </td>
+                                            <td>
+                                                <a class="btn btn-link text-danger text-gradient px-1 mb-0" data-confirm-delete="true" href="{{ route('administrasi.data-jemaat.destroy', $anggota->jemaat->id_jemaat) }}">
+                                                <i class="far fa-trash-alt me-1"></i>
+                                                </a>
                                             </td>
                                         </tr>
                                     @endforeach
@@ -453,27 +510,45 @@
         </div>
 
     <div class="modal fade" id="popupStatus" tabindex="-1" aria-labelledby="popupLabel" aria-hidden="true">
-    <div class="modal-dialog">
-        <div class="modal-content">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="popupLabel">Detail Perpindahan</h5>
+                </div>
+            <div class="modal-body">
+                <div class="form-group">
+                    <label for="tanggalPerpindahan">Tanggal</label>
+                    <input type="date" class="form-control" id="tanggalPindah">
+                </div>
+                <div class="form-group">
+                    <label for="gerejaTujuan">Gereja Tujuan</label>
+                    <input type="text" class="form-control" id="gerejaTujuan">
+                </div>
+            </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary btn-sm" id="savePopup">Lanjut</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <!-- Modal Meninggal Dunia -->
+    <div class="modal fade" id="popupMeninggal" tabindex="-1" role="dialog" aria-labelledby="popupMeninggalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
             <div class="modal-header">
-                <h5 class="modal-title" id="popupLabel">Detail Perpindahan</h5>
+                <h5 class="modal-title">Tanggal Meninggal Dunia</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
             </div>
-        <div class="modal-body">
-            <div class="form-group">
-                <label for="tanggalPerpindahan">Tanggal</label>
-                <input type="date" class="form-control" id="tanggalPindah">
+            <div class="modal-body">
+                <input type="date" id="tanggalMeninggal" class="form-control" placeholder="Pilih tanggal meninggal">
             </div>
-            <div class="form-group">
-                <label for="gerejaTujuan">Gereja Tujuan</label>
-                <input type="text" class="form-control" id="gerejaTujuan">
+            <div class="modal-footer">
+                <button type="button" class="btn btn-primary btn-sm" id="saveTanggalMeninggal">Lanjut</button>
             </div>
-        </div>
-        <div class="modal-footer">
-            <button type="button" class="btn btn-primary" id="savePopup">Lanjut</button>
-        </div>
+            </div>
         </div>
     </div>
-    </div>
+
 
         @include('layouts.footers.auth.footer')
     </div>
@@ -726,6 +801,10 @@
                         document.getElementById('gerejaTujuan').value = '';
                         window.activeSelect = this;
                         $('#popupStatus').modal('show');
+                    }else if(value === 'Meninggal Dunia') {
+                        document.getElementById('tanggalMeninggal').value = '';
+                        window.activeSelect = this;
+                        $('#popupMeninggal').modal('show');
                     }
                 });
             });
@@ -736,7 +815,6 @@
 
                 const td = window.activeSelect.closest('td');
 
-                // 🟢 Tangani kepala keluarga secara khusus
                 if (window.activeSelect.name === 'status_aktif_kk') {
                     document.getElementById('tanggal_pindah_kk').value = tanggal;
                     document.getElementById('gereja_tujuan_kk').value = gereja;
@@ -744,7 +822,6 @@
                     return;
                 }
 
-                // 🟡 Proses anggota keluarga
                 let tanggalInput = td.querySelector('.tanggal-pindah');
                 let gerejaInput = td.querySelector('.gereja-tujuan');
 
@@ -769,9 +846,72 @@
 
                 $('#popupStatus').modal('hide');
             });
+
+            document.getElementById('saveTanggalMeninggal').addEventListener('click', function () {
+                const tanggal = document.getElementById('tanggalMeninggal').value;
+                
+                const td = window.activeSelect.closest('td');
+
+                if (window.activeSelect.name === 'status_aktif_kk') {
+                    document.getElementById('tanggal_meninggal_kk').value = tanggal;
+                    $('#popupMeninggal').modal('hide');
+                    return;
+                }
+
+                let tanggalMeninggalInput = td.querySelector('.tanggal-meninggal');
+
+                if (!tanggalMeninggalInput) {
+                    tanggalMeninggalInput = document.createElement('input');
+                    tanggalMeninggalInput.type = 'hidden';
+                    tanggalMeninggalInput.name = 'tanggal_meninggal[]';
+                    tanggalMeninggalInput.classList.add('tanggal-meninggal');
+                    td.appendChild(tanggalMeninggalInput);
+                }
+
+                tanggalMeninggalInput.value = tanggal;
+
+                $('#popupMeninggal').modal('hide');
+            });
+
         });
     </script>
 
+<script>
+function confirmDelete() {
+    Swal.fire({
+        title: 'Yakin ingin menghapus?',
+        text: "Data akan dihapus secara permanen.",
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#d33',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Ya, hapus!',
+        cancelButtonText: 'Batal'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            document.getElementById('delete-form').submit();
+        }
+    })
+}
+</script>
+
+<script>
+    function buatKK(idJemaat) {
+        Swal.fire({
+            title: 'Jadikan Kepala Keluarga?',
+            text: 'Data ini akan dibuat sebagai Kepala Keluarga baru.',
+            icon: 'question',
+            showCancelButton: true,
+            confirmButtonText: 'Ya, buat KK',
+            cancelButtonText: 'Batal'
+        }).then((result) => {
+            if (result.isConfirmed) {
+                const url = "{{ route('administrasi.data-kk.createFromJemaat', ['id' => ':id']) }}".replace(':id', idJemaat);
+                window.location.href = url;
+            }
+        });
+    }
+</script>
     @endsection
 
     

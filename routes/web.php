@@ -11,8 +11,10 @@ use App\Http\Controllers\Web\ManajemenUserController;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Administrasi\JemaatController;
+use App\Http\Controllers\Administrasi\KKController;
 use App\Http\Controllers\Administrasi\AtestasiKeluarController;
 use App\Http\Controllers\Administrasi\BaptisanController;
+use App\Http\Controllers\Laporan\LaporanController;
 use App\Http\Controllers\Master\WilayahController;
 use App\Http\Controllers\Auth\MfaController;
 use App\Http\Controllers\MainController;
@@ -51,6 +53,8 @@ Route::middleware(['auth', 'active', 'verify.otp'])->group(function () {
     Route::get('admin/home', [DashboardController::class, 'index']);
     Route::post('admin/home', [DashboardController::class, 'index']);
     Route::get('admin/{detail}', [DashboardController::class, 'detail'])->name('admin.detail');
+    Route::get('laporan/{detail}', [LaporanController::class, 'detail'])->name('laporan.detail');
+
     //Route::get('admin/home', function() {
        // return view('admin/dashboard/dashboard');
     //});     
@@ -99,11 +103,18 @@ Route::middleware(['auth', 'active', 'verify.otp'])->group(function () {
             Route::resource('data-jemaat', JemaatController::class);
             Route::get('atestasi-keluar/cetak/{par1}', [JemaatController::class, 'cetak'])->name('atestasi-keluar.cetak');
             Route::resource('atestasi-keluar', AtestasiKeluarController::class);
+            Route::delete('data-kk/{id}', [KKController::class, 'destroy'])->name('data-kk.destroy');
+            Route::get('data-kk/createFromJemaat/{id}', [KKController::class, 'createFromJemaat'])->name('data-kk.createFromJemaat');
+
         });
 
         Route::prefix('master')->name('master.')->middleware(['role:Administrator'])->group(function () {
             Route::resource('grup-wilayah', WilayahController::class);
         });
+
+        Route::prefix('laporan')->name('laporan.')->middleware(['role:Administrator'])->group(function () {
+        });
+
     });
 });
 

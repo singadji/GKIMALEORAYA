@@ -29,7 +29,7 @@ class BaptisanController extends Controller
         $btn    = '';
         $page   = 'Administrasi';
         $judul  = 'Data Jemaat';
-        $subjudul = 'Data Anggota Baptisan';
+        $subjudul = 'Data Anggota Calon Sidi';
         $tombol = $btn;
         $Hjudul = strtoupper($subjudul);
 

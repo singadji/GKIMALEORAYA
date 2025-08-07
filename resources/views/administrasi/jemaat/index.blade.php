@@ -46,10 +46,15 @@
                                 <th class="text-uppercase font-weight-bolder ps-2">L/P</th>
                                 <th class="text-uppercase font-weight-bolder ps-2" style="display: none;">Tempat</th>
                                 <th class="text-uppercase font-weight-bolder ps-2" style="display: none;"><br>Tanggal Lahir</th>
+                                <th class="text-uppercase font-weight-bolder ps-2" style="display: none;"><br>Tanggal Baptis</th>
+                                <th class="text-uppercase font-weight-bolder ps-2" style="display: none;"><br>Tanggal Sidi</th>
+                                <th class="text-uppercase font-weight-bolder ps-2" style="display: none;"><br>Tanggal Nikah</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">Alamat Domisili</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">Wil.</th>
+                                <th class="text-uppercase font-weight-bolder ps-2" style="display: none;">Asal Gereja</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">No. Telepon/HP</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">Status<br>Keanggotaan</th>
+                                <th class="text-uppercase font-weight-bolder ps-2">Keterangan</th>
                                 <!-- <th class=""></th> -->
                             </tr>
                         </thead>

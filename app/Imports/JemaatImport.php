@@ -12,7 +12,7 @@ class JemaatImport
     public function import($file)
 {
     $path = $file->getRealPath();
-    $data = \Maatwebsite\Excel\Facades\Excel::toArray([], $path, null, \Maatwebsite\Excel\Excel::XLSX);
+    $data = \Maatwebsite\Excel\Facades\Excel::toArray([], $file, null, \Maatwebsite\Excel\Excel::XLSX);
 
     $rows = $data[0];
 
@@ -216,14 +216,14 @@ class JemaatImport
 
         // Jika kosong atau string kosong, kembalikan tanggal default
         if (empty($excelDate)) {
-            return '1900-01-01';
+            return NULL;
         }
 
         try {
             // Coba parse string tanggal biasa
             return \Carbon\Carbon::parse($excelDate)->format('Y-m-d');
         } catch (\Exception $e) {
-            return '1900-01-01'; // fallback jika parsing gagal
+            return NULL; // fallback jika parsing gagal
         }
     }
 

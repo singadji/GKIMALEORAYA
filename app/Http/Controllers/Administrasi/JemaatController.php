@@ -203,7 +203,7 @@ class JemaatController extends Controller
         
         $data = $service->getJemaatDetail($id);
         $viewModel = new JemaatDetailViewModel(...$data);
-
+       
         return view('administrasi.jemaat.detail', [
             'page' => 'Administrasi',
             'judul' => 'Data Jemaat',
@@ -216,7 +216,7 @@ class JemaatController extends Controller
             'anggotaKeluarga' => $viewModel->anggotaKeluarga,
             'id_kk' => $viewModel->id_kk,
             'kk_jemaat' => $viewModel->kk_jemaat,
-            'id' => $id
+            'id' => $id,
         ]);
     }
     
@@ -226,8 +226,10 @@ class JemaatController extends Controller
         //
     }
 
-   public function update(Request $request, $id)
+    public function update(Request $request, $id)
     {
+        //dd($request->all());
+
         DB::beginTransaction();
         $statusMessages = [];
         $idKepalaKeluargaBaru = null;
@@ -241,7 +243,15 @@ class JemaatController extends Controller
 
             // Proses status aktif KK
             $status = $request->status_aktif_kk;
-            $tanggal = in_array($status, ['Atestasi Keluar', 'Pindah Gereja', 'Meninggal Dunia']) ? $request->tanggal_pindah_kk : null;
+            //$tanggal = in_array($status, ['Atestasi Keluar', 'Pindah Gereja', 'Meninggal Dunia']) ? $request->tanggal_pindah_kk : null;
+            if (in_array($status, ['Atestasi Keluar', 'Pindah Gereja'])) {
+                $tanggal = $request->tanggal_pindah_kk ?? null;
+            } elseif ($status === 'Meninggal Dunia') {
+                $tanggal = $request->tanggal_meninggal_kk ?? null;
+            } else {
+                $tanggal = null;
+            }
+
             $gereja = in_array($status, ['Atestasi Keluar', 'Pindah Gereja']) ? $request->gereja_tujuan_kk : null;
 
             $statusService->handle($KKjemaat, $status, $tanggal, $gereja);
@@ -282,14 +292,11 @@ class JemaatController extends Controller
             }
             $Jemaat = Jemaat::where('id_jemaat', $id)->firstOrFail();
             $Jemaat->delete();
-
-            if (request()->ajax()) {
+          if (request()->ajax()) {
                 return response()->json(['success' => 'Jemaat berhasil dihapus.']);
             }
-
-            return redirect()->back()->with(['success' => 'Jemaat berhasil dihapus.']);
-
-        } catch (\Exception $e) {
+          return redirect()->back()->with(['success' => 'Jemaat berhasil dihapus.']);
+      } catch (\Exception $e) {
             if (request()->ajax()) {
                 return response()->json(['error' => 'Gagal menghapus data: ' . $e->getMessage()], 500);
             }
@@ -305,7 +312,6 @@ class JemaatController extends Controller
         ]);
 
         try {
-            // Proses impor menggunakan layanan HargaBapokImport
             $importer = new JemaatImport();
             $message = $importer->import($request->file('file'));
 

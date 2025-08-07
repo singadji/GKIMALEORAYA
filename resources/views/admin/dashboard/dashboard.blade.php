@@ -97,7 +97,7 @@
             <div class="card-body">
               <div class="row">
                 <div class="col">
-                  <h5 class="card-title text-uppercase text-muted mb-0">Jumlah Anggota Baptisan</h5>
+                  <h5 class="card-title text-uppercase text-muted mb-0">Jumlah Anggota Calon Sidi</h5>
                   <span class="h1 font-weight-bold mb-0">{{ $jJ['baptisan'] }}</span> Jemaat
                 </div>
                 <div class="col-auto">
