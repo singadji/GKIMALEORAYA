@@ -54,28 +54,28 @@
                             @foreach($data as $item)
                                 
                                 <tr onclick="window.location='{{ route('administrasi.data-jemaat.show', $item->id_jemaat) }}';" style="cursor: pointer;">
-                                    <td class="align-middle">{{ $loop->iteration }}</td>
-                                    <td class="text-center font-weight-bold" width="30px" style="word-wrap: break-word; white-space: normal !important;">
-                                        {{$item->jemaat->nia}}
-                                    </td>
-                                    <td class="align-left">
-                                        {{ $item->jemaat?->nama_jemaat ?? '-' }}
-                                    </td>
-                                    <td class="align-left">
-                                        {{  $item->gender }}
-                                    </td>
-                                    <td class="align-left">
-                                    {{ $item->hubunganKeluarga?->kkJemaat?->id_group_wilayah ?? '0' }}
-                                    </td>
-                                    <td class="text-left" style="max-width: 250px; white-space: normal; word-wrap: break-word;">
-                                        {!!  $item->alamat ?? '-' !!}
-                                    </td>
-                                    <td class="text-center">
-                                        {!!  $item->telepon ?? '-'!!}
-                                    </td>
-                                    <td class="text-center">
-                                        {{ $item->tanggal ? Carbon::parse($item->tanggal)->translatedFormat('d F Y') : '-' }}
-                                    </td>
+                                    <td>{{ $loop->iteration }}</td>
+    <td>{{ $item->jemaat->nia }}</td>
+    <td>{{ $item->jemaat->nama_jemaat ?? '-' }}</td>
+    <td>{{ $item->jemaat->gender }}</td>
+    
+    <td>
+        {{ $item->jemaat->hubunganKeluarga->kkJemaat->id_group_wilayah ?? '-' }}
+    </td>
+    
+    <td style="max-width: 250px; white-space: normal;">
+        {{ $item->jemaat->kkJemaat->alamat 
+        ?? $item->jemaat->hubunganKeluarga->kkJemaat->alamat 
+        ?? '-' }}
+    </td>
+    
+    <td class="text-center">
+        {{ $item->jemaat->telepon ?? '-' }}
+    </td>
+    
+    <td class="text-center">
+        {{ $item->tanggal ? \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d F Y') : '-' }}
+    </td>
                                 </tr>
                             @endforeach
                         </tbody>

@@ -47,7 +47,18 @@
             {!! $statusBadge !!}
         </span>
     </td>
-    <td class="text-left">
+    <td class="text-left" style="max-width: 500px; white-space: normal; word-wrap: break-word;">
+    @if ($item->status_aktif === 'Meninggal Dunia')
+       pada tanggal {{ optional($item->meninggalJemaat)->tanggal 
+            ? \Carbon\Carbon::parse($item->meninggalJemaat->tanggal)->translatedFormat('d F Y') 
+            : '-' }}
+    @elseif (in_array($item->status_aktif, ['Pindah Gereja', 'Atestasi Keluar']))
+        ke {{ optional($item->atestasiJemaatKeluar)->gereja ?? '-' }},
+       tanggal {{ optional($item->atestasiJemaatKeluar)->tanggal 
+            ? \Carbon\Carbon::parse($item->atestasiJemaatKeluar->tanggal)->translatedFormat('d F Y') 
+            : '' }}
+    @else
         {{ $item->keterangan ?? '-' }}
-    </td>
+    @endif
+</td>
 </tr>

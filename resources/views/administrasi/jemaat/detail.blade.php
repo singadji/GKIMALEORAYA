@@ -40,9 +40,9 @@
                         id="edt" name="edit" value="Ubah Data"><i class="fas fa-pencil-alt"></i> Ubah Data</a>
                     </span>
                     &nbsp;<span>
-                    <a href="{{ route('administrasi.data-jemaat.cetak', $id) }}" class="btn btn-primary btn-sm">
+                    <!-- <a href="{{ route('administrasi.data-jemaat.cetak', $id) }}" class="btn btn-primary btn-sm">
                         <i class="fas fa-file-pdf"></i> Export PDF
-                    </a>
+                    </a> -->
                     </span>
                     &nbsp;<span>
                         <form id="delete-form" action="{{ route('administrasi.data-kk.destroy', $id_kk) }}" method="POST" style="display: inline;">
