@@ -159,7 +159,7 @@ class JemaatImport
             DB::table('kk_jemaat')->updateOrInsert(
                 ['id_jemaat' => $idJemaat],
                 [
-                    'id_group_wilayah' => $idGroupWilayah,
+                    'id_group_wilayah' => $row[7] ?? '',
                     'alamat'           => $row[4] ?? '',
                     'created_at'       => now(),
                     'updated_at'       => now(),
@@ -178,7 +178,7 @@ class JemaatImport
             if (!$idKk) {
                 $idKk = DB::table('kk_jemaat')->insertGetId([
                     'id_jemaat'        => $idKepala,
-                    'id_group_wilayah' => $idGroupWilayah,
+                    'id_group_wilayah' => $row[7] ?? '',
                     'alamat'           => '',
                     'created_at'       => now(),
                     'updated_at'       => now(),

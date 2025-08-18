@@ -40,9 +40,9 @@
                         id="edt" name="edit" value="Ubah Data"><i class="fas fa-pencil-alt"></i> Ubah Data</a>
                     </span>
                     &nbsp;<span>
-                    <!-- <a href="{{ route('administrasi.data-jemaat.cetak', $id) }}" class="btn btn-primary btn-sm">
+                    <a href="{{ route('administrasi.data-jemaat.cetak', $id) }}" class="btn btn-primary btn-sm">
                         <i class="fas fa-file-pdf"></i> Export PDF
-                    </a> -->
+                    </a>
                     </span>
                     &nbsp;<span>
                         <form id="delete-form" action="{{ route('administrasi.data-kk.destroy', $id_kk) }}" method="POST" style="display: inline;">
@@ -214,7 +214,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <th>Grup Wilayah</th>
+                                        <th>Wilayah</th>
                                         <td>
                                             <input type="text" id="ubahdata" name="group_wilayah_kk" value="{{ $kepalaKeluarga->id_group_wilayah ?? '-' }}" placeholder="" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                         </td>
@@ -255,19 +255,8 @@
                                     <tr>
                                         <th>Keterangan</th>
                                         <td>
-                                            @if(in_array($kepalaKeluarga->jemaatKK->status_aktif, ['Pindah Gereja', 'Atestasi Keluar']))
-                                                Ke {{ optional($kepalaKeluarga->jemaatKK->atestasiJemaatKeluar)->gereja ?? '-' }},
-                                                tanggal {{ optional($kepalaKeluarga->jemaatKK->atestasiJemaatKeluar)->tanggal ? \Carbon\Carbon::parse($kepalaKeluarga->jemaatKK->atestasiJemaatKeluar->tanggal)->translatedFormat('d F Y') : '' }}
-                                            @elseif($kepalaKeluarga->jemaatKK->status_aktif === 'Meninggal Dunia')
-                                                Meninggal Dunia pada tanggal
-                                                {{ $kepalaKeluarga->jemaatKK->meninggalJemaat->tanggal 
-                                                    ? \Carbon\Carbon::parse($kepalaKeluarga->jemaatKK->meninggalJemaat->tanggal)->translatedFormat('d F Y') 
-                                                    : '-' }}
-                                            @else
-                                                {{ $kepalaKeluarga->jemaatKK->status_aktif ?? '-' }}
-                                            @endif
-
-                                        </td>
+                                            <input type="text" id="ubahdata" name="keterangan_kk" value="{{$kepalaKeluarga->jemaatKK->keterangan}}" placeholder="" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
+                                            </td>
                                 </table>
                         </div>
                     </div>
@@ -392,7 +381,7 @@
                                                 <input type="text" required id="ubahdata" style="width:150px;" name="tempat_lahir[]" value="{{ $anggota->jemaat->tempat_lahir ?? 'Tidak Diketahui' }}" placeholder="Tempat Lahir" class="form-control form-control-sm" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                             </td>
                                             <td class="text-center">
-                                                <input required type="text"
+                                                <input type="text"
                                                         id="ubahdata"
                                                         name="tanggal_lahir[]"
                                                         class="form-control form-control-sm tanggal-terformat"
@@ -477,17 +466,7 @@
                                                 </div>
                                             </td>
                                             <td class="text-center">
-                                                 @if(in_array($anggota->jemaat->status_aktif, ['Pindah Gereja', 'Atestasi Keluar']))
-                                                ke {{ optional($anggota->jemaat->atestasiJemaatKeluar)->gereja ?? '-' }}<br>
-                                                tanggal {{ optional($anggota->jemaat->atestasiJemaatKeluar)->tanggal ? \Carbon\Carbon::parse($anggota->jemaat->atestasiJemaatKeluar->tanggal)->translatedFormat('d F Y') : '' }}
-                                            @elseif($anggota->jemaat->status_aktif === 'Meninggal Dunia')
-                                                Meninggal Dunia pada tanggal
-                                                {{ $anggota->jemaat->meninggalJemaat->tanggal 
-                                                    ? \Carbon\Carbon::parse($anggota->jemaat->meninggalJemaat->tanggal)->translatedFormat('d F Y') 
-                                                    : '-' }}
-                                            @else
-                                                {{ $anggota->jemaat->status_aktif ?? '-' }}
-                                            @endif
+                                                <input type="text" class="form-control form-control-sm" name="keterangan[]" placeholder="Keterangan" id="ubahdata" style="width:150px;" value="{{ $anggota->jemaat->keterangan ?? '-' }}" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                             </td>
                                             <td>
                                                 <a class="btn btn-link text-danger text-gradient px-1 mb-0" data-confirm-delete="true" href="{{ route('administrasi.data-jemaat.destroy', $anggota->jemaat->id_jemaat) }}">

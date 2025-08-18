@@ -113,7 +113,7 @@ class JemaatController extends Controller
             $KKjemaat->asal_gereja    =   $request->asal_gereja_kk;
             $KKjemaat->tanggal_terdaftar = $request->tanggal_terdaftar_kk;
             $KKjemaat->status_aktif   =   'Aktif';
-            //$KKjemaat->keterangan     =   $request->keterangan_kk;
+            $KKjemaat->keterangan     =   $request->keterangan_kk;
             $KKjemaat->save();
 
             if ($request->status_aktif_kk === 'Atestasi Masuk') {

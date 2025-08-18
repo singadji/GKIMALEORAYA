@@ -149,7 +149,7 @@
                                     </td>
                                 </tr>
                                 <tr>
-                                    <th>Grup Wilayah</th>
+                                    <th>Wilayah</th>
                                     <td>
                                         <input type="text" required name="group_wilayah_kk" value="{{ old('id_group_wilayah') }}" placeholder="" class="form-control form-control-sm">
                                     </td>
