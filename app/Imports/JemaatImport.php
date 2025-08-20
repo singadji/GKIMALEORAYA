@@ -134,7 +134,7 @@ class JemaatImport
                 ]);
         }
 
-        if(trim($row[14]) === 'Tidak Aktif' && trim($row[15]) === 'Meninggal Dunia')
+        if(trim($row[14]) === 'Meninggal Dunia' && trim($row[15]) === 'Meninggal Dunia')
         {
             DB::table('meninggal_dunia')->updateOrInsert(
                 ['id_jemaat' => $idJemaat],

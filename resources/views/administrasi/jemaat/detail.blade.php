@@ -242,6 +242,7 @@
                                                         <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Pindah Gereja') selected @endif value="Pindah Gereja">Pindah Gereja </option>
                                                         <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Meninggal Dunia') selected @endif value="Meninggal Dunia">Meninggal Dunia</option>
                                                         <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Bukan Anggota') selected @endif value="Bukan Anggota">Bukan Anggota</option>
+                                                        <option @if($kepalaKeluarga->jemaatKK->status_aktif == 'Tidak Aktif') selected @endif value="Tidak Aktif">Tidak Aktif</option>
                                                     </select>
                                                 </div>
                                                 <div class="col-md-6">
@@ -456,6 +457,7 @@
                                                             <option @if($anggota->jemaat->status_aktif == 'Pindah Gereja') selected @endif value="Pindah Gereja">Pindah Gereja</option>
                                                             <option @if($anggota->jemaat->status_aktif == 'Meninggal Dunia') selected @endif value="Meninggal Dunia">Meninggal Dunia</option>
                                                             <option @if($anggota->jemaat->status_aktif == 'Bukan Anggota') selected @endif value="Bukan Anggota">Bukan Anggota</option>
+                                                            <option @if($anggota->jemaat->status_aktif == 'Tidak Aktif') selected @endif value="Tidak Aktif">Tidak Aktif</option>
                                                         </select>
                                                     </div>
                                                     <div class="col-md-6">
@@ -578,6 +580,7 @@
                         <option value="Pindah Gereja">Pindah Gereja</option>
                         <option value="Meninggal Dunia">Meninggal Dunia</option>
                         <option value="Bukan Anggota">Bukan Anggota</option>
+                        <option value="Tidak Aktif">Tidak Aktif</option>
                     </select>
                      <input type="hidden" name="tanggal_pindah[]" class="tanggal-pindah">
                     <input type="hidden" name="gereja_tujuan[]" class="gereja-tujuan">
