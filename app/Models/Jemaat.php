@@ -25,7 +25,7 @@ class Jemaat extends Model
         'nia', 
         'nama_jemaat', 
         'gender', 
-        'nomor_hp', 
+        'telepon', 
         'asal_gereja',
         'tanggal_terdaftar', 
         'tempat_lahir', 

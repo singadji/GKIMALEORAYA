@@ -86,7 +86,7 @@
                                 <tr>
                                     <th>Nomor Telepon / HP<span class="text-danger">*</span></th>
                                     <td>
-                                        <input type="text" required name="telepon_kk" value="{{ old('telepon') }}" placeholder="Telepon" class="form-control form-control-sm">
+                                        <input type="text" required name="telepon_kk" value="{{ old('telepon_kk') }}" placeholder="Telepon" class="form-control form-control-sm">
                                     </td>
                                 </tr>
                                 <tr>
