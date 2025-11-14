@@ -53,6 +53,10 @@ Route::middleware(['auth', 'active', 'verify.otp'])->group(function () {
     Route::get('admin/home', [DashboardController::class, 'index']);
     Route::post('admin/home', [DashboardController::class, 'index']);
     Route::get('admin/{detail}', [DashboardController::class, 'detail'])->name('admin.detail');
+    Route::get('laporan/jemaat-wilayah/{wilayah?}', [LaporanController::class, 'laporanJemaatWilayah'])
+        ->name('laporan.jemaat-wilayah');
+    Route::get('laporan/jemaat-tanggal-daftar', [LaporanController::class, 'laporanJemaatPeriode'])->name('laporan.jemaat-tanggal-daftar');
+    Route::get('laporan/jemaat-tanggal-lahir', [LaporanController::class, 'laporanJemaatTanggalLahir'])->name('laporan.jemaat-tanggal-lahir');
     Route::get('laporan/{detail}', [LaporanController::class, 'detail'])->name('laporan.detail');
 
     //Route::get('admin/home', function() {

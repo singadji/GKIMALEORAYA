@@ -53,12 +53,18 @@ class LaporanController extends Controller
     public function detail(Request $request, $detail)
     {
         switch ($detail) {
+            case 'jemaat-wilayah':
+                return $this->laporanJemaatWilayah($request);
             case 'atestasi-masuk':
                 return $this->laporanAtestasiMasuk($request);
             case 'atestasi-keluar':
                 return $this->laporanAtestasiKeluar($request);
             case 'meninggal':
                 return $this->laporanMeninggal($request);
+            case 'jemaat-tanggal-terdaftar':
+                return $this->laporanJemaatPeriode($request);
+            case 'jemaat-tanggal-lahir':
+                return $this->laporanJemaatTanggalLahir($request);
             default:
                 abort(404, 'Laporan tidak ditemukan.');
         }
@@ -139,4 +145,93 @@ class LaporanController extends Controller
 
         return view('laporan.meninggal', compact('data', 'btn', 'page', 'judul', 'subjudul', 'tombol', 'Hjudul'));
     }
+
+    public function laporanJemaatWilayah(Request $request, $wilayahId = null)
+    {
+        $wilayah = KkJemaat::select('id_group_wilayah')
+            ->distinct()
+            ->orderBy('id_group_wilayah')
+            ->get();
+
+        $data = collect();
+
+        if ($wilayahId) {
+            $data = DB::table('jemaat as j')
+                ->join('kk_jemaat as kk', 'kk.id_jemaat', '=', 'j.id_jemaat')
+                ->select('*')
+                ->where('kk.id_group_wilayah', $wilayahId)
+                ->where('j.status_aktif', 'Aktif')
+                ->orderBy('j.nama_jemaat', 'asc')
+                ->get();
+        }
+
+        $page = 'Laporan';
+        $judul = 'Data Jemaat Berdasarkan Wilayah';
+        $subjudul = 'Daftar Jemaat per Wilayah Pelayanan';
+        $Hjudul = $subjudul;
+        $tombol = '';
+
+        return view('laporan.jemaat-wilayah', compact(
+            'data', 'page', 'judul', 'subjudul', 'Hjudul', 'tombol', 'wilayah', 'wilayahId'
+        ));
+    }
+
+    public function laporanJemaatPeriode(Request $request)
+    {
+        $tanggalAwal = $request->input('tanggal_awal');
+        $tanggalAkhir = $request->input('tanggal_akhir');
+
+        $data = collect();
+
+        if ($tanggalAwal && $tanggalAkhir) {
+            $data = DB::table('jemaat as j')
+                ->leftJoin('hubungan_keluarga as hk', 'hk.id_jemaat', '=', 'j.id_jemaat')
+                ->leftJoin('kk_jemaat as kk', 'kk.id_kk_jemaat', '=', 'hk.id_kk_jemaat')
+                ->select('*')
+                ->whereBetween('j.tanggal_terdaftar', [$tanggalAwal, $tanggalAkhir])
+                ->orderBy('j.tanggal_terdaftar', 'asc')
+                ->get();
+        }
+
+        $page = 'Laporan';
+        $judul = 'Data Jemaat Berdasarkan Periode';
+        $subjudul = 'Daftar Jemaat Berdasarkan Rentang Tanggal Terdaftar';
+        $Hjudul = 'Laporan Jemaat ' . ($tanggalAwal && $tanggalAkhir ? 'Periode ' . Carbon::parse($tanggalAwal)->translatedFormat('d M Y') . ' s/d ' . Carbon::parse($tanggalAkhir)->translatedFormat('d M Y') : '');
+        $tombol = '';
+
+        return view('laporan.jemaat-periode', compact(
+            'data', 'page', 'judul', 'subjudul', 'Hjudul', 'tombol', 'tanggalAwal', 'tanggalAkhir'
+        ));
+    }
+
+    public function laporanJemaatTanggalLahir(Request $request)
+{
+    $tanggalAwal = $request->input('tanggal_awal');
+    $tanggalAkhir = $request->input('tanggal_akhir');
+
+    $data = collect();
+
+    if ($tanggalAwal && $tanggalAkhir) {
+        $data = DB::table('jemaat as j')
+            ->leftJoin('hubungan_keluarga as hk', 'hk.id_jemaat', '=', 'j.id_jemaat')
+            ->leftJoin('kk_jemaat as kk', 'kk.id_kk_jemaat', '=', 'hk.id_kk_jemaat')
+            ->select('*')
+            ->whereBetween('j.tanggal_lahir', [$tanggalAwal, $tanggalAkhir])
+            ->orderBy('j.tanggal_lahir', 'asc')
+            ->get();
+    }
+
+    $page = 'Laporan';
+    $judul = 'Data Jemaat Berdasarkan Rentang Tanggal Lahir';
+    $subjudul = 'Daftar Jemaat Berdasarkan Rentang Tanggal Lahir';
+    $Hjudul = 'Laporan Jemaat ' . ($tanggalAwal && $tanggalAkhir ? 'Tanggal Lahir ' . Carbon::parse($tanggalAwal)->translatedFormat('d M Y') . ' s/d ' . Carbon::parse($tanggalAkhir)->translatedFormat('d M Y') : '');
+    $tombol = '';
+
+    return view('laporan.jemaat-tanggal-lahir', compact(
+        'data', 'page', 'judul', 'subjudul', 'Hjudul', 'tombol', 'tanggalAwal', 'tanggalAkhir'
+    ));
+}
+
+
+
 }
