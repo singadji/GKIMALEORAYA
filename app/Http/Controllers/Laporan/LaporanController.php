@@ -204,34 +204,102 @@ class LaporanController extends Controller
         ));
     }
 
-    public function laporanJemaatTanggalLahir(Request $request)
+   public function laporanJemaatTanggalLahir(Request $request)
 {
-    $tanggalAwal = $request->input('tanggal_awal');
-    $tanggalAkhir = $request->input('tanggal_akhir');
+    $bulanAwal  = $request->input('bulan_awal');
+    $hariAwal   = $request->input('hari_awal');
+    $bulanAkhir = $request->input('bulan_akhir');
+    $hariAkhir  = $request->input('hari_akhir');
 
     $data = collect();
 
-    if ($tanggalAwal && $tanggalAkhir) {
-        $data = DB::table('jemaat as j')
+    if ($bulanAwal && $hariAwal && $bulanAkhir && $hariAkhir) {
+
+        // Format MM-DD
+        $awal  = sprintf('%02d-%02d', $bulanAwal, $hariAwal);
+        $akhir = sprintf('%02d-%02d', $bulanAkhir, $hariAkhir);
+
+        $query = DB::table('jemaat as j')
             ->leftJoin('hubungan_keluarga as hk', 'hk.id_jemaat', '=', 'j.id_jemaat')
             ->leftJoin('kk_jemaat as kk', 'kk.id_kk_jemaat', '=', 'hk.id_kk_jemaat')
-            ->select('*')
-            ->whereBetween('j.tanggal_lahir', [$tanggalAwal, $tanggalAkhir])
-            ->orderBy('j.tanggal_lahir', 'asc')
+            ->select(
+                    'j.id_jemaat',
+                    'j.nia',
+                    'j.nama_jemaat',
+                    'j.gender',
+                    'j.tanggal_lahir',
+                    'j.tanggal_terdaftar',
+                    'kk.alamat',
+                    'j.telepon',
+                    'j.keterangan',
+                    'hk.id_kk_jemaat',
+                    'kk.id_group_wilayah'
+                )
+            ->whereNotNull('j.tanggal_lahir')
+            ->where('j.status_aktif', 'Aktif');
+
+        /*
+        |--------------------------------------------------
+        | Rentang NORMAL (contoh: 01-03 s/d 31-03)
+        |--------------------------------------------------
+        */
+        if ($awal <= $akhir) {
+
+            $query->whereRaw(
+                "DATE_FORMAT(j.tanggal_lahir, '%m-%d') BETWEEN ? AND ?",
+                [$awal, $akhir]
+            );
+
+        }
+        /*
+        |--------------------------------------------------
+        | Rentang LINTAS TAHUN (contoh: 15-12 s/d 10-01)
+        |--------------------------------------------------
+        */
+        else {
+
+            $query->where(function ($q) use ($awal, $akhir) {
+                $q->whereRaw("DATE_FORMAT(j.tanggal_lahir, '%m-%d') >= ?", [$awal])
+                  ->orWhereRaw("DATE_FORMAT(j.tanggal_lahir, '%m-%d') <= ?", [$akhir]);
+            });
+
+        }
+
+        $data = $query
+            ->orderByRaw("DATE_FORMAT(j.tanggal_lahir, '%m-%d') ASC")
             ->get();
     }
 
-    $page = 'Laporan';
-    $judul = 'Data Jemaat Berdasarkan Rentang Tanggal Lahir';
+    $page     = 'Laporan';
+    $judul    = 'Data Jemaat Berdasarkan Rentang Tanggal Lahir';
     $subjudul = 'Daftar Jemaat Berdasarkan Rentang Tanggal Lahir';
-    $Hjudul = 'Laporan Jemaat ' . ($tanggalAwal && $tanggalAkhir ? 'Tanggal Lahir ' . Carbon::parse($tanggalAwal)->translatedFormat('d M Y') . ' s/d ' . Carbon::parse($tanggalAkhir)->translatedFormat('d M Y') : '');
+
+    // Judul TANPA TAHUN
+    $Hjudul = 'Laporan Jemaat ' . (
+    $bulanAwal && $hariAwal && $bulanAkhir && $hariAkhir
+        ? 'Tanggal Lahir '
+            . Carbon::createFromDate(2000, (int)$bulanAwal, (int)$hariAwal)
+                ->translatedFormat('d F')
+            . ' s/d '
+            . Carbon::createFromDate(2000, (int)$bulanAkhir, (int)$hariAkhir)
+                ->translatedFormat('d F')
+        : ''
+);
+
     $tombol = '';
 
     return view('laporan.jemaat-tanggal-lahir', compact(
-        'data', 'page', 'judul', 'subjudul', 'Hjudul', 'tombol', 'tanggalAwal', 'tanggalAkhir'
+        'data',
+        'page',
+        'judul',
+        'subjudul',
+        'Hjudul',
+        'tombol',
+        'bulanAwal',
+        'hariAwal',
+        'bulanAkhir',
+        'hariAkhir'
     ));
 }
-
-
 
 }

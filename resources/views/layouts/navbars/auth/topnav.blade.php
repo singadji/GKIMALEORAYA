@@ -58,14 +58,24 @@
 
     <main class="main-content border-radius-lg header bg-primary pb-1">
       <div class="container-fluid py-4">
-      
-          <!-- <div class="row">
+      @if(\Auth::user()->google2fa_enabled == 0)
+          <div class="row">
             <div class="col-xl-12">
-              <div id="alert">
-                @include('includes.alert')
+              <div class="card alert-warning bg-gradient-warning">
+                <div class="card-body">
+                  Fitur <b>Multi-Factor Authentication</b> belum aktif.<br>
+                  Anda dapat mengaktifkan Fitur MFA untuk menambah lapisan keamanan.<br>
+                  <p>Pastikan Google Authenticator atau aplikasi sejenisnya telah terinstall pada perangkat HP Anda.</p>
+                  <p style="">(Jika Anda klik tombol berikut ini, harus menyelesaikannya. <b>Pastikan Anda telah siap untuk aktivasi</b>)</p>
+                  <a class="btn btn-lg btn-info bg-gradient-warning mt-4 mb-0 text-white" href="{{asset('mfa/enable')}}">Aktifasi Fitur MFA</a>
+                </div>
               </div>
             </div>
-          </div> -->
+          </div>
+          @endif
+          <div class="row">
+            
+          </div>
       </div>
     </main>
   <div class="header bg-primary pb-6">

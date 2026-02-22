@@ -33,20 +33,58 @@
         <div class="card-body">
             <form method="GET" action="{{ route('laporan.jemaat-tanggal-lahir') }}" class="mb-4">
                 <div class="row">
-                    <div class="col-md-4">
-                        <label for="tanggal_awal">Tanggal Lahir Awal</label>
-                        <input type="date" name="tanggal_awal" id="tanggal_awal" class="form-control"
-                            value="{{ request('tanggal_awal') }}">
-                    </div>
-                    <div class="col-md-4">
-                        <label for="tanggal_akhir">Tanggal Lahir Akhir</label>
-                        <input type="date" name="tanggal_akhir" id="tanggal_akhir" class="form-control"
-                            value="{{ request('tanggal_akhir') }}">
-                    </div>
-                    <div class="col-md-4 d-flex align-items-end">
-                        <button type="submit" class="btn btn-primary w-100">Tampilkan</button>
-                    </div>
-                </div>
+        <div class="col-md-2">
+            <label>Bulan Awal</label>
+            <select name="bulan_awal" class="form-control from-control-sm">
+                @for($i=1; $i<=12; $i++)
+                    <option value="{{ $i }}"
+                        {{ request('bulan_awal') == $i ? 'selected' : '' }}>
+                        {{ \Carbon\Carbon::create()->month($i)->translatedFormat('F') }}
+                    </option>
+                @endfor
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label>Tanggal Awal</label>
+            <select name="hari_awal" class="form-control from-control-sm">
+                @for($i=1; $i<=31; $i++)
+                    <option value="{{ $i }}"
+                        {{ request('hari_awal') == $i ? 'selected' : '' }}>
+                        {{ $i }}
+                    </option>
+                @endfor
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label>Bulan Akhir</label>
+            <select name="bulan_akhir" class="form-control from-control-sm">
+                @for($i=1; $i<=12; $i++)
+                    <option value="{{ $i }}"
+                        {{ request('bulan_akhir') == $i ? 'selected' : '' }}>
+                        {{ \Carbon\Carbon::create()->month($i)->translatedFormat('F') }}
+                    </option>
+                @endfor
+            </select>
+        </div>
+
+        <div class="col-md-2">
+            <label>Tanggal Akhir</label>
+            <select name="hari_akhir" class="form-control from-control-sm">
+                @for($i=1; $i<=31; $i++)
+                    <option value="{{ $i }}"
+                        {{ request('hari_akhir') == $i ? 'selected' : '' }}>
+                        {{ $i }}
+                    </option>
+                @endfor
+            </select>
+        </div>
+
+        <div class="col-md-2 mt-3"><br>
+            <button class="btn btn-primary w-100 btn-sm">Tampilkan</button>
+        </div>
+    </div>
             </form>
 
             <div class="table-responsive p-4" style="overflow-x:auto; overflow-y:auto;">
@@ -68,7 +106,15 @@
                     <tbody>
                         @php $no = 1; @endphp
                         @foreach($data as $item)
-                            <tr onclick="window.open('{{ route('administrasi.data-jemaat.show', $item->id_jemaat) }}', '_blank');" style="cursor: pointer;">
+                            <tr
+                                @if(!empty($item->id_jemaat))
+                                    onclick="window.open(
+                                        '{{ route('administrasi.data-jemaat.show', ['data_jemaat' => $item->id_jemaat]) }}',
+                                        '_blank'
+                                    )"
+                                    style="cursor:pointer;"
+                                @endif
+                                >
                                 <td>{{ $no++ }}</td>
                                 <td>{{ $item->nia }}</td>
                                 <td>{{ $item->nama_jemaat }}</td>

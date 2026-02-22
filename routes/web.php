@@ -59,9 +59,7 @@ Route::middleware(['auth', 'active', 'verify.otp'])->group(function () {
     Route::get('laporan/jemaat-tanggal-lahir', [LaporanController::class, 'laporanJemaatTanggalLahir'])->name('laporan.jemaat-tanggal-lahir');
     Route::get('laporan/{detail}', [LaporanController::class, 'detail'])->name('laporan.detail');
 
-    //Route::get('admin/home', function() {
-       // return view('admin/dashboard/dashboard');
-    //});     
+    
 
     Route::group(['middleware' => ['auth']], function () {
         Route::get('getkecamatan', [WilayahController::class, 'getKecamatan']);
