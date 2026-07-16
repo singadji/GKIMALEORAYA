@@ -157,6 +157,7 @@
                     <th class="text-center">Nama Jemaat</th>
                     <th class="text-center" style="width:50px">L / P</th>
                     <th class="text-center">Hubungan</th>
+                    <th class="text-center">No. HP</th>
                     <th class="text-center">Tempat,<br> Tanggal Lahir</th>
                     <th class="text-center">Tanggal<br>Baptis</th>
                     <th class="text-center">Tanggal<br>Sidi</th>
@@ -174,6 +175,7 @@
                         <td>{{ $anggota->jemaat->nama_jemaat ?? 'Tidak Diketahui' }}</td>
                         <td class="text-center">{{$anggota->jemaat->gender}}</td>
                         <td class="text-center">{{ $anggota->hubungan_keluarga }}</td>
+                        <td class="text-center">{{ $anggota->jemaat->telepon ?? '-' }}</td>
                         <td class="text-center">{{ $anggota->jemaat->tempat_lahir ?? 'Tidak Diketahui' }}, {{ optional($anggota->jemaat)->tanggal_lahir ? \Carbon\Carbon::parse($anggota->jemaat->tanggal_lahir)->translatedFormat('d F Y') :'-' }}</td>
                         <td class="text-center">{{ optional($anggota->jemaat)->tanggal_baptis ? \Carbon\Carbon::parse($anggota->jemaat->tanggal_baptis)->translatedFormat('d F Y'):'-' }}</td>
                         <td class="text-center">{{ optional($anggota->jemaat)->tanggal_sidi ? \Carbon\Carbon::parse($anggota->jemaat->tanggal_sidi)->translatedFormat('d F Y'):'-' }}</td>

@@ -164,6 +164,7 @@ class JemaatController extends Controller
                     $anggota->nia = $nia;
                     $anggota->nama_jemaat = $request->nama_jemaat[$index];
                     $anggota->gender = $request->p_l[$index];
+                    $anggota->telepon = $request->telepon[$index] ?? null;
                     $anggota->tempat_lahir = $request->tempat_lahir[$index];
                     $anggota->tanggal_lahir = $request->tanggal_lahir[$index];
                     $anggota->tanggal_baptis = $request->tanggal_baptis[$index];

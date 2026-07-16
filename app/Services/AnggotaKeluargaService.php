@@ -29,6 +29,7 @@ class AnggotaKeluargaService
         'nia'               => $nia,
         'nama_jemaat'       => $request->nama_jemaat[$index],
         'gender'            => $request->p_l[$index],
+        'telepon'           => $request->telepon[$index] ?? null,
         'tempat_lahir'      => $request->tempat_lahir[$index] ?? null,
         'tanggal_lahir'     => parseTanggalIndo($request->tanggal_lahir[$index] ?? null),
         'tanggal_baptis'    => parseTanggalIndo($request->tanggal_baptis[$index] ?? null),

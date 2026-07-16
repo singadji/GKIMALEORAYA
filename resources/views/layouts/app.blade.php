@@ -58,7 +58,7 @@
 @keyframes chartjs-render-animation{from{opacity:.99}to{opacity:1}}.chartjs-render-monitor{animation:chartjs-render-animation 1ms}.chartjs-size-monitor,.chartjs-size-monitor-expand,.chartjs-size-monitor-shrink{position:absolute;direction:ltr;left:0;top:0;right:0;bottom:0;overflow:hidden;pointer-events:none;visibility:hidden;z-index:-1}.chartjs-size-monitor-expand>div{position:absolute;width:1000000px;height:1000000px;left:0;top:0}.chartjs-size-monitor-shrink>div{position:absolute;width:200%;height:200%;left:0;top:0}
 
 .dt-custom-buttons {
-    justify-content: start; /* pastikan tombol ke kiri */
+    justify-content: start;
 }
 .buttons-excel {
     display: none;
@@ -69,6 +69,33 @@
 }
 .dataTables_length {
   display: block !important;
+}
+
+@media (max-width: 1199.98px) {
+  .sidenav {
+    transform: translateX(-100%) !important;
+    transition: transform 0.3s ease;
+    z-index: 1000;
+  }
+  .sidenav.show {
+    transform: translateX(0) !important;
+  }
+  .main-content {
+    margin-left: 0 !important;
+  }
+  .backdrop {
+    display: none !important;
+  }
+  .backdrop.show {
+    display: block !important;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 999;
+  }
+  .navbar-brand-img {
+    max-height: 40px;
+  }
 }
 </style>
 </head>
@@ -139,6 +166,31 @@
             }
             Scrollbar.init(document.querySelector('#sidenav-scrollbar'), options);
         }
+
+        document.addEventListener('DOMContentLoaded', function() {
+            var backdrop = document.querySelector('.backdrop');
+            var sidenav = document.querySelector('#sidenav-main');
+            var sidenavTogglers = document.querySelectorAll('[data-action="sidenav-pin"]');
+            
+            if (backdrop) {
+                backdrop.addEventListener('click', function() {
+                    sidenav.classList.remove('show');
+                    backdrop.classList.remove('show');
+                });
+            }
+
+            sidenavTogglers.forEach(function(toggler) {
+                toggler.addEventListener('click', function(e) {
+                    e.preventDefault();
+                    if (window.innerWidth < 1200) {
+                        sidenav.classList.toggle('show');
+                        if (backdrop) {
+                            backdrop.classList.toggle('show');
+                        }
+                    }
+                });
+            });
+        });
     </script>
   <script async defer src="https://buttons.github.io/buttons.js"></script>
     <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
@@ -219,7 +271,8 @@
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
   
-  <script src="https://appsrv1-147a1.kxcdn.com/argon-dashboard-pro/js/argon.js?v=1.2.0"></script><div class="backdrop d-xl-none" data-action="sidenav-unpin" data-target="undefined"></div><div style="left: -1000px; overflow: scroll; position: absolute; top: -1000px; border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"><div style="border: none; box-sizing: content-box; height: 200px; margin: 0px; padding: 0px; width: 200px;"></div></div>
+  <script src="https://appsrv1-147a1.kxcdn.com/argon-dashboard-pro/js/argon.js?v=1.2.0"></script>
+  <div class="backdrop d-xl-none" data-action="sidenav-unpin" data-target="#sidenav-main"></div>
   <!-- Demo JS - remove this in your project -->
   <script src="{{ asset('argon/plugins/custom/datatables/demo.min.js') }}"></script>
 

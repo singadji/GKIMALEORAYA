@@ -14,22 +14,23 @@
  }
 @endphp
 
-<nav class="sidenav navbar navbar-vertical  fixed-left  navbar-expand-xs navbar-light bg-white" id="sidenav-main">
-    <div class="scroll-wrapper scrollbar-inner" style="position: relative;"><div class="scrollbar-inner scroll-content" style="height: 1012px; margin-bottom: 0px; margin-right: 0px; max-height: none;">
-        <div class="sidenav-header  d-flex  align-items-center">
-            <a class="navbar-brand" href="{{ asset('admin/home') }}">
-            <img src="{{ asset('assets/img/logo.png') }}" class="navbar-brand-img" alt="...">
-            </a>
-            <div class=" ml-0 ">
-                <div class="sidenav-toggler d-none d-xl-block active" data-action="sidenav-unpin" data-target="#sidenav-main">
-                    <div class="sidenav-toggler-inner">
-                    <i class="sidenav-toggler-line"></i>
-                    <i class="sidenav-toggler-line"></i>
-                    <i class="sidenav-toggler-line"></i>
+<nav class="sidenav navbar navbar-vertical fixed-left navbar-expand-xs navbar-light bg-white" id="sidenav-main">
+    <div class="scroll-wrapper scrollbar-inner" style="position: relative;">
+        <div class="scrollbar-inner scroll-content" style="height: 1012px; margin-bottom: 0px; margin-right: 0px; max-height: none;">
+            <div class="sidenav-header d-flex align-items-center">
+                <a class="navbar-brand" href="{{ asset('admin/home') }}">
+                    <img src="{{ asset('assets/img/logo.png') }}" class="navbar-brand-img" alt="Logo" style="max-width: 100%; height: auto;">
+                </a>
+                <div class="ml-auto d-xl-none">
+                    <div class="sidenav-toggler" data-action="sidenav-unpin" data-target="#sidenav-main">
+                        <div class="sidenav-toggler-inner">
+                            <i class="sidenav-toggler-line"></i>
+                            <i class="sidenav-toggler-line"></i>
+                            <i class="sidenav-toggler-line"></i>
+                        </div>
+                    </div>
                 </div>
             </div>
-        </div>
-    </div>
     <div class="navbar-inner">
         <div class="collapse navbar-collapse w-auto h-auto" id="sidenav-collapse-main">
         <ul class="navbar-nav">
@@ -110,8 +111,6 @@
         const as = $(".nav-link.active").closest(".parentset").find('.collapse').first();
         as.addClass("show");
         as.find('.collapse').first().addClass("show");
-
-        // $(".nav-link.active").closest(".parentset").find("a").first().click();
     });
     </script>
-  </nav>  
+</nav>

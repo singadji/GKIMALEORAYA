@@ -2,12 +2,11 @@
 <nav class="navbar navbar-top navbar-expand navbar-dark bg-primary border-bottom">
       <div class="container-fluid">
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <a class="" href="{{ asset('admin/home') }}">
-              <img src="{{ asset('assets/img/bw_logo.png') }}" width="400" class="navbar-brand-img" alt="">
+            <a class="d-flex align-items-center" href="{{ asset('admin/home') }}">
+              <img src="{{ asset('assets/img/bw_logo.png') }}" style="max-width: 200px; height: auto;" class="navbar-brand-img d-none d-lg-block" alt="">
             </a>
-          <ul class="navbar-nav align-items-center  ml-md-auto ">
+          <ul class="navbar-nav align-items-center ml-md-auto">
             <li class="nav-item d-xl-none">
-              <!-- Sidenav toggler -->
               <div class="pr-3 sidenav-toggler sidenav-toggler-dark" data-action="sidenav-pin" data-target="#sidenav-main">
                 <div class="sidenav-toggler-inner">
                   <i class="sidenav-toggler-line"></i>
@@ -16,7 +15,6 @@
                 </div>
               </div>
             </li>
-           
           </ul>
           <ul class="navbar-nav align-items-center  ml-auto ml-md-0 ">
             <li class="nav-item dropdown">

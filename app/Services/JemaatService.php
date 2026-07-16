@@ -35,16 +35,23 @@ class JemaatService
             'pindahJemaat.jemaatPindah'
         ])->where('id_jemaat', $id)->firstOrFail();
 
-        $kk = KkJemaat::where('id_jemaat', $jemaat->id_jemaat)->first();
         $kk_jemaat = KkJemaat::select('id_jemaat')->get();
+        $isAnggotaH = str_starts_with($jemaat->nia, 'H-');
 
-        if ($kk) {
-            $kepalaKeluarga = $kk;
-            $id_kk = $kk->id_kk_jemaat;
-        } else {
+        if ($isAnggotaH) {
             $hubungan = HubunganKeluarga::where('id_jemaat', $id)->with('kkJemaat')->first();
             $kepalaKeluarga = $hubungan?->kkJemaat;
             $id_kk = $hubungan?->id_kk_jemaat;
+        } else {
+            $kk = KkJemaat::where('id_jemaat', $jemaat->id_jemaat)->first();
+            if ($kk) {
+                $kepalaKeluarga = $kk;
+                $id_kk = $kk->id_kk_jemaat;
+            } else {
+                $hubungan = HubunganKeluarga::where('id_jemaat', $id)->with('kkJemaat')->first();
+                $kepalaKeluarga = $hubungan?->kkJemaat;
+                $id_kk = $hubungan?->id_kk_jemaat;
+            }
         }
 
         $anggotaKeluarga = HubunganKeluarga::where('id_kk_jemaat', $id_kk)->with('jemaat')->get();
@@ -71,11 +78,15 @@ class JemaatService
         $Jkk = Jemaat::where('status_aktif', 'Aktif')->whereHas('kkJemaat')->count();
 
         $baptisan = Jemaat::with(['kkJemaat', 'hubunganKeluarga.kkJemaat'])
-            ->whereNull('tanggal_sidi')
-            ->whereNotNull('tanggal_baptis')
             ->whereIn('status_aktif', ['Bukan Anggota'])
+            ->where(function ($query) {
+                $query->whereNull('tanggal_sidi')
+                      ->orWhere('tanggal_sidi', '1900-01-01')
+                      ->orWhereNull('tanggal_baptis')
+                      ->orWhere('tanggal_baptis', '1900-01-01');
+            })
+            ->where('tanggal_lahir', '<=', now()->subYears(16))
             ->where('tanggal_lahir', '!=', '1900-01-01')
-            ->where('tanggal_baptis', '!=', '1900-01-01')
             ->count();
 
         return [

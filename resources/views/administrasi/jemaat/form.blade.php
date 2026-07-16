@@ -173,6 +173,7 @@
                                     <th class="text-center">Nama Jemaat<span class="text-danger">*</span></th>
                                     <th class="text-center">L / P<span class="text-danger">*</span></th>
                                     <th class="text-center">Hubungan<span class="text-danger">*</span></th>
+                                    <th class="text-center">No. HP</th>
                                     <th class="text-center">Tempat<br>Lahir</th>
                                     <th class="text-center">Tanggal<br>Lahir<span class="text-danger">*</span></th>
                                     <th class="text-center">Tanggal<br>Baptis</th>
@@ -224,6 +225,7 @@
                     <option value="Belum Menikah">Belum Menikah</option>
                 </select>
             </td>
+            <td><input type="text" class="form-control form-control-sm" name="telepon[]" placeholder="No. HP"></td>
             <td><input type="text" required class="form-control form-control-sm" name="tempat_lahir[]" placeholder="Tempat Lahir"></td>
             <td><input type="date" required class="form-control form-control-sm" name="tanggal_lahir[]"></td>
             <td><input type="date" class="form-control form-control-sm" name="tanggal_baptis[]"></td>
