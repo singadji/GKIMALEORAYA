@@ -280,6 +280,7 @@
 let table = $('#dataTable').DataTable({
     scrollX: false,
     autoWidth: true,
+    deferRender: true,
     responsive: true,
     searching: true,
     fixedHeader: true,

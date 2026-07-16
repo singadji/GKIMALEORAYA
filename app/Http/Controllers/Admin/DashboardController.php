@@ -131,7 +131,7 @@ class DashboardController extends Controller
             $item = Jemaat::where('status_aktif', 'Atestasi Keluar')
                 ->where('tanggal_terdaftar', '<=', $tahunAkhir)
                 ->whereHas('atestasiJemaatKeluar')
-                ->with('atestasiJemaatKeluar')
+                ->with('atestasiJemaatKeluar', 'kkJemaat', 'hubunganKeluarga.kkJemaat')
                 ->get();
             $Hjudul = "<h1>Data Jemaat Atestasi</h1><hr>";
         }
@@ -144,12 +144,17 @@ class DashboardController extends Controller
                 ->whereNotNull('tanggal_terdaftar')
                 ->whereNotNull('tanggal_sidi')
                 ->whereNotNull('tanggal_baptis')
+                ->with('kkJemaat', 'hubunganKeluarga.kkJemaat')
                 ->get();
         }
         if($detail == 'kepala-keluarga')
         {
             $Hjudul = "<h1>Data Kepala Keluarga</h1><hr>";
-            $item = Jemaat::where('status_aktif', 'Aktif')->whereHas('kkJemaat')->where('tanggal_terdaftar', '<=', $tahunAkhir)->get();
+            $item = Jemaat::where('status_aktif', 'Aktif')
+                ->whereHas('kkJemaat')
+                ->where('tanggal_terdaftar', '<=', $tahunAkhir)
+                ->with('kkJemaat', 'hubunganKeluarga.kkJemaat')
+                ->get();
         }
 
         $Hjudul = strtoupper($Hjudul);

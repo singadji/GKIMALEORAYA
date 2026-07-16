@@ -16,12 +16,11 @@ class JemaatService
         return Jemaat::with([
             'kkJemaat',
             'hubunganKeluarga.kkJemaat',
-            'atestasiJemaat',
-            'atestasiJemaat.jemaatAtestasi',
-            'pindahJemaat',
-            'pindahJemaat.jemaatPindah',
-            'meninggalJemaat.jemaatMeninggaal'
-        ])->orderby('nia')->get();
+            'atestasiJemaatKeluar',
+            'pindahJemaatKeluar',
+        ])->select('id_jemaat', 'nia', 'nama_jemaat', 'gender', 'telepon', 'tempat_lahir', 'tanggal_lahir', 'tanggal_baptis', 'tanggal_sidi', 'tanggal_nikah', 'asal_gereja', 'tanggal_terdaftar', 'status_aktif', 'status_menikah', 'keterangan', 'updated_by')
+          ->orderBy('nia')
+          ->get();
     }
 
     public function getJemaatDetail($id)
