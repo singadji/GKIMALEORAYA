@@ -6,7 +6,7 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use App\Http\Requests\JemaatRequest;
+
 use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Auth;
 use App\Imports\JemaatImport;
@@ -15,7 +15,7 @@ use Illuminate\Support\Facades\Hash;
 use Barryvdh\DomPDF\Facade\Pdf;
 
 use App\Models\Jemaat;
-use App\Models\KKJemaat;
+use App\Models\KkJemaat;
 use App\Models\HubunganKeluarga;
 use App\Models\Atestasi;
 use App\Models\PindahGereja;
@@ -28,7 +28,7 @@ use App\Services\KepalaKeluargaService;
 use App\Services\AnggotaKeluargaService;
 
 use Carbon\Carbon;
-use App\Halpers\DateHelper;
+
 
 use Alert;
 
@@ -91,7 +91,7 @@ class JemaatController extends Controller
         $tombol = $btn;
         $aksi = "" . route("administrasi.data-jemaat.store") . "";
 
-        $kk = KKJemaat::with("jemaatKK")->get();
+        $kk = KkJemaat::with("jemaatKK")->get();
 
         return view(
             "administrasi.jemaat.form",

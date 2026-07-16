@@ -5,8 +5,6 @@ use App\Http\Controllers\Controller;
 
 use Illuminate\Http\Request;
 
-use GuzzleHttp\Client;
-
 use App\Models\Berita;
 use App\Models\Foto;
 use App\Models\Menu;
@@ -14,12 +12,7 @@ use App\Models\IdentitasWeb;
 use App\Models\Slider;
 use App\Models\Album;
 
-
-use App\Helpers\FunctionHelper;
-
 use Illuminate\Support\Facades\DB;
-
-use App\Services\PriceService;
 
 use Carbon\Carbon;
 

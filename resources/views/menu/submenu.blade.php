@@ -1,11 +1,8 @@
 <ul>
-          <?php //if (!function_exists('createTreeView')) {
+          <?php if (!function_exists('createTreeView')) {
 										function createTreeView($array, $currentParent, $currLevel = 0, $prevLevel = -1) {
 											foreach ($array as $menuId => $menu) {
-											//echo $currentParent;
 										if ($currentParent == $menu['id_parent']) {
-											//if ($currLevel > $prevLevel) echo "<ul>";
-								//if ($currLevel == $prevLevel) echo " </li> ";
 											if($menu['isi_menu']==''){
 								}
 											$target='';
@@ -25,9 +22,8 @@
 								$currLevel--;              
 											}  
 							}
-							//if ($currLevel == $prevLevel) echo " </li>";
 							} 
-            //}
+            }
 							$arrayMenu = array();
 							foreach($nav_menu as $menua){
 								$arrayMenu[$menua->id] = array("id" => $menua->id, "id_parent" => $menua->id_parent, "nama_menu" => $menua->nama_menu, "link_menu" => $menua->link_menu, "isi_menu" => $menua->isi_menu, "dokumen" => $menua->dokumen); 

@@ -10,15 +10,16 @@ class Role
 {
     public function handle(Request $request, Closure $next, ...$roles)
     {
-        if (auth()->check()) {
-            $userRole = \Auth::user()->role;
-
-            // Check if the user's role matches any of the specified roles
-            if (!in_array($userRole, $roles)) {
-                return abort(404);
-            }
+        if (!auth()->check()) {
+            return redirect()->route('login');
         }
-        
+
+        $userRole = auth()->user()->role;
+
+        if (!in_array($userRole, $roles)) {
+            abort(403, 'Unauthorized.');
+        }
+
         return $next($request);
     }
 }

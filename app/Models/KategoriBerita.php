@@ -14,8 +14,6 @@ class KategoriBerita extends Model
 {
     use HasFactory, SoftDeletes;
 
-    use HasFactory;
-
     protected $table = 'kategoriberitas';
     protected $primaryKey = 'id_kategori';
     public $timestamps = true;

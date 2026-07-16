@@ -14,8 +14,6 @@ class PindahGereja extends Model
 {
     use HasFactory, SoftDeletes;
 
-    use HasFactory;
-
     protected $table = 'pindah_gereja'; 
     protected $primaryKey = 'id_pindah_gereja';
     public $timestamps = true; 

@@ -14,8 +14,6 @@ class MeninggalDunia extends Model
 {
     use HasFactory, SoftDeletes;
 
-    use HasFactory;
-
     protected $table = 'meninggal_dunia'; 
     protected $primaryKey = 'id_meninggal_dunia';
     public $timestamps = true; 

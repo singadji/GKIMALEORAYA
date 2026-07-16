@@ -9,7 +9,7 @@ class MasterKecamatan extends Model
 {
     use HasFactory;
 
-    protected $tableName = "master_kecamatans";
+    protected $table = "master_kecamatans";
     protected $primaryKey = 'id_kecamatan';
     protected $fillable = [
         'id_kota_kabupaten',

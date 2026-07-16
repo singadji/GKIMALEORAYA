@@ -4,7 +4,7 @@ namespace App\Services;
 use App\Models\Jemaat;
 use App\Models\Atestasi;
 use App\Models\PindahGereja;
-use App\Models\Meningal;
+use App\Models\MeninggalDunia;
 use App\Models\HubunganKeluarga;
 use App\Models\KkJemaat;
 use Illuminate\Support\Facades\DB;

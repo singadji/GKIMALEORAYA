@@ -3,10 +3,8 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-use App\Http\Requests;
 use App\Models\ContactUS;
-
-use App\Models\identitas;
+use App\Models\IdentitasWeb;
 
 class ContactUSController extends Controller
 {
@@ -37,7 +35,7 @@ class ContactUSController extends Controller
             "nama_menu"  => "Kontak Kami",
         );
 
-        $identitas = identitas::first();
+        $identitas = IdentitasWeb::first();
 
        return view('contactUS', ['page'=>$page, 'identitas'=>$identitas, ]);
    }

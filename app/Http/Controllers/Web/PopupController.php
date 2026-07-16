@@ -53,7 +53,7 @@ class PopupController extends Controller
         }
 
         $gambar_img     = $request->file('gambar');
-        $gambarName_img = 'popup' . $request->judul . strtolower($gambar_img->getClientOriginalName());
+        $gambarName_img = 'popup_' . Str::uuid() . '.' . $gambar_img->getClientOriginalExtension();
 
         $request->gambar->move(public_path('images/banner'), $gambarName_img);
 
@@ -107,12 +107,12 @@ class PopupController extends Controller
         
         if($request->file('gambar') != ''){
 
-            if($popup->gambar != ''){
+            if($popup->gambar != '' && file_exists(public_path('images/banner/').$popup->gambar)){
                 unlink(public_path('images/banner/').$popup->gambar);
             }
 
             $gambar_img     = $request->file('gambar');
-            $gambarName_img = 'popup' . $request->judul . strtolower($gambar_img->getClientOriginalName());
+            $gambarName_img = 'popup_' . Str::uuid() . '.' . $gambar_img->getClientOriginalExtension();
 
             $request->gambar->move(public_path('images/banner'), $gambarName_img);
         
@@ -133,9 +133,10 @@ class PopupController extends Controller
         $popup = popup::where('uuid', '=', $request->uuid)->first();
 
         if($popup != null){
+            if($popup->gambar && file_exists(public_path('images/banner/').$popup->gambar)){
+                unlink(public_path('images/banner/').$popup->gambar);
+            }
             $popup->delete();
-            
-            unlink(public_path('images/banner/').$popup->gambar);
 
             return redirect()->route('admin-popup.index')
                         ->with('success','popup berhasil dihapus.');

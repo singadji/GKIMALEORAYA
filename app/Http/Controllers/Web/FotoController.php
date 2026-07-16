@@ -67,7 +67,7 @@ class FotoController extends Controller
                     
         if(!empty($gambar)) {
         
-            $imageName = $request->foto->getClientOriginalName();   
+            $imageName = Str::uuid() . '.' . $gambar->getClientOriginalExtension();
                  
             $request->foto->move(public_path('images/foto'), $imageName);
             $foto = new Foto;

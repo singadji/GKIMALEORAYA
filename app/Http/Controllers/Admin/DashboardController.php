@@ -5,9 +5,9 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\Identitas;
+use App\Models\IdentitasWeb;
 use App\Models\Jemaat;
-use App\Models\KKJemaat;
+use App\Models\KkJemaat;
 use App\Services\JemaatService;
 
 use Image;

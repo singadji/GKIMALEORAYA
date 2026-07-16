@@ -96,7 +96,7 @@ class ArtikelController extends Controller
         }
 
         if($gambar){
-            $gambarName = $request->gambar->getClientOriginalName();  
+            $gambarName = Str::uuid() . '.' . $gambar->getClientOriginalExtension();
             $request->gambar->move(public_path('images/artikel'), $gambarName);
             
             $artikel->gambar     = $gambarName;
@@ -183,7 +183,7 @@ class ArtikelController extends Controller
                 unlink($cekgbr);
             }
             
-            $gambarName = $request->gambar->getClientOriginalName();  
+            $gambarName = Str::uuid() . '.' . $gambar->getClientOriginalExtension();
             $request->gambar->move(public_path('images/artikel'), $gambarName);
 
             $artikel->gambar     = $gambarName;

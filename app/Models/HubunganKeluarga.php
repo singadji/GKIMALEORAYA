@@ -14,8 +14,6 @@ class HubunganKeluarga extends Model
 {
     use HasFactory, SoftDeletes;
 
-    use HasFactory;
-
     protected $table = 'hubungan_keluarga'; // Nama tabel di database
     protected $primaryKey = 'id_hub_kel'; // Primary Key
 

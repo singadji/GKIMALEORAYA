@@ -14,8 +14,6 @@ class Atestasi extends Model
 {
     use HasFactory, SoftDeletes;
 
-    use HasFactory;
-
     protected $table = 'atestasi'; 
     protected $primaryKey = 'id_atestasi';
     public $timestamps = true; 

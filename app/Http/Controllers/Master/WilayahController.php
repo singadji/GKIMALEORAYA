@@ -1,7 +1,6 @@
 <?php
 namespace App\Http\Controllers\Master;
 use App\Http\Controllers\Controller;
-use App\Models\MasterKabupaten;
 use App\Models\MasterKecamatan;
 use App\Models\MasterKelurahan;
 use App\Models\GroupWilayah;
@@ -41,7 +40,7 @@ class WilayahController extends Controller
         return response()->json($kabupaten);
     }
     public function getKecamatan(Request $request){
-        $kecamatan = MasterKecamatan::where("id_kota_kabupaten","3603")->pluck('id_kecamatan','kecamatan');
+        $kecamatan = MasterKecamatan::where("id_kota_kabupaten", config('church.kabupaten_code'))->pluck('id_kecamatan','kecamatan');
         return response()->json($kecamatan);
     }
     public function getKelurahan($id){

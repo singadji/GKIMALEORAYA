@@ -28,13 +28,13 @@
     <div class="alert alert-danger alert-dismissible text-white" role="alert">
         <strong>Oops, terjadi kesalahan. </strong>
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
-        <span>{!! Session::get('failed') !!}</span>
+        <span>{{ Session::get('failed') }}</span>
     </div>
     @endif
 
     @if (Session::has('error'))
     <div class="alert alert-danger alert-dismissible text-white" role="alert">
-        <span>{!! Session::get('error') !!}</span>
+        <span>{{ Session::get('error') }}</span>
         <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span aria-hidden="true">×</span></button>
     </div>
     @endif

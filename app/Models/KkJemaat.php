@@ -14,8 +14,6 @@ class KkJemaat extends Model
 {
     use HasFactory, SoftDeletes;
 
-    use HasFactory;
-
     protected $table = 'kk_jemaat'; // Nama tabel di database
     protected $primaryKey = 'id_jemaat'; // Primary Key
 

@@ -153,7 +153,7 @@ class VideoController extends Controller
                 unlink($cekgbr);
             }
             
-            $gambarName = $request->gambar->getClientOriginalName();  
+            $gambarName = Str::uuid() . '.' . $gambar->getClientOriginalExtension();
             $request->gambar->move(public_path('images/video'), $gambarName);
 
             $video->gambar     = $gambarName;
@@ -177,6 +177,11 @@ class VideoController extends Controller
     {
         try {
             $video = Video::where('id_video', $id)->firstOrFail();
+
+            if($video->gambar && file_exists(public_path('images/video/'.$video->gambar))){
+                unlink(public_path('images/video/'.$video->gambar));
+            }
+
             $video->delete();
 
             return redirect('web/video')->with(['success' => 'Data berhasil dihapus.']);

@@ -21,7 +21,7 @@ class CustomCKFinderAuth
     public function handle($request, Closure $next)
     {
         config(['ckfinder.authentication' => function() {
-            return true;
+            return auth()->check() && auth()->user()->role === 'Administrator';
         }]);
         return $next($request);
     }

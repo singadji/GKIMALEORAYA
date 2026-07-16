@@ -53,7 +53,7 @@ class SliderController extends Controller
         }
 
         $gambar_img     = $request->file('gambar');
-        $gambarName_img = 'slider' . $request->judul . strtolower($gambar_img->getClientOriginalName());
+        $gambarName_img = 'slider_' . Str::uuid() . '.' . $gambar_img->getClientOriginalExtension();
 
         $request->gambar->move(public_path('images/banner'), $gambarName_img);
 
@@ -107,12 +107,12 @@ class SliderController extends Controller
         
         if($request->file('gambar') != ''){
 
-            if($slider->gambar != ''){
+            if($slider->gambar != '' && file_exists(public_path('images/banner/').$slider->gambar)){
                 unlink(public_path('images/banner/').$slider->gambar);
             }
 
             $gambar_img     = $request->file('gambar');
-            $gambarName_img = 'slider' . $request->judul . strtolower($gambar_img->getClientOriginalName());
+            $gambarName_img = 'slider_' . Str::uuid() . '.' . $gambar_img->getClientOriginalExtension();
 
             $request->gambar->move(public_path('images/banner'), $gambarName_img);
         
@@ -133,9 +133,10 @@ class SliderController extends Controller
         $slider = Slider::where('uuid', '=', $request->uuid)->first();
 
         if($slider != null){
+            if($slider->gambar && file_exists(public_path('images/banner/').$slider->gambar)){
+                unlink(public_path('images/banner/').$slider->gambar);
+            }
             $slider->delete();
-            
-            unlink(public_path('images/banner/').$slider->gambar);
 
             return redirect()->route('admin-slider.index')
                         ->with('success','Slider berhasil dihapus.');

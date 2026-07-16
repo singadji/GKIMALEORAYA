@@ -9,7 +9,7 @@ use App\Models\Foto;
 use App\Models\Album;
 use App\Models\Berita;
 use App\Models\Video;
-use App\Models\Identitas;
+use App\Models\IdentitasWeb;
 use App\Models\ContactUS;
 
 use App\Http\Controllers\Controller;

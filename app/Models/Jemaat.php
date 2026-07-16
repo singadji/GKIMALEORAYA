@@ -13,8 +13,6 @@ class Jemaat extends Model
 {
     use HasFactory, SoftDeletes;
 
-    use HasFactory;
-
     protected $table = "jemaat"; // Nama tabel di database
     protected $primaryKey = "id_jemaat"; // Primary Key
 

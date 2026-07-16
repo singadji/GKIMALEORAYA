@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Administrasi;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
-use App\Models\KKJemaat;
+use App\Models\KkJemaat;
 
 class KKController extends Controller
 {
@@ -68,7 +68,7 @@ class KKController extends Controller
         }
 
         // Buat KK baru untuk jemaat ini
-        $kkJemaat = new KKJemaat();
+        $kkJemaat = new KkJemaat();
         $kkJemaat->id_jemaat = $id;
         $kkJemaat->id_group_wilayah = 0;
         $kkJemaat->save();

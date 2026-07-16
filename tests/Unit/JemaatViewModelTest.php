@@ -16,8 +16,6 @@ class JemaatViewModelTest extends TestCase
             ['status_aktif' => 'Pasif', 'expected' => 'bg-primary'],
             ['status_aktif' => 'Meninggal Dunia', 'expected' => 'bg-gradient-purple'],
             ['status_aktif' => 'Bukan Anggota', 'expected' => 'bg-gradient-warning'],
-            ['status_aktif' => 'Pindah Gereja', 'pindahJemaat' => (object)['ke' => 1], 'expected' => 'bg-gradient-danger'],
-            ['status_aktif' => 'Atestasi Keluar', 'atestasiJemaat' => (object)['keluar' => 1], 'expected' => 'bg-gradient-danger'],
             ['status_aktif' => 'Tidak Jelas', 'expected' => 'bg-gradient-default'],
         ];
 

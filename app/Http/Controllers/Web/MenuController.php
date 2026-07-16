@@ -10,8 +10,6 @@ use App\Http\Requests\MenuRequest;
 use Yajra\DataTables\Facades\DataTables;
 
 use App\Models\Menu;
-use App\Models\Modul;
-use App\Models\Gambar;
 
 use Carbon\Carbon;
 

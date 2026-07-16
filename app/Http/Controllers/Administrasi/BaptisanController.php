@@ -10,7 +10,7 @@ use Yajra\DataTables\Facades\DataTables;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\Jemaat;
-use App\Models\KKJemaat;
+use App\Models\KkJemaat;
 use App\Models\HubunganKeluarga;
 use Carbon\Carbon;
 

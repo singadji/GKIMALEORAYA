@@ -8,7 +8,6 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 
 use App\Models\ContactUS;
-use App\Models\Modul;
 
 use Carbon\Carbon;
 

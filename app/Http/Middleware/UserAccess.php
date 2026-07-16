@@ -16,7 +16,7 @@ class UserAccess
      */
     public function handle(Request $request, Closure $next, $userType)
     {
-        if(auth()->user()->role == $userType && auth()->user()->aktif = "Y"){
+        if(auth()->user()->role == $userType && auth()->user()->aktif == "Y"){
             return $next($request);
         }
           

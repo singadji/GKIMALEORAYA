@@ -6,10 +6,9 @@ use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
-use App\Http\Requests\KategoriArtikelRequest;
 use Yajra\DataTables\Facades\DataTables;
 
-use App\Models\KategoriArtikel;
+use App\Models\KategoriBerita;
 
 
 use Carbon\Carbon;
@@ -39,7 +38,7 @@ class KategoriArtikelController extends Controller
         $tombol = $btn;
         $aksi = '' .route('admin-kategoriartikel.store').'';
 
-        $kategori = KategoriArtikel::get();
+        $kategori = KategoriBerita::get();
 
         return view('admin.kategoriartikel.form',[
             'btn'    => $btn,
@@ -57,7 +56,7 @@ class KategoriArtikelController extends Controller
      */
     public function store(Request $request)
     {
-        $artikel = new KategoriArtikel;
+        $artikel = new KategoriBerita;
         
         $artikel->nama_kategori    = $request->nama_kategori;
         

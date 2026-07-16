@@ -56,8 +56,8 @@
     <div class="topbar d-flex align-items-center dark-background">
       <div class="container d-flex justify-content-center justify-content-md-between">
         <div class="contact-info d-flex align-items-center">
-          <i class="bi bi-envelope d-flex align-items-center"><a href="mailto:contact@example.com">contact@example.com</a></i>
-          <i class="bi bi-phone d-flex align-items-center ms-4"><span>+1 5589 55488 55</span></i>
+          <i class="bi bi-envelope d-flex align-items-center"><a href="mailto:{{ $site_config->email ?? 'info@gkimaleoraya.org' }}">{{ $site_config->email ?? 'info@gkimaleoraya.org' }}</a></i>
+          <i class="bi bi-phone d-flex align-items-center ms-4"><span>{{ $site_config->telepon ?? '-' }}</span></i>
         </div>
         <div class="social-links d-none d-md-flex align-items-center">
           <a href="#" class="twitter"><i class="bi bi-twitter-x"></i></a>
@@ -79,7 +79,7 @@
 
         <nav id="navmenu" class="navmenu">
           <ul>
-            <?php //if (!function_exists('createTreeView')) {
+            <?php if (!function_exists('createTreeView')) {
 										function createTreeView($array, $currentParent, $currLevel = 0, $prevLevel = -1) {
 											foreach ($array as $menuId => $menu) {
 											//echo $currentParent;
@@ -107,7 +107,7 @@
 							}
 							//if ($currLevel == $prevLevel) echo " </li>";
 							} 
-            //}
+            }
 							$arrayMenu = array();
 							foreach($nav_menu as $menua){
 								$arrayMenu[$menua->id] = array("id" => $menua->id, "id_parent" => $menua->id_parent, "nama_menu" => $menua->nama_menu, "link_menu" => $menua->link_menu, "isi_menu" => $menua->isi_menu, "dokumen" => $menua->dokumen); 

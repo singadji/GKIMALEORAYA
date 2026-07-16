@@ -68,7 +68,6 @@ class Kernel extends HttpKernel
         'role' => \App\Http\Middleware\Role::class,
         'user.access' => \App\Http\Middleware\UserAccess::class,
         'active' => \App\Http\Middleware\CheckUserIsActive::class,
-        'verify.otp' => \App\Http\Middleware\VerifyOtp::class,
 
     ];
 }

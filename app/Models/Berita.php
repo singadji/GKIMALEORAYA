@@ -14,8 +14,6 @@ class Berita extends Model
 {
     use HasFactory, SoftDeletes;
 
-    use HasFactory;
-
     protected $table = 'beritas';
     protected $primaryKey = 'id_berita';
     public $timestamps = true;
