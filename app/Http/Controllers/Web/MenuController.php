@@ -92,7 +92,8 @@ class MenuController extends Controller
         }
         
         if($gambar){
-            $imageName = $request->images->getClientOriginalName();  
+            // [SECURITY] Gunakan UUID untuk nama file
+            $imageName = Str::uuid() . '.' . $gambar->getClientOriginalExtension();
             $request->images->move(public_path('images/menu'), $imageName);
             
             $menu->nama_menu    = $request->nama_menu;
@@ -106,7 +107,8 @@ class MenuController extends Controller
             $menu->created_at   = Carbon::now();
         }
         elseif($dokumen){
-            $dokumenName = $request->dokumen->getClientOriginalName();  
+            // [SECURITY] Gunakan UUID untuk nama file
+            $dokumenName = Str::uuid() . '.' . $dokumen->getClientOriginalExtension();  
             $request->dokumen->move(public_path('files'), $dokumenName);
             
             $menu->nama_menu    = $request->nama_menu;
@@ -121,7 +123,8 @@ class MenuController extends Controller
             $menu->created_at   = Carbon::now();
         }
         elseif($video){
-            $videoName = $request->video->getClientOriginalName();  
+            // [SECURITY] Gunakan UUID untuk nama file
+            $videoName = Str::uuid() . '.' . $video->getClientOriginalExtension();  
             $request->video->move(public_path('videos'), $videoName);
 
             $menu->nama_menu    = $request->nama_menu;
@@ -206,14 +209,16 @@ class MenuController extends Controller
         $video      = $request->file('video');
         
         if($gambar){
-            $cekgbr = public_path().'images/menu/'.$menu->gambar;
-                                
+            // [SECURITY] Hapus file lama jika ada
+            if($menu->gambar) {
+                $cekgbr = public_path('images/menu/'.$menu->gambar);
                 if(file_exists($cekgbr)) {
-                                
                     unlink($cekgbr);
                 }
+            }
 
-            $imageName = $request->images->getClientOriginalName();  
+            // [SECURITY] Gunakan UUID untuk nama file
+            $imageName = Str::uuid() . '.' . $gambar->getClientOriginalExtension();
             $request->images->move(public_path('images/menu'), $imageName);
             
             $menu->nama_menu    = $request->nama_menu;
@@ -227,14 +232,16 @@ class MenuController extends Controller
             $menu->updated_at   = Carbon::now();
         }
         elseif($dokumen){
-            $cekdok = public_path().'files/'.$menu->dokumen;
-                                
+            // [SECURITY] Hapus file lama jika ada
+            if($menu->dokumen) {
+                $cekdok = public_path('files/'.$menu->dokumen);
                 if(file_exists($cekdok)) {
-                                
                     unlink($cekdok);
                 }
+            }
 
-            $dokumenName = $request->dokumen->getClientOriginalName();  
+            // [SECURITY] Gunakan UUID untuk nama file
+            $dokumenName = Str::uuid() . '.' . $dokumen->getClientOriginalExtension();  
             $request->dokumen->move(public_path('files'), $dokumenName);
             
             $menu->nama_menu    = $request->nama_menu;
@@ -249,14 +256,16 @@ class MenuController extends Controller
             $menu->updated_at   = Carbon::now();
         }
         elseif($video){
-            $cekvid = public_path().'files/'.$menu->video;
-                                
+            // [SECURITY] Hapus file lama jika ada
+            if($menu->video) {
+                $cekvid = public_path('videos/'.$menu->video);
                 if(file_exists($cekvid)) {
-                                
                     unlink($cekvid);
                 }
+            }
 
-            $videoName = $request->video->getClientOriginalName();  
+            // [SECURITY] Gunakan UUID untuk nama file
+            $videoName = Str::uuid() . '.' . $video->getClientOriginalExtension();  
             $request->video->move(public_path('videos'), $videoName);
 
             $menu->nama_menu    = $request->nama_menu;
@@ -294,19 +303,21 @@ class MenuController extends Controller
     {
         try {
             $menu = menu::where('id', $id)->firstOrFail();
+            
+            // [SECURITY] Hapus file fisik jika ada
+            if($menu->gambar && file_exists(public_path('images/menu/'.$menu->gambar))) {
+                unlink(public_path('images/menu/'.$menu->gambar));    
+            }
+    
+            if($menu->dokumen && file_exists(public_path('files/'.$menu->dokumen))) {
+                unlink(public_path('files/'.$menu->dokumen));
+            }
+    
+            if($menu->video && file_exists(public_path('videos/'.$menu->video))) {
+                unlink(public_path('videos/'.$menu->video));
+            }
+    
             $menu->delete();
-
-            if($menu->gambar != ""){
-                unlink(public_path().'/images/menu/'.$menu->gambar);    
-            }
-    
-            if($menu->dokumen != ""){
-                unlink(public_path().'/files/'.$menu->dokumen);
-            }
-    
-            if($menu->video != ""){
-                unlink(public_path().'/videos/'.$menu->video);
-            }
     
             return redirect('web/menu')->with(['success' => 'Data berhasil dihapus.']);
         } catch (\Exception $e) {

@@ -204,12 +204,14 @@ class FotoController extends Controller
      */
     public function delete(Request $request, $id)
     {
-        $foto = Foto::where('id_foto', $id)
-                    ->first();
+        $foto = Foto::where('id_foto', $id)->firstOrFail();
+
+        // [SECURITY] Hapus file fisik jika ada
+        if($foto->foto && file_exists(public_path('images/foto/'.$foto->foto))) {
+            unlink(public_path('images/foto/'.$foto->foto));
+        }
 
         DB::table('fotos')->where('id_foto', $id)->delete();
-        
-        unlink(public_path().'/images/foto/'.$foto->foto);
 
         return redirect('web/album-foto')
             ->with('success','Foto berhasil dihapus.');
@@ -218,19 +220,17 @@ class FotoController extends Controller
 
     public function destroy(Request $request, $id)
     {
-        $album = Album::where('id_album', $id)->first();
-
-        $jmlfoto = Foto::select('*')
-                    ->where('id_album', $album->id)
-                    ->count();
+        $album = Album::where('id_album', $id)->firstOrFail();
 
         $foto = Foto::select('*')
                     ->where('id_album', $album->id_album)
                     ->get();
         
+        // [SECURITY] Hapus semua file foto terkait
         foreach($foto as $fotoD){
-        
-            unlink(public_path().'/images/foto/'.$fotoD->foto);
+            if($fotoD->foto && file_exists(public_path('images/foto/'.$fotoD->foto))) {
+                unlink(public_path('images/foto/'.$fotoD->foto));
+            }
         }
 
         DB::table('fotos')->where('id_album', $album->id_album)->delete();

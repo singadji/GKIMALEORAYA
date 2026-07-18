@@ -197,12 +197,12 @@ class JemaatController extends Controller
                 ->route("administrasi.data-jemaat.index")
                 ->with("success", "Berhasil menambahkan data-jemaat.");
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error storing jemaat: ' . $e->getMessage());
             DB::rollBack();
 
-            // Tampilkan error ke dalam session flash message
             return redirect()
                 ->back()
-                ->with("error", "Terjadi kesalahan: " . $e->getMessage());
+                ->with('error', 'Terjadi kesalahan saat menyimpan data. Silakan hubungi administrator.');
         }
 
         return redirect()
@@ -301,10 +301,10 @@ class JemaatController extends Controller
                 $idKepalaKeluargaBaru ?? "./administrasi/data-jemaat/" . $id,
             )->with("success", $successMessage);
         } catch (\Exception $e) {
-            DB::rollBack();
+            \Illuminate\Support\Facades\Log::error('Error updating jemaat: ' . $e->getMessage());
             return redirect()
                 ->back()
-                ->with("error", "Terjadi kesalahan: " . $e->getMessage());
+                ->with('error', 'Terjadi kesalahan saat memperbarui data. Silakan hubungi administrator.');
         }
     }
 
@@ -326,15 +326,16 @@ class JemaatController extends Controller
                 ->back()
                 ->with(["success" => "Jemaat berhasil dihapus."]);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error deleting jemaat: ' . $e->getMessage());
             if (request()->ajax()) {
                 return response()->json(
-                    ["error" => "Gagal menghapus data: " . $e->getMessage()],
+                    ['error' => 'Gagal menghapus data. Silakan hubungi administrator.'],
                     500,
                 );
             }
             return redirect()
                 ->back()
-                ->with("error", "Gagal menghapus data: " . $e->getMessage());
+                ->with('error', 'Gagal menghapus data. Silakan hubungi administrator.');
         }
     }
 
@@ -351,13 +352,12 @@ class JemaatController extends Controller
 
             return redirect()->back()->with("success", $message);
         } catch (\Exception $e) {
+            \Illuminate\Support\Facades\Log::error('Error importing jemaat: ' . $e->getMessage());
             return redirect()
                 ->back()
                 ->with(
-                    "error",
-                    "Terjadi kesalahan saat mengimport data, " .
-                        $e->getMessage(),
-                    500,
+                    'error',
+                    'Terjadi kesalahan saat mengimport data. Silakan hubungi administrator.'
                 );
         }
     }

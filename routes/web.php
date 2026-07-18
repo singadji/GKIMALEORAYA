@@ -28,6 +28,11 @@ Route::get('{link_menu}', [PageController::class, 'detail'])->name('detail');
 
 Auth::routes();
 
+// [SECURITY] Rate limiting pada login (5 percobaan per menit)
+Route::middleware('throttle:5,1')->group(function () {
+    Route::post('/login', [\App\Http\Controllers\Auth\LoginController::class, 'login'])->name('login');
+});
+
 Route::middleware(['auth', 'active'])->group(function () {
     Route::get('admin/home', [DashboardController::class, 'index']);
     Route::post('admin/home', [DashboardController::class, 'index']);
@@ -50,6 +55,9 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::resource('manajemen-user', ManajemenUserController::class);
             Route::get('manajemen-user/publish/{par1}', [ManajemenUserController::class, 'publish'])->name('manajemen-user.publish');
             Route::get('manajemen-user/notpublish/{par1}', [ManajemenUserController::class, 'notpublish'])->name('manajemen-user.notpublish');
+            // [SECURITY] User update hanya bisa diakses Administrator
+            Route::get('user/update/{par1}', [UserController::class, 'index'])->name('user.update.get');
+            Route::post('user/update/{par1}', [UserController::class, 'index'])->name('user.update.post');
             Route::get('identitas-web', [IdentitasWebController::class, 'index'])->name('identitas-web.get');
             Route::post('identitas-web', [IdentitasWebController::class, 'index'])->name('identitas-web.post');
         });
@@ -87,8 +95,6 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::get('berita-kegiatan/notpublish/{par1}', [ArtikelController::class, 'notpublish'])->name('berita-kegiatan.notpublish');
         Route::get('berita-kegiatan/isslider/{par1}', [ArtikelController::class, 'isslider'])->name('berita-kegiatan.isslider');
         Route::get('berita-kegiatan/noslider/{par1}', [ArtikelController::class, 'noslider'])->name('berita-kegiatan.noslider');
-        Route::get('user/update/{par1}', [UserController::class, 'index'])->name('user.update.get');
-        Route::post('user/update/{par1}', [UserController::class, 'index'])->name('user.update.post');
     });
 });
 

@@ -84,7 +84,7 @@ class PageController extends Controller
     {
         $berita = Berita::join('users', 'beritas.id_user', '=', 'users.id')
             ->where('id_berita',$id)
-            ->first();
+            ->firstOrFail();
         $baca = $berita->baca + 1;
 
         $beritaL = $beritaT= Berita::getArtB();

@@ -14,6 +14,10 @@ class UserController extends Controller
 
     public function index(Request $request, $id)
     {
+        // [SECURITY] Hanya bisa update password sendiri
+        if (auth()->id() != $id) {
+            abort(403, 'Anda tidak dapat mengubah password user lain.');
+        }
 
         if($_SERVER["REQUEST_METHOD"] == "POST") {
             

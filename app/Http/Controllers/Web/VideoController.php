@@ -119,7 +119,7 @@ class VideoController extends Controller
             'page'      => $page,
             'judul'     => $judul,
             'subjudul'  => $subjudul,
-            'tombol'    => $tombol, 
+            'tombol'    => $btn, 
             'kategori'  => $kategori,
             'item'      => $item,
             'aksi'      => $aksi,
@@ -147,12 +147,15 @@ class VideoController extends Controller
         }
 
         if($request->file('gambar')){
-            $cekgbr = public_path().'images/video/'.$video->gambar;
-                                
-            if(file_exists($cekgbr)) {                    
-                unlink($cekgbr);
+            // [SECURITY] Hapus file lama jika ada
+            if($video->gambar) {
+                $cekgbr = public_path('images/video/'.$video->gambar);
+                if(file_exists($cekgbr)) {                    
+                    unlink($cekgbr);
+                }
             }
             
+            // [SECURITY] Gunakan UUID untuk nama file
             $gambarName = Str::uuid() . '.' . $gambar->getClientOriginalExtension();
             $request->gambar->move(public_path('images/video'), $gambarName);
 

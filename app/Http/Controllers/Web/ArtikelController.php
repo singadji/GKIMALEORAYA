@@ -207,13 +207,15 @@ class ArtikelController extends Controller
     {
         try {
             $artikel = Berita::where('id_berita', $id)->firstOrFail();
+            
+            // [SECURITY] Hapus file gambar jika ada
+            if($artikel->gambar && file_exists(public_path('images/artikel/'.$artikel->gambar))) {
+                unlink(public_path('images/artikel/'.$artikel->gambar));
+            }
+            
             $artikel->delete();
 
-            if($artikel->gambar != ''){
-                unlink(public_path().'/images/artikel/'.$artikel->gambar);
-
-                return redirect('web/berita-kegiatan')->with(['success' => 'Data berhasil dihapus.']);
-            }
+            return redirect('web/berita-kegiatan')->with(['success' => 'Data berhasil dihapus.']);
         } catch (\Exception $e) {
             return redirect('web/berita-kegiatan')->with('error', 'Gagal, data tidak dapat dihapus.');
         }            
