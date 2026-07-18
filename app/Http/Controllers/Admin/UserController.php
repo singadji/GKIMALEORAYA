@@ -36,14 +36,14 @@ class UserController extends Controller
             $user->password = Hash::make($request->password);
             $user->save();
 
-            return redirect('admin.home')->with('success', 'Password berhasil diupdate, silahkan logout dan login kembali.');
+            return redirect()->route('admin.home')->with('success', 'Password berhasil diupdate, silahkan logout dan login kembali.');
 
           
         }
 
         $item =  User::where('id', $id)->firstOrFail();
         
-        $btn    = '<a href="' .asset('admin/home') . '" class="btn btn-secondary bg-gradient-secondary btn-sm mt-3 ms-auto">Batal</a>';
+        $btn    = '<a href="' .route('admin.home') . '" class="btn btn-secondary bg-gradient-secondary btn-sm mt-3 ms-auto">Batal</a>';
         $page   = 'Content Management';
         $judul  = 'User';
         $subjudul = 'Update Password';

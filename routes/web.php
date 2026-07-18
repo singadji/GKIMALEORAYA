@@ -34,14 +34,15 @@ Route::middleware('throttle:5,1')->group(function () {
 });
 
 Route::middleware(['auth', 'active'])->group(function () {
-    Route::get('admin/home', [DashboardController::class, 'index']);
-    Route::post('admin/home', [DashboardController::class, 'index']);
+    Route::get('admin/home', [DashboardController::class, 'index'])->name('admin.home');
+    Route::post('admin/home', [DashboardController::class, 'index'])->name('admin.home');
     Route::get('admin/{detail}', [DashboardController::class, 'detail'])->name('admin.detail');
     Route::get('laporan/jemaat-wilayah/{wilayah?}', [LaporanController::class, 'laporanJemaatWilayah'])
-        ->name('laporan.jemaat-wilayah');
-    Route::get('laporan/jemaat-tanggal-daftar', [LaporanController::class, 'laporanJemaatPeriode'])->name('laporan.jemaat-tanggal-daftar');
-    Route::get('laporan/jemaat-tanggal-lahir', [LaporanController::class, 'laporanJemaatTanggalLahir'])->name('laporan.jemaat-tanggal-lahir');
-    Route::get('laporan/{detail}', [LaporanController::class, 'detail'])->name('laporan.detail');
+            ->name('laporan.jemaat-wilayah');
+        Route::get('laporan/jemaat-tanggal-daftar', [LaporanController::class, 'laporanJemaatPeriode'])->name('laporan.jemaat-tanggal-daftar');
+        Route::get('laporan/jemaat-tanggal-lahir', [LaporanController::class, 'laporanJemaatTanggalLahir'])->name('laporan.jemaat-tanggal-lahir');
+        Route::get('laporan/meninggal', [LaporanController::class, 'laporanMeninggal'])->name('laporan.meninggal');
+        Route::get('laporan/{detail}', [LaporanController::class, 'detail'])->name('laporan.detail');
 
     Route::get('getkecamatan', [WilayahController::class, 'getKecamatan']);
     Route::get('getkelurahan/{id}', [WilayahController::class, 'getKelurahan']);
@@ -70,9 +71,10 @@ Route::middleware(['auth', 'active'])->group(function () {
             Route::post('data-jemaat/simpan-jemaat', [JemaatController::class, 'simpan'])->name('data-jemaat.simpan');
             Route::resource('data-jemaat', JemaatController::class);
             Route::get('atestasi-keluar/cetak/{par1}', [JemaatController::class, 'cetak'])->name('atestasi-keluar.cetak');
-            Route::resource('atestasi-keluar', AtestasiKeluarController::class);
-            Route::delete('data-kk/{id}', [KKController::class, 'destroy'])->name('data-kk.destroy');
-            Route::get('data-kk/createFromJemaat/{id}', [KKController::class, 'createFromJemaat'])->name('data-kk.createFromJemaat');
+                        Route::resource('atestasi-keluar', AtestasiKeluarController::class);
+                        Route::resource('kk', KKController::class);
+                        Route::delete('kk/{id}', [KKController::class, 'destroy'])->name('data-kk.destroy');
+                        Route::get('kk/createFromJemaat/{id}', [KKController::class, 'createFromJemaat'])->name('data-kk.createFromJemaat');
         });
 
         Route::prefix('master')->name('master.')->group(function () {

@@ -61,14 +61,28 @@ class PageController extends Controller
     }
 
     public function video()
-    {
-        $video  = video::where('publish','Y')->paginate(6);
-        return view('menu.video')
-            ->with('video', $video)
-            ->with('title', 'Video Dokumentasi Kegiatan');
-    }
+        {
+            $video  = video::where('publish','Y')->paginate(6);
+            return view('menu.video')
+                ->with('video', $video)
+                ->with('title', 'Video Dokumentasi Kegiatan');
+        }
 
-    public function news()
+        public function gkimaLeoraya()
+        {
+            $page = Menu::where('link_menu', 'gkima-leoraya')->first();
+
+            $menu = Menu::where('id', $page->id_parent)->first();
+            $nama_menu = 'nama_menu';
+
+            if ($page) {
+                return view('menu.menu', compact('page', 'menu', 'nama_menu'));
+            } else {
+                return abort(404);
+            }
+        }
+
+        public function news()
     {
         $berita = Berita::getArt();
         $beritaT= Berita::getArtB();

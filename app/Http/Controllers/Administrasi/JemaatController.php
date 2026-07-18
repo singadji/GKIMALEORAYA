@@ -41,41 +41,49 @@ class JemaatController extends Controller
         $this->jemaatService = $jemaatService;
     }
 
-    public function index()
+public function index(Request $request)
     {
+        $statusFilter = $request->input('status', 'semua');
+
         $btn =
             '<a href="#" class="btn btn-warning bg-gradient-warning btn-sm mt-3 ms-auto dropdown" id="navbar-default_dropdown_1" role="button" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">Upload Excel</a>
                     <div class="dropdown-menu dropdown-menu-right" aria-labelledby="navbar-default_dropdown_1">
                         <a class="dropdown-item" href="' .
-            route("download.template.excel.import", [
-                "filename" => "Template_Data_Jemaat.xlsx",
-            ]) .
-            '">Download Template</a>
+        route("download.template.excel.import", [
+            "filename" => "Template_Data_Jemaat.xlsx",
+        ]) .
+        '">Download Template</a>
                         <form action="' .
-            route("administrasi.data-jemaat.import") .
-            '" method="POST" enctype="multipart/form-data" id="formImport">
+        route("administrasi.data-jemaat.import") .
+        '" method="POST" enctype="multipart/form-data" id="formImport">
                             ' .
-            csrf_field() .
-            '
+        csrf_field() .
+        '
                             <input type="file" name="file" id="file" class="form-control" style="display: none;" accept=".xlsx,.xls" required>
                             <a href="#" class="dropdown-item" id="importLink">Upload</a>
                         </form>
                     </div>
                     <a href="' .
-            route("administrasi.data-jemaat.create") .
-            '" class="btn btn-info bg-gradient-info btn-sm mt-3 ms-auto">Jemaat Baru</a>';
+        route("administrasi.data-jemaat.create") .
+        '" class="btn btn-info bg-gradient-info btn-sm mt-3 ms-auto">Jemaat Baru</a>';
         $page = "Administrasi";
         $judul = "Data Jemaat";
         $subjudul = "Administrasi Jemaat";
         $tombol = $btn;
 
-        $jemaatList = $this->jemaatService->getJemaatList();
+        $query = $this->jemaatService->getJemaatQuery();
+
+        if ($statusFilter !== 'semua') {
+            $query->where('status_aktif', $statusFilter);
+        }
+
+        $jemaatList = $query->get();
         $viewModel = new JemaatViewModel($jemaatList);
         $jemaatList = $viewModel->formatted();
 
         return view(
             "administrasi.jemaat.index",
-            compact("jemaatList", "btn", "page", "judul", "subjudul", "tombol"),
+            compact("jemaatList", "btn", "page", "judul", "subjudul", "tombol", "statusFilter"),
         );
     }
 

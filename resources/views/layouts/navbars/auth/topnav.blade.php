@@ -2,7 +2,7 @@
 <nav class="navbar navbar-top navbar-expand navbar-dark bg-primary border-bottom">
       <div class="container-fluid">
         <div class="collapse navbar-collapse" id="navbarSupportedContent">
-            <a class="d-flex align-items-center" href="{{ asset('admin/home') }}">
+            <a class="d-flex align-items-center" href="{{ route('admin.home') }}">
               <img src="{{ asset('assets/img/bw_logo.png') }}" style="max-width: 200px; height: auto;" class="navbar-brand-img d-none d-lg-block" alt="">
             </a>
           <ul class="navbar-nav align-items-center ml-md-auto">

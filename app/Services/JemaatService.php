@@ -11,7 +11,24 @@ use Illuminate\Support\Facades\DB;
 
 class JemaatService
 {
-    public function getJemaatList()
+    public function getJemaatList($statusFilter = null)
+    {
+        $query = Jemaat::with([
+            'kkJemaat',
+            'hubunganKeluarga.kkJemaat',
+            'atestasiJemaatKeluar',
+            'pindahJemaatKeluar',
+        ])->select('id_jemaat', 'nia', 'nama_jemaat', 'gender', 'telepon', 'tempat_lahir', 'tanggal_lahir', 'tanggal_baptis', 'tanggal_sidi', 'tanggal_nikah', 'asal_gereja', 'tanggal_terdaftar', 'status_aktif', 'status_menikah', 'keterangan', 'updated_by')
+          ->orderBy('nia');
+
+        if ($statusFilter && $statusFilter !== 'semua') {
+            $query->where('status_aktif', $statusFilter);
+        }
+
+        return $query->get();
+    }
+
+    public function getJemaatQuery()
     {
         return Jemaat::with([
             'kkJemaat',
@@ -19,8 +36,7 @@ class JemaatService
             'atestasiJemaatKeluar',
             'pindahJemaatKeluar',
         ])->select('id_jemaat', 'nia', 'nama_jemaat', 'gender', 'telepon', 'tempat_lahir', 'tanggal_lahir', 'tanggal_baptis', 'tanggal_sidi', 'tanggal_nikah', 'asal_gereja', 'tanggal_terdaftar', 'status_aktif', 'status_menikah', 'keterangan', 'updated_by')
-          ->orderBy('nia')
-          ->get();
+          ->orderBy('nia');
     }
 
     public function getJemaatDetail($id)
@@ -74,6 +90,8 @@ class JemaatService
 
         $Jatestasi = Jemaat::where('status_aktif', 'Atestasi Keluar')->count();
         $Jpasif = Jemaat::where('status_aktif', 'Pasif')->count();
+        $JbukanAnggota = Jemaat::where('status_aktif', 'Bukan Anggota')->count();
+        $Jmeninggal = Jemaat::where('status_aktif', 'Meninggal Dunia')->count();
         $Jkk = Jemaat::where('status_aktif', 'Aktif')->whereHas('kkJemaat')->count();
 
         $baptisan = Jemaat::with(['kkJemaat', 'hubunganKeluarga.kkJemaat'])
@@ -92,6 +110,8 @@ class JemaatService
             'total_jemaat' => $Jaktif->total,
             'atestasi_keluar' => $Jatestasi,
             'pasif' => $Jpasif,
+            'bukan_anggota' => $JbukanAnggota,
+            'meninggal' => $Jmeninggal,
             'jemaat_kk' => $Jkk,
             'baptisan' => $baptisan,
         ];

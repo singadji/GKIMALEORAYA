@@ -18,7 +18,7 @@
     <div class="scroll-wrapper scrollbar-inner" style="position: relative;">
         <div class="scrollbar-inner scroll-content" style="height: 1012px; margin-bottom: 0px; margin-right: 0px; max-height: none;">
             <div class="sidenav-header d-flex align-items-center">
-                <a class="navbar-brand" href="{{ asset('admin/home') }}">
+                <a class="navbar-brand" href="{{ route('admin.home') }}">
                     <img src="{{ asset('assets/img/logo.png') }}" class="navbar-brand-img" alt="Logo" style="max-width: 100%; height: auto;">
                 </a>
                 <div class="ml-auto d-xl-none">
@@ -35,7 +35,7 @@
         <div class="collapse navbar-collapse w-auto h-auto" id="sidenav-collapse-main">
         <ul class="navbar-nav">
     <li class="nav-item">
-        <a class="nav-link" href="{{ asset('admin/home') }}">
+        <a class="nav-link" href="{{ route('admin.home') }}">
             <i class="ni ni-shop text-primary"></i>
             <span class="nav-link-text">Dashboards</span>
         </a>
