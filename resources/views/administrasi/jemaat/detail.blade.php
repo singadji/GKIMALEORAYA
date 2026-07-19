@@ -691,7 +691,7 @@ document.addEventListener('DOMContentLoaded', function () {
                 console.log('savePopup CLICKED!');
                 const tanggal = document.getElementById('tanggalPindah').value;
                 const gereja = document.getElementById('gerejaTujuan').value;
-                const td = window.activeSelect.closest('td');
+                const td = window.activeSelect?.closest('td');
 
                 console.log('savePopup clicked', { 
                     tanggal, 
@@ -701,7 +701,7 @@ document.addEventListener('DOMContentLoaded', function () {
                     td: td
                 });
 
-                if (window.activeSelect.name === 'status_aktif_kk') {
+                if (window.activeSelect?.name === 'status_aktif_kk') {
                     document.getElementById('tanggal_pindah_kk').value = tanggal;
                     document.getElementById('gereja_tujuan_kk').value = gereja;
                     console.log('Set KK hidden inputs', tanggal, gereja);
@@ -709,26 +709,41 @@ document.addEventListener('DOMContentLoaded', function () {
                     return;
                 }
 
-                // Find existing hidden inputs in the status-row1 div (same td)
-                const statusRow = td.querySelector('.status-row1');
-                console.log('statusRow found:', statusRow);
-                if (!statusRow) return;
-
-                // Try multiple selectors
-                let tanggalInput = statusRow.querySelector('.tanggal-pindah');
-                let gerejaInput = statusRow.querySelector('.gereja-tujuan');
+                // For anggota: find the hidden inputs in the same row
+                let tanggalInput, gerejaInput;
                 
-                console.log('Looking for .tanggal-pindah:', statusRow.querySelector('.tanggal-pindah'));
-                console.log('Looking for .gereja-tujuan:', statusRow.querySelector('.gereja-tujuan'));
-                console.log('All inputs in statusRow:', statusRow.querySelectorAll('input'));
+                if (td) {
+                    // Try status-row1 div first
+                    const statusRow = td.querySelector('.status-row1');
+                    console.log('statusRow found:', statusRow);
+                    if (statusRow) {
+                        tanggalInput = statusRow.querySelector('.tanggal-pindah');
+                        gerejaInput = statusRow.querySelector('.gereja-tujuan');
+                    }
+                }
+                
+                // Fallback: find by index matching the select
+                if (!tanggalInput || !gerejaInput) {
+                    const selects = document.querySelectorAll('select[name="status_aktif[]"]');
+                    const index = Array.from(selects).indexOf(window.activeSelect);
+                    console.log('Active select index:', index);
+                    if (index >= 0) {
+                        const allTanggalInputs = document.querySelectorAll('input[name="tanggal_pindah[]"]');
+                        const allGerejaInputs = document.querySelectorAll('input[name="gereja_tujuan[]"]');
+                        if (allTanggalInputs[index]) tanggalInput = allTanggalInputs[index];
+                        if (allGerejaInputs[index]) gerejaInput = allGerejaInputs[index];
+                    }
+                }
+
+                console.log('Found inputs:', { tanggalInput, gerejaInput });
 
                 if (tanggalInput) {
                     tanggalInput.value = tanggal;
-                    console.log('Set tanggal-pindah value to:', tanggalInput.value);
+                    console.log('Set tanggal_pindah[] value to:', tanggalInput.value);
                 }
                 if (gerejaInput) {
                     gerejaInput.value = gereja;
-                    console.log('Set gereja-tujuan value to:', gerejaInput.value);
+                    console.log('Set gereja_tujuan[] value to:', gerejaInput.value);
                 }
                 $('#popupStatus').modal('hide');
             });
