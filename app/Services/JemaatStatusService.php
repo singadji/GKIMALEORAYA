@@ -55,10 +55,14 @@ class JemaatStatusService
                     'tanggal' => $tanggal,
                     'gereja' => $gereja,
                 ]);
-                Atestasi::updateOrCreate(
+                $result = Atestasi::updateOrCreate(
                     ['id_jemaat' => $jemaat->id_jemaat, 'keluar' => 1],
                     ['tanggal' => $tanggal, 'gereja' => $gereja, 'setuju' => 1]
                 );
+                Log::info('Atestasi after handle', [
+                    'id_atestasi' => $result->id_atestasi ?? 'none',
+                    'updated_at' => $result->updated_at ?? 'none',
+                ]);
             } elseif ($existing) {
                 // If existing record but no new data, keep existing (don't delete)
                 return;
