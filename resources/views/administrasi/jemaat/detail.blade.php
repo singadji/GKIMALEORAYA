@@ -734,6 +734,17 @@ document.addEventListener('DOMContentLoaded', function () {
                         if (allGerejaInputs[index]) gerejaInput = allGerejaInputs[index];
                     }
                 }
+                
+                // Strategy 3: Find by closest row (tr) then query within that row
+                if (!tanggalInput || !gerejaInput) {
+                    const tr = window.activeSelect?.closest('tr');
+                    console.log('TR found:', tr);
+                    if (tr) {
+                        tanggalInput = tr.querySelector('input[name="tanggal_pindah[]"]');
+                        gerejaInput = tr.querySelector('input[name="gereja_tujuan[]"]');
+                        console.log('Found by TR:', { tanggalInput, gerejaInput });
+                    }
+                }
 
                 console.log('Found inputs:', { tanggalInput, gerejaInput });
 
@@ -750,19 +761,46 @@ document.addEventListener('DOMContentLoaded', function () {
 
             document.getElementById('saveTanggalMeninggal').addEventListener('click', function () {
                 const tanggal = document.getElementById('tanggalMeninggal').value;
-                const td = window.activeSelect.closest('td');
+                const td = window.activeSelect?.closest('td');
 
-                if (window.activeSelect.name === 'status_aktif_kk') {
+                if (window.activeSelect?.name === 'status_aktif_kk') {
                     document.getElementById('tanggal_meninggal_kk').value = tanggal;
                     $('#popupMeninggal').modal('hide');
                     return;
                 }
 
-                const statusRow = td.querySelector('.status-row1');
-                if (!statusRow) return;
-
-                let tanggalMeninggalInput = statusRow.querySelector('.tanggal-meninggal');
-                if (tanggalMeninggalInput) tanggalMeninggalInput.value = tanggal;
+                // For anggota: find hidden input with multiple strategies
+                let tanggalMeninggalInput = null;
+                
+                if (td) {
+                    const statusRow = td.querySelector('.status-row1');
+                    if (statusRow) {
+                        tanggalMeninggalInput = statusRow.querySelector('.tanggal-meninggal');
+                    }
+                }
+                
+                // Fallback: find by index
+                if (!tanggalMeninggalInput) {
+                    const selects = document.querySelectorAll('select[name="status_aktif[]"]');
+                    const index = Array.from(selects).indexOf(window.activeSelect);
+                    if (index >= 0) {
+                        const allInputs = document.querySelectorAll('input[name="tanggal_meninggal[]"]');
+                        if (allInputs[index]) tanggalMeninggalInput = allInputs[index];
+                    }
+                }
+                
+                // Strategy 3: Find by closest TR
+                if (!tanggalMeninggalInput) {
+                    const tr = window.activeSelect?.closest('tr');
+                    if (tr) {
+                        tanggalMeninggalInput = tr.querySelector('input[name="tanggal_meninggal[]"]');
+                    }
+                }
+                
+                if (tanggalMeninggalInput) {
+                    tanggalMeninggalInput.value = tanggal;
+                    console.log('Set tanggal_meninggal[] value to:', tanggalMeninggalInput.value);
+                }
                 $('#popupMeninggal').modal('hide');
             });
         });
