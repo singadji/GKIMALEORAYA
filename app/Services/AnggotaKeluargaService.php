@@ -6,6 +6,7 @@ use App\Models\Jemaat;
 use App\Models\HubunganKeluarga;
 use App\Models\KkJemaat;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\DB;
 
 class AnggotaKeluargaService
 {
@@ -17,6 +18,7 @@ class AnggotaKeluargaService
 
         Log::info('AnggotaKeluargaService updateAll called', [
             'nia_anggota' => $request->nia_anggota,
+            'id_anggota' => $request->id_anggota ?? [],
             'status_aktif' => $request->status_aktif ?? [],
             'tanggal_pindah' => $request->tanggal_pindah ?? [],
             'gereja_tujuan' => $request->gereja_tujuan ?? [],
@@ -30,9 +32,18 @@ class AnggotaKeluargaService
         !isset($request->p_l[$index]) ||
         !isset($request->status_aktif[$index]) ||
         !isset($request->status_menikah[$index])
-    ) continue;
+    ) {
+        Log::warning('Skipping anggota due to missing data', ['index' => $index]);
+        continue;
+    }
 
-    $jemaat = Jemaat::find($request->id_anggota[$index] ?? null) ?? new Jemaat();
+    $idJemaat = $request->id_anggota[$index] ?? null;
+    $jemaat = $idJemaat ? Jemaat::find($idJemaat) : new Jemaat();
+
+    if (!$jemaat || (!$idJemaat && !$jemaat->exists)) {
+        Log::warning('Jemaat not found', ['index' => $index, 'id_anggota' => $idJemaat]);
+        continue;
+    }
 
     $jemaat->fill([
         'nia'               => $nia,
@@ -65,12 +76,31 @@ class AnggotaKeluargaService
     Log::info('Processing status for jemaat', [
         'index' => $index,
         'nia' => $nia,
+        'id_jemaat' => $jemaat->id_jemaat,
         'status' => $status,
         'tanggal' => $tanggal,
         'gereja' => $gereja,
     ]);
 
-    $statusService->handle($jemaat, $status, $tanggal, $gereja);
+    try {
+        $statusService->handle($jemaat, $status, $tanggal, $gereja);
+        
+        // Verify atestasi was saved
+        $atestasi = \App\Models\Atestasi::where('id_jemaat', $jemaat->id_jemaat)->where('keluar', 1)->first();
+        Log::info('Atestasi after handle', [
+            'id_jemaat' => $jemaat->id_jemaat,
+            'atestasi_found' => $atestasi ? true : false,
+            'tanggal' => $atestasi?->tanggal,
+            'gereja' => $atestasi?->gereja,
+        ]);
+    } catch (\Exception $e) {
+        Log::error('Error in statusService handle', [
+            'index' => $index,
+            'nia' => $nia,
+            'error' => $e->getMessage(),
+        ]);
+        throw $e;
+    }
 
     HubunganKeluarga::updateOrCreate(
         ['id_jemaat' => $jemaat->id_jemaat],
