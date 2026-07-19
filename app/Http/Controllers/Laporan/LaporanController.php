@@ -75,80 +75,146 @@ class LaporanController extends Controller
         $tanggalAwal = $request->input('tanggal_awal');
         $tanggalAkhir = $request->input('tanggal_akhir');
 
-        // Standard Query Pattern: CTE with ROW_NUMBER for distinct jemaat
-        $tahunAkhir = $tanggalAkhir ?? (date('Y') . '-12-31');
-        $tahunAwal = $tanggalAwal ?? '0001-01-01';
+        $tigaBulanLalu = Carbon::now()->subMonths(3)->startOfDay();
 
-        $sql = "
-            WITH ranked AS (
-                SELECT
-                    j.id_jemaat,
-                    j.nama_jemaat,
-                    j.nia,
-                    j.gender,
-                    a.tanggal,
-                    a.gereja,
-                    j.telepon,
-                    j.keterangan,
-                    COALESCE(kk_kk.alamat, kk_anggota.alamat) as alamat,
-                    COALESCE(kk_kk.id_group_wilayah, kk_anggota.id_group_wilayah) as id_group_wilayah,
-                    ROW_NUMBER() OVER (PARTITION BY j.id_jemaat ORDER BY a.tanggal DESC) as rn
-                FROM atestasi a
-                JOIN jemaat j ON a.id_jemaat = j.id_jemaat
-                LEFT JOIN hubungan_keluarga hk ON hk.id_jemaat = j.id_jemaat
-                LEFT JOIN kk_jemaat kk_anggota ON kk_anggota.id_kk_jemaat = hk.id_kk_jemaat
-                LEFT JOIN kk_jemaat kk_kk ON kk_kk.id_jemaat = j.id_jemaat
-                WHERE a.keluar = 1
-                AND a.tanggal BETWEEN '$tahunAwal' AND '$tahunAkhir'
-            )
-            SELECT * FROM ranked WHERE rn = 1
-            ORDER BY tanggal DESC
-        ";
+        $query = DB::table('pindah_gereja as pg')
+            ->join('jemaat as j', 'pg.id_jemaat', '=', 'j.id_jemaat')
+            ->leftJoin('hubungan_keluarga as hk', 'hk.id_jemaat', '=', 'j.id_jemaat')
+            ->leftJoin('kk_jemaat as kk_anggota', 'kk_anggota.id_kk_jemaat', '=', 'hk.id_kk_jemaat')
+            ->leftJoin('kk_jemaat as kk_kk', 'kk_kk.id_jemaat', '=', 'j.id_jemaat')
+            ->where('pg.dari', 1)
+            ->where('pg.ke', 0)
+            ->select(
+                'j.id_jemaat', 'j.nia', 'j.nama_jemaat', 'j.gender', 'j.telepon',
+                'pg.tanggal', 'pg.gereja', 'pg.id_pindah_gereja', 'pg.setuju',
+                DB::raw('COALESCE(kk_kk.alamat, kk_anggota.alamat) as alamat'),
+                DB::raw('COALESCE(kk_kk.id_group_wilayah, kk_anggota.id_group_wilayah) as id_group_wilayah'),
+                DB::raw("'Pindah' as sumber")
+            );
 
-        $data = collect(DB::select($sql));
+        $queryAtestasi = DB::table('atestasi as a')
+            ->join('jemaat as j', 'a.id_jemaat', '=', 'j.id_jemaat')
+            ->leftJoin('hubungan_keluarga as hk', 'hk.id_jemaat', '=', 'j.id_jemaat')
+            ->leftJoin('kk_jemaat as kk_anggota', 'kk_anggota.id_kk_jemaat', '=', 'hk.id_kk_jemaat')
+            ->leftJoin('kk_jemaat as kk_kk', 'kk_kk.id_jemaat', '=', 'j.id_jemaat')
+            ->where('a.keluar', 1)
+            ->whereNull('a.deleted_at')
+            ->select(
+                'j.id_jemaat', 'j.nia', 'j.nama_jemaat', 'j.gender', 'j.telepon',
+                'a.tanggal', 'a.gereja', 'a.id_atestasi as id_pindah_gereja', 'a.setuju',
+                DB::raw('COALESCE(kk_kk.alamat, kk_anggota.alamat) as alamat'),
+                DB::raw('COALESCE(kk_kk.id_group_wilayah, kk_anggota.id_group_wilayah) as id_group_wilayah'),
+                DB::raw("'Atestasi Keluar' as sumber")
+            );
 
-        $title  = 'Hapus Data!';
-        $text   = "Data akan dihapus, Anda Yakin?";
-        $btn    = '';
-        $page   = 'Administrasi';
-        $judul  = 'Data Jemaat Atestasi Keluar';
-        $subjudul = 'Data Jemaat Atestasi Keluar' . ($tanggalAwal && $tanggalAkhir ? " Periode " . Carbon::parse($tanggalAwal)->translatedFormat('d F Y') . " - " . Carbon::parse($tanggalAkhir)->translatedFormat('d F Y') : " (Semua Data)");
+        if ($tanggalAwal && $tanggalAkhir) {
+            $query->whereBetween('pg.tanggal', [$tanggalAwal, $tanggalAkhir]);
+            $queryAtestasi->whereBetween('a.tanggal', [$tanggalAwal, $tanggalAkhir]);
+        } else {
+            $query->where('pg.tanggal', '>=', $tigaBulanLalu);
+            $queryAtestasi->where('a.tanggal', '>=', $tigaBulanLalu);
+        }
+
+        $query->union($queryAtestasi);
+
+        $data = DB::table(DB::raw("({$query->toSql()}) as combined"))
+            ->mergeBindings($query)
+            ->orderBy('tanggal', 'desc')
+            ->get();
+
+        $totalAll = $data->count();
+        $totalLaki = $data->where('gender', 'L')->count();
+        $totalPerempuan = $data->where('gender', 'P')->count();
+        $totalPindah = $data->where('sumber', 'Pindah')->count();
+        $totalAtestasi = $data->where('sumber', 'Atestasi Keluar')->count();
+
+        $btn = '';
+        $page = 'Laporan';
+        $judul = 'Laporan Atestasi Keluar';
+        $subjudul = 'Laporan Atestasi Keluar' . ($tanggalAwal && $tanggalAkhir ? " Periode " . Carbon::parse($tanggalAwal)->translatedFormat('d F Y') . " - " . Carbon::parse($tanggalAkhir)->translatedFormat('d F Y') : " dalam 3 bulan terakhir");
         $tombol = $btn;
         $Hjudul = $subjudul;
 
-        return view('laporan.atestasi-keluar', compact('data', 'btn', 'page', 'judul', 'subjudul', 'tombol', 'Hjudul', 'tanggalAwal', 'tanggalAkhir'));
+        return view('laporan.atestasi-keluar', compact(
+            'data', 'page', 'judul', 'subjudul', 'tombol', 'Hjudul',
+            'tanggalAwal', 'tanggalAkhir',
+            'totalAll', 'totalLaki', 'totalPerempuan', 'totalPindah', 'totalAtestasi'
+        ));
     }
 
     public function laporanAtestasiMasuk(Request $request)
-        {
-            $tanggalAwal = $request->input('tanggal_awal');
-            $tanggalAkhir = $request->input('tanggal_akhir');
+    {
+        $tanggalAwal = $request->input('tanggal_awal');
+        $tanggalAkhir = $request->input('tanggal_akhir');
 
-            // Default: 3 bulan terakhir
-            $tigaBulanLalu = Carbon::now()->subMonths(3)->startOfDay();
+        $tigaBulanLalu = Carbon::now()->subMonths(3)->startOfDay();
 
-            $query = Jemaat::where('status_aktif', 'Aktif')
-                ->orderBy('tanggal_terdaftar', 'desc');
+        // Pindah masuk: pindah_gereja where ke=1 (incoming)
+        $queryPindah = DB::table('pindah_gereja as pg')
+            ->join('jemaat as j', 'pg.id_jemaat', '=', 'j.id_jemaat')
+            ->leftJoin('hubungan_keluarga as hk', 'hk.id_jemaat', '=', 'j.id_jemaat')
+            ->leftJoin('kk_jemaat as kk_anggota', 'kk_anggota.id_kk_jemaat', '=', 'hk.id_kk_jemaat')
+            ->leftJoin('kk_jemaat as kk_kk', 'kk_kk.id_jemaat', '=', 'j.id_jemaat')
+            ->where('pg.ke', 1)
+            ->whereNull('pg.deleted_at')
+            ->select(
+                'j.id_jemaat', 'j.nia', 'j.nama_jemaat', 'j.gender', 'j.telepon',
+                'pg.tanggal', 'pg.gereja', 'pg.id_pindah_gereja', 'pg.setuju',
+                DB::raw('COALESCE(kk_kk.alamat, kk_anggota.alamat) as alamat'),
+                DB::raw('COALESCE(kk_kk.id_group_wilayah, kk_anggota.id_group_wilayah) as id_group_wilayah'),
+                DB::raw("'Pindah' as sumber")
+            );
 
-            if ($tanggalAwal && $tanggalAkhir) {
-                $query->whereBetween('tanggal_terdaftar', [$tanggalAwal, $tanggalAkhir]);
-            } else {
-                $query->where('tanggal_terdaftar', '>=', $tigaBulanLalu);
-            }
+        // Atestasi masuk: atestasi where masuk=1 (incoming)
+        $queryAtestasi = DB::table('atestasi as a')
+            ->join('jemaat as j', 'a.id_jemaat', '=', 'j.id_jemaat')
+            ->leftJoin('hubungan_keluarga as hk', 'hk.id_jemaat', '=', 'j.id_jemaat')
+            ->leftJoin('kk_jemaat as kk_anggota', 'kk_anggota.id_kk_jemaat', '=', 'hk.id_kk_jemaat')
+            ->leftJoin('kk_jemaat as kk_kk', 'kk_kk.id_jemaat', '=', 'j.id_jemaat')
+            ->where('a.masuk', 1)
+            ->whereNull('a.deleted_at')
+            ->select(
+                'j.id_jemaat', 'j.nia', 'j.nama_jemaat', 'j.gender', 'j.telepon',
+                'a.tanggal', 'a.gereja', 'a.id_atestasi as id_pindah_gereja', 'a.setuju',
+                DB::raw('COALESCE(kk_kk.alamat, kk_anggota.alamat) as alamat'),
+                DB::raw('COALESCE(kk_kk.id_group_wilayah, kk_anggota.id_group_wilayah) as id_group_wilayah'),
+                DB::raw("'Atestasi Masuk' as sumber")
+            );
 
-            $data = $query->get();
-
-            $title  = 'Hapus Data!';
-            $text   = "Data akan dihapus, Anda Yakin?";
-            $btn    = '';
-            $page   = 'Administrasi';
-            $judul  = 'Data Jemaat Atestasi Masuk';
-            $subjudul = 'Data Jemaat Atestasi Masuk' . ($tanggalAwal && $tanggalAkhir ? " Periode " . Carbon::parse($tanggalAwal)->translatedFormat('d F Y') . " - " . Carbon::parse($tanggalAkhir)->translatedFormat('d F Y') : " dalam 3 bulan terakhir");
-            $tombol = $btn;
-            $Hjudul = $subjudul;
-
-            return view('laporan.atestasi-masuk', compact('data', 'btn', 'page', 'judul', 'subjudul', 'tombol', 'Hjudul', 'tanggalAwal', 'tanggalAkhir'));
+        if ($tanggalAwal && $tanggalAkhir) {
+            $queryPindah->whereBetween('pg.tanggal', [$tanggalAwal, $tanggalAkhir]);
+            $queryAtestasi->whereBetween('a.tanggal', [$tanggalAwal, $tanggalAkhir]);
+        } else {
+            $queryPindah->where('pg.tanggal', '>=', $tigaBulanLalu);
+            $queryAtestasi->where('a.tanggal', '>=', $tigaBulanLalu);
         }
+
+        $queryPindah->union($queryAtestasi);
+
+        $data = DB::table(DB::raw("({$queryPindah->toSql()}) as combined"))
+            ->mergeBindings($queryPindah)
+            ->orderBy('tanggal', 'desc')
+            ->get();
+
+        $totalAll = $data->count();
+        $totalLaki = $data->where('gender', 'L')->count();
+        $totalPerempuan = $data->where('gender', 'P')->count();
+        $totalPindah = $data->where('sumber', 'Pindah')->count();
+        $totalAtestasi = $data->where('sumber', 'Atestasi Masuk')->count();
+
+        $btn = '';
+        $page = 'Laporan';
+        $judul = 'Laporan Atestasi Masuk';
+        $subjudul = 'Laporan Atestasi Masuk' . ($tanggalAwal && $tanggalAkhir ? " Periode " . Carbon::parse($tanggalAwal)->translatedFormat('d F Y') . " - " . Carbon::parse($tanggalAkhir)->translatedFormat('d F Y') : " dalam 3 bulan terakhir");
+        $tombol = $btn;
+        $Hjudul = $subjudul;
+
+        return view('laporan.atestasi-masuk', compact(
+            'data', 'page', 'judul', 'subjudul', 'tombol', 'Hjudul',
+            'tanggalAwal', 'tanggalAkhir',
+            'totalAll', 'totalLaki', 'totalPerempuan', 'totalPindah', 'totalAtestasi'
+        ));
+    }
 
     public function laporanMeninggal(Request $request)
     {

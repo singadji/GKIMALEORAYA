@@ -190,15 +190,26 @@
                                             <select class="form-control form-control-sm status-aktif-select" required name="status_aktif_kk" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                                 <option value="Aktif" {{ ($kepalaKeluarga->jemaatKK->status_aktif ?? '') == 'Aktif' ? 'selected' : '' }}>Aktif</option>
                                                 <option value="Pasif" {{ ($kepalaKeluarga->jemaatKK->status_aktif ?? '') == 'Pasif' ? 'selected' : '' }}>Pasif</option>
-                                                <option value="Atestasi Keluar" {{ ($kepalaKeluarga->jemaatKK->status_aktif ?? '') == 'Atestasi Keluar' ? 'selected' : '' }}>Atestasi Keluar</option>
-                                                <option value="Pindah Gereja" {{ ($kepalaKeluarga->jemaatKK->status_aktif ?? '') == 'Pindah Gereja' ? 'selected' : '' }}>Pindah Gereja</option>
                                                 <option value="Meninggal Dunia" {{ ($kepalaKeluarga->jemaatKK->status_aktif ?? '') == 'Meninggal Dunia' ? 'selected' : '' }}>Meninggal Dunia</option>
                                                 <option value="Bukan Anggota" {{ ($kepalaKeluarga->jemaatKK->status_aktif ?? '') == 'Bukan Anggota' ? 'selected' : '' }}>Bukan Anggota</option>
                                                 <option value="Tidak Aktif" {{ ($kepalaKeluarga->jemaatKK->status_aktif ?? '') == 'Tidak Aktif' ? 'selected' : '' }}>Tidak Aktif</option>
                                             </select>
-                                            <input type="hidden" id="tanggal_pindah_kk" name="tanggal_pindah_kk">
-                                            <input type="hidden" id="gereja_tujuan_kk" name="gereja_tujuan_kk">
-                                            <input type="hidden" id="tanggal_meninggal_kk" name="tanggal_meninggal_kk">
+                                            <div id="detail-perpindahan-kk" class="mt-2" style="display: none;">
+                                                <div class="row g-2">
+                                                    <div class="col-md-6">
+                                                        <label class="form-label fw-bold small">Tanggal Pindah</label>
+                                                        <input type="date" class="form-control form-control-sm" id="tanggal_pindah_kk" name="tanggal_pindah_kk">
+                                                    </div>
+                                                    <div class="col-md-6">
+                                                        <label class="form-label fw-bold small">Gereja Tujuan</label>
+                                                        <input type="text" class="form-control form-control-sm" id="gereja_tujuan_kk" name="gereja_tujuan_kk" placeholder="Nama gereja tujuan">
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div id="detail-meninggal-kk" class="mt-2" style="display: none;">
+                                                <label class="form-label fw-bold small">Tanggal Meninggal</label>
+                                                <input type="date" class="form-control form-control-sm" id="tanggal_meninggal_kk" name="tanggal_meninggal_kk">
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
@@ -364,15 +375,26 @@
                                                         <select class="form-control form-control-sm status-aktif-select" required name="status_aktif[]" {{ isset($anggotaKeluarga) ? 'disabled' : '' }}>
                                                             <option value="Aktif" {{ ($anggota->jemaat->status_aktif ?? '') == 'Aktif' ? 'selected' : '' }}>Aktif</option>
                                                             <option value="Pasif" {{ ($anggota->jemaat->status_aktif ?? '') == 'Pasif' ? 'selected' : '' }}>Pasif</option>
-                                                            <option value="Atestasi Keluar" {{ ($anggota->jemaat->status_aktif ?? '') == 'Atestasi Keluar' ? 'selected' : '' }}>Atestasi Keluar</option>
-                                                            <option value="Pindah Gereja" {{ ($anggota->jemaat->status_aktif ?? '') == 'Pindah Gereja' ? 'selected' : '' }}>Pindah Gereja</option>
                                                             <option value="Meninggal Dunia" {{ ($anggota->jemaat->status_aktif ?? '') == 'Meninggal Dunia' ? 'selected' : '' }}>Meninggal Dunia</option>
                                                             <option value="Bukan Anggota" {{ ($anggota->jemaat->status_aktif ?? '') == 'Bukan Anggota' ? 'selected' : '' }}>Bukan Anggota</option>
                                                             <option value="Tidak Aktif" {{ ($anggota->jemaat->status_aktif ?? '') == 'Tidak Aktif' ? 'selected' : '' }}>Tidak Aktif</option>
                                                         </select>
-                                                        <input type="hidden" name="tanggal_pindah[]" class="tanggal-pindah">
-                                                        <input type="hidden" name="gereja_tujuan[]" class="gereja-tujuan">
-                                                        <input type="hidden" name="tanggal_meninggal[]" class="tanggal-meninggal">
+                                                        <div class="detail-perpindahan mt-2" style="display: none;">
+                                                            <div class="row g-2">
+                                                                <div class="col-md-6">
+                                                                    <label class="form-label fw-bold small">Tanggal Pindah</label>
+                                                                    <input type="date" class="form-control form-control-sm tanggal-pindah" name="tanggal_pindah[]">
+                                                                </div>
+                                                                <div class="col-md-6">
+                                                                    <label class="form-label fw-bold small">Gereja Tujuan</label>
+                                                                    <input type="text" class="form-control form-control-sm gereja-tujuan" name="gereja_tujuan[]" placeholder="Nama gereja tujuan">
+                                                                </div>
+                                                            </div>
+                                                        </div>
+                                                        <div class="detail-meninggal mt-2" style="display: none;">
+                                                            <label class="form-label fw-bold small">Tanggal Meninggal</label>
+                                                            <input type="date" class="form-control form-control-sm tanggal-meninggal" name="tanggal_meninggal[]">
+                                                        </div>
                                                     </div>
                                                 </td>
                                                 <td>
@@ -400,55 +422,7 @@
             </div>
         </div>
 
-    <!-- Modal Status Perpindahan -->
-    <div class="modal fade" id="popupStatus" tabindex="-1" aria-labelledby="popupLabel" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header py-2">
-                    <h6 class="modal-title" id="popupLabel">Detail Perpindahan</h6>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group mb-3">
-                        <label class="form-label fw-bold small">Tanggal Pindah</label>
-                        <input type="date" class="form-control form-control-sm" id="tanggalPindah">
-                    </div>
-                    <div class="form-group mb-0">
-                        <label class="form-label fw-bold small">Gereja Tujuan</label>
-                        <input type="text" class="form-control form-control-sm" id="gerejaTujuan" placeholder="Nama gereja tujuan">
-                    </div>
-                </div>
-                <div class="modal-footer py-2">
-                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-primary btn-sm" id="savePopup">Lanjut</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Modal Meninggal Dunia -->
-    <div class="modal fade" id="popupMeninggal" tabindex="-1" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header py-2">
-                    <h6 class="modal-title">Tanggal Meninggal Dunia</h6>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Tutup"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="form-group mb-0">
-                        <label class="form-label fw-bold small">Tanggal Meninggal</label>
-                        <input type="date" id="tanggalMeninggal" class="form-control form-control-sm">
-                    </div>
-                </div>
-                <div class="modal-footer py-2">
-                    <button type="button" class="btn btn-secondary btn-sm" data-bs-dismiss="modal">Batal</button>
-                    <button type="button" class="btn btn-primary btn-sm" id="saveTanggalMeninggal">Lanjut</button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-        @include('layouts.footers.auth.footer')
+    @include('layouts.footers.auth.footer')
     </div>
 
     <style>
@@ -498,8 +472,6 @@
                         <select class="form-control form-control-sm status-aktif-select" required name="status_aktif[]">
                             <option value="Aktif">Aktif</option>
                             <option value="Pasif">Pasif</option>
-                            <option value="Atestasi Keluar">Atestasi Keluar</option>
-                            <option value="Pindah Gereja">Pindah Gereja</option>
                             <option value="Meninggal Dunia">Meninggal Dunia</option>
                             <option value="Bukan Anggota">Bukan Anggota</option>
                             <option value="Tidak Aktif">Tidak Aktif</option>
@@ -651,7 +623,7 @@
                     let message = 'Gagal menyimpan data.';
                     if (xhr.status === 409) { message = 'Data sudah pernah ditambahkan sebelumnya.'; }
                     Swal.fire({ icon: 'error', title: 'Oops...', text: message, confirmButtonColor: '#d33' });
-                }
+}
             });
         });
 
@@ -663,7 +635,7 @@
     </script>
 
     <script>
-document.addEventListener('DOMContentLoaded', function () {
+        document.addEventListener('DOMContentLoaded', function () {
             console.log('DOMContentLoaded - attaching event listeners');
             
             const selects = document.querySelectorAll('.status-aktif-select');
@@ -672,136 +644,60 @@ document.addEventListener('DOMContentLoaded', function () {
             selects.forEach(select => {
                 select.addEventListener('change', function () {
                     const value = this.value;
+                    const isKK = this.name === 'status_aktif_kk';
+                    const detailDiv = isKK ? document.getElementById('detail-perpindahan-kk') : this.closest('td').querySelector('.status-row1');
+                    const meninggalDiv = isKK ? document.getElementById('detail-meninggal-kk') : this.closest('td').querySelector('.tanggal-meninggal').parentElement;
+                    
+                    // Hide all detail divs first
+                    if (isKK) {
+                        document.getElementById('detail-perpindahan-kk').style.display = 'none';
+                        document.getElementById('detail-meninggal-kk').style.display = 'none';
+                    } else {
+                        const statusRow = this.closest('td').querySelector('.status-row1');
+                        if (statusRow) {
+                            const perpindahanDiv = statusRow.querySelector('.detail-perpindahan');
+                            const meninggalDiv = statusRow.querySelector('.detail-meninggal');
+                            if (perpindahanDiv) perpindahanDiv.style.display = 'none';
+                            if (meninggalDiv) meninggalDiv.style.display = 'none';
+                        }
+                    }
+                    
                     console.log('Status changed to:', value);
                     if (value === 'Atestasi Keluar' || value === 'Pindah Gereja') {
-                        document.getElementById('tanggalPindah').value = '';
-                        document.getElementById('gerejaTujuan').value = '';
-                        window.activeSelect = this;
-                        $('#popupStatus').modal('show');
+                        if (isKK) {
+                            document.getElementById('detail-perpindahan-kk').style.display = 'block';
+                            document.getElementById('tanggal_pindah_kk').value = '';
+                            document.getElementById('gereja_tujuan_kk').value = '';
+                        } else {
+                            const statusRow = this.closest('td').querySelector('.status-row1');
+                            const perpindahanDiv = statusRow?.querySelector('.detail-perpindahan');
+                            if (perpindahanDiv) {
+                                perpindahanDiv.style.display = 'block';
+                                perpindahanDiv.querySelector('.tanggal-pindah').value = '';
+                                perpindahanDiv.querySelector('.gereja-tujuan').value = '';
+                            }
+                        }
                     } else if (value === 'Meninggal Dunia') {
-                        document.getElementById('tanggalMeninggal').value = '';
-                        window.activeSelect = this;
-                        $('#popupMeninggal').modal('show');
+                        if (isKK) {
+                            document.getElementById('detail-meninggal-kk').style.display = 'block';
+                            document.getElementById('tanggal_meninggal_kk').value = '';
+                        } else {
+                            const statusRow = this.closest('td').querySelector('.status-row1');
+                            const meninggalDiv = statusRow?.querySelector('.detail-meninggal');
+                            if (meninggalDiv) {
+                                meninggalDiv.style.display = 'block';
+                                meninggalDiv.querySelector('.tanggal-meninggal').value = '';
+                            }
+                        }
+                    } else {
+                        // Clear hidden inputs for other statuses
+                        if (isKK) {
+                            document.getElementById('tanggal_pindah_kk').value = '';
+                            document.getElementById('gereja_tujuan_kk').value = '';
+                            document.getElementById('tanggal_meninggal_kk').value = '';
+                        }
                     }
                 });
-            });
-
-            console.log('savePopup element:', document.getElementById('savePopup'));
-            document.getElementById('savePopup').addEventListener('click', function () {
-                console.log('savePopup CLICKED!');
-                const tanggal = document.getElementById('tanggalPindah').value;
-                const gereja = document.getElementById('gerejaTujuan').value;
-                const td = window.activeSelect?.closest('td');
-
-                console.log('savePopup clicked', { 
-                    tanggal, 
-                    gereja, 
-                    activeSelect: window.activeSelect,
-                    activeSelectName: window.activeSelect?.name,
-                    td: td
-                });
-
-                if (window.activeSelect?.name === 'status_aktif_kk') {
-                    document.getElementById('tanggal_pindah_kk').value = tanggal;
-                    document.getElementById('gereja_tujuan_kk').value = gereja;
-                    console.log('Set KK hidden inputs', tanggal, gereja);
-                    $('#popupStatus').modal('hide');
-                    return;
-                }
-
-                // For anggota: find the hidden inputs in the same row
-                let tanggalInput, gerejaInput;
-                
-                if (td) {
-                    // Try status-row1 div first
-                    const statusRow = td.querySelector('.status-row1');
-                    console.log('statusRow found:', statusRow);
-                    if (statusRow) {
-                        tanggalInput = statusRow.querySelector('.tanggal-pindah');
-                        gerejaInput = statusRow.querySelector('.gereja-tujuan');
-                    }
-                }
-                
-                // Fallback: find by index matching the select
-                if (!tanggalInput || !gerejaInput) {
-                    const selects = document.querySelectorAll('select[name="status_aktif[]"]');
-                    const index = Array.from(selects).indexOf(window.activeSelect);
-                    console.log('Active select index:', index);
-                    if (index >= 0) {
-                        const allTanggalInputs = document.querySelectorAll('input[name="tanggal_pindah[]"]');
-                        const allGerejaInputs = document.querySelectorAll('input[name="gereja_tujuan[]"]');
-                        if (allTanggalInputs[index]) tanggalInput = allTanggalInputs[index];
-                        if (allGerejaInputs[index]) gerejaInput = allGerejaInputs[index];
-                    }
-                }
-                
-                // Strategy 3: Find by closest row (tr) then query within that row
-                if (!tanggalInput || !gerejaInput) {
-                    const tr = window.activeSelect?.closest('tr');
-                    console.log('TR found:', tr);
-                    if (tr) {
-                        tanggalInput = tr.querySelector('input[name="tanggal_pindah[]"]');
-                        gerejaInput = tr.querySelector('input[name="gereja_tujuan[]"]');
-                        console.log('Found by TR:', { tanggalInput, gerejaInput });
-                    }
-                }
-
-                console.log('Found inputs:', { tanggalInput, gerejaInput });
-
-                if (tanggalInput) {
-                    tanggalInput.value = tanggal;
-                    console.log('Set tanggal_pindah[] value to:', tanggalInput.value);
-                }
-                if (gerejaInput) {
-                    gerejaInput.value = gereja;
-                    console.log('Set gereja_tujuan[] value to:', gerejaInput.value);
-                }
-                $('#popupStatus').modal('hide');
-            });
-
-            document.getElementById('saveTanggalMeninggal').addEventListener('click', function () {
-                const tanggal = document.getElementById('tanggalMeninggal').value;
-                const td = window.activeSelect?.closest('td');
-
-                if (window.activeSelect?.name === 'status_aktif_kk') {
-                    document.getElementById('tanggal_meninggal_kk').value = tanggal;
-                    $('#popupMeninggal').modal('hide');
-                    return;
-                }
-
-                // For anggota: find hidden input with multiple strategies
-                let tanggalMeninggalInput = null;
-                
-                if (td) {
-                    const statusRow = td.querySelector('.status-row1');
-                    if (statusRow) {
-                        tanggalMeninggalInput = statusRow.querySelector('.tanggal-meninggal');
-                    }
-                }
-                
-                // Fallback: find by index
-                if (!tanggalMeninggalInput) {
-                    const selects = document.querySelectorAll('select[name="status_aktif[]"]');
-                    const index = Array.from(selects).indexOf(window.activeSelect);
-                    if (index >= 0) {
-                        const allInputs = document.querySelectorAll('input[name="tanggal_meninggal[]"]');
-                        if (allInputs[index]) tanggalMeninggalInput = allInputs[index];
-                    }
-                }
-                
-                // Strategy 3: Find by closest TR
-                if (!tanggalMeninggalInput) {
-                    const tr = window.activeSelect?.closest('tr');
-                    if (tr) {
-                        tanggalMeninggalInput = tr.querySelector('input[name="tanggal_meninggal[]"]');
-                    }
-                }
-                
-                if (tanggalMeninggalInput) {
-                    tanggalMeninggalInput.value = tanggal;
-                    console.log('Set tanggal_meninggal[] value to:', tanggalMeninggalInput.value);
-                }
-                $('#popupMeninggal').modal('hide');
             });
         });
     </script>

@@ -10,8 +10,9 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Administrasi\JemaatController;
 use App\Http\Controllers\Administrasi\KKController;
-use App\Http\Controllers\Administrasi\AtestasiController;
 use App\Http\Controllers\Administrasi\BaptisanController;
+use App\Http\Controllers\Administrasi\PindahGerejaKeluarController;
+use App\Http\Controllers\Administrasi\ModulController;
 use App\Http\Controllers\Laporan\LaporanController;
 use App\Http\Controllers\Master\WilayahController;
 use App\Http\Controllers\MainController;
@@ -42,6 +43,7 @@ Route::middleware(['auth', 'active'])->group(function () {
         Route::get('laporan/jemaat-tanggal-daftar', [LaporanController::class, 'laporanJemaatPeriode'])->name('laporan.jemaat-tanggal-daftar');
         Route::get('laporan/jemaat-tanggal-lahir', [LaporanController::class, 'laporanJemaatTanggalLahir'])->name('laporan.jemaat-tanggal-lahir');
         Route::get('laporan/meninggal', [LaporanController::class, 'laporanMeninggal'])->name('laporan.meninggal');
+        Route::get('laporan/atestasi-keluar', [LaporanController::class, 'laporanAtestasiKeluar'])->name('laporan.atestasi-keluar');
         Route::get('laporan/{detail}', [LaporanController::class, 'detail'])->name('laporan.detail');
 
     Route::get('getkecamatan', [WilayahController::class, 'getKecamatan']);
@@ -72,10 +74,10 @@ Route::middleware(['auth', 'active'])->group(function () {
                                         Route::post('data-jemaat/simpan-jemaat', [JemaatController::class, 'simpan'])->name('data-jemaat.simpan');
                     Route::resource('data-jemaat', JemaatController::class);
 
-                    // Atestasi routes - unified for Masuk & Keluar
-                    Route::resource('atestasi', AtestasiController::class);
-                    Route::get('atestasi/create/{type}', [AtestasiController::class, 'create'])->name('atestasi.create');
-                    Route::get('atestasi/cetak/{id}/{type}', [AtestasiController::class, 'cetak'])->name('atestasi.cetak');
+                    // Atestasi Keluar Pindah
+                    Route::resource('pindah-gereja-keluar', PindahGerejaKeluarController::class)->except(['show']);
+                    Route::get('pindah-gereja-keluar/cetak/{id}', [PindahGerejaKeluarController::class, 'cetak'])->name('pindah-gereja-keluar.cetak');
+                    Route::post('pindah-gereja-keluar/{id}/setuju', [PindahGerejaKeluarController::class, 'setuju'])->name('pindah-gereja-keluar.setuju');
 
                     Route::resource('kk', KKController::class);
                     Route::delete('kk/{id}', [KKController::class, 'destroy'])->name('data-kk.destroy');
@@ -84,6 +86,12 @@ Route::middleware(['auth', 'active'])->group(function () {
 
         Route::prefix('master')->name('master.')->group(function () {
             Route::resource('grup-wilayah', WilayahController::class);
+        });
+
+        Route::prefix('admin')->name('admin.')->group(function () {
+            Route::resource('modul', ModulController::class)->except(['show']);
+            Route::post('modul/{id}/toggle-aktif', [ModulController::class, 'toggleAktif'])->name('modul.toggle-aktif');
+            Route::post('modul/{id}/toggle-publish', [ModulController::class, 'togglePublish'])->name('modul.toggle-publish');
         });
     });
 

@@ -24,6 +24,11 @@ class Atestasi extends Model
         return $this->belongsTo(Jemaat::class, 'id_jemaat', 'id_jemaat');
     }
 
+    public function jemaatPindah()
+    {
+        return $this->belongsTo(Jemaat::class, 'id_jemaat', 'id_jemaat');
+    }
+
     protected static function boot()
     {
         parent::boot();

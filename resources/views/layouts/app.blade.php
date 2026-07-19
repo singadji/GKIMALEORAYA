@@ -195,7 +195,6 @@
   <script async defer src="https://buttons.github.io/buttons.js"></script>
     <!-- Control Center for Soft Dashboard: parallax effects, scripts for the example pages etc -->
     <script src="{{asset('argon/js/argon-dashboard.js')}}"></script>
-    @stack('js');
 
 <script src="{{ asset('argon/js/ckeditor.js') }}"></script>
 <script>
@@ -256,6 +255,7 @@
 
    <!-- Specific Page JS goes HERE  -->
   <script src="{{ asset('argon/plugins/custom/datatables/select2.min.js') }}"></script>
+  @stack('js');
   <script src="{{ asset('argon/plugins/custom/datatables/jquery.dataTables.min.js') }}"></script>
   <script src="{{ asset('argon/plugins/custom/datatables/dataTables.bootstrap4.min.js') }}"></script>
   <script src="{{ asset('argon/plugins/custom/datatables/dataTables.select.min.js') }}"></script>
