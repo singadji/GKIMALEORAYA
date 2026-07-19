@@ -74,16 +74,22 @@ public function index(Request $request)
         $query = $this->jemaatService->getJemaatQuery();
 
         if ($statusFilter !== 'semua') {
-            $query->where('status_aktif', $statusFilter);
+            if ($statusFilter === 'Tidak Aktif') {
+                $query->where('status_aktif', 'Tidak Aktif');
+            } else {
+                $query->where('status_aktif', $statusFilter);
+            }
         }
 
         $jemaatList = $query->get();
         $viewModel = new JemaatViewModel($jemaatList);
         $jemaatList = $viewModel->formatted();
 
+        $stats = $this->jemaatService->getStats();
+
         return view(
             "administrasi.jemaat.index",
-            compact("jemaatList", "btn", "page", "judul", "subjudul", "tombol", "statusFilter"),
+            compact("jemaatList", "btn", "page", "judul", "subjudul", "tombol", "statusFilter", "stats"),
         );
     }
 
@@ -309,11 +315,21 @@ public function index(Request $request)
                 $idKepalaKeluargaBaru ?? "./administrasi/data-jemaat/" . $id,
             )->with("success", $successMessage);
         } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Error updating jemaat: ' . $e->getMessage());
-            return redirect()
-                ->back()
-                ->with('error', 'Terjadi kesalahan saat memperbarui data. Silakan hubungi administrator.');
-        }
+                    \Illuminate\Support\Facades\Log::error('Error updating jemaat: ' . $e->getMessage());
+            
+                    // Show validation errors to user
+                    $errorMessage = $e->getMessage();
+                    if (str_contains($errorMessage, 'wajib isi') || str_contains($errorMessage, 'validasi') || str_contains($errorMessage, 'tidak ditemukan')) {
+                        return redirect()
+                            ->back()
+                            ->withInput()
+                            ->with('error', $errorMessage);
+                    }
+            
+                    return redirect()
+                        ->back()
+                        ->with('error', 'Terjadi kesalahan saat memperbarui data. Silakan hubungi administrator.');
+                }
     }
 
     public function destroy($id)
@@ -409,17 +425,29 @@ public function index(Request $request)
     }
 
     public function search(Request $request)
-    {
-        $keyword = $request->get("keyword");
+        {
+            $keyword = $request->get("keyword");
 
-        $results = Jemaat::where("nama_jemaat", "like", "%" . $keyword . "%")
-            //->limit(10)
-            ->get();
+            $results = Jemaat::where("nama_jemaat", "like", "%" . $keyword . "%")
+                    //->limit(10)
+                    ->get();
 
-        return response()->json($results);
-    }
+            return response()->json($results);
+        }
 
-    public function simpan(Request $request)
+        /**
+         * Get jemaat data as JSON for AJAX lookup
+         */
+        public function getJemaatJson($id)
+        {
+            $jemaat = Jemaat::select('id_jemaat', 'nia', 'nama_jemaat', 'gender', 'telepon', 'alamat', 'asal_gereja', 'tanggal_terdaftar', 'status_aktif')
+                ->where('id_jemaat', $id)
+                ->firstOrFail();
+
+            return response()->json($jemaat);
+        }
+
+        public function simpan(Request $request)
     {
         $kk = KkJemaat::where(
             "id_jemaat",

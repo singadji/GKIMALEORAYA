@@ -74,6 +74,24 @@ class JemaatService
         return compact('jemaat', 'kepalaKeluarga', 'anggotaKeluarga', 'id_kk', 'kk_jemaat');
     }
 
+    public function getStats()
+    {
+        $allJemaat = Jemaat::select('id_jemaat', 'status_aktif', 'gender')->get();
+
+        return [
+            'total_jemaat' => $allJemaat->count(),
+            'aktif' => $allJemaat->where('status_aktif', 'Aktif')->count(),
+            'meninggal' => $allJemaat->where('status_aktif', 'Meninggal Dunia')->count(),
+            'atestasi' => $allJemaat->where('status_aktif', 'Atestasi Keluar')->count(),
+            'pasif' => $allJemaat->where('status_aktif', 'Pasif')->count(),
+            'bukan_anggota' => $allJemaat->where('status_aktif', 'Bukan Anggota')->count(),
+            'tidak_aktif' => $allJemaat->where('status_aktif', 'Tidak Aktif')->count(),
+            'laki' => $allJemaat->where('gender', 'L')->count(),
+            'perempuan' => $allJemaat->where('gender', 'P')->count(),
+            'kk' => Jemaat::whereHas('kkJemaat')->count(),
+        ];
+    }
+
     // di App\Services\JemaatService.php
     public function JumlahJemaat($tahunAkhir)
     {
@@ -88,7 +106,14 @@ class JemaatService
                 AND tanggal_baptis IS NOT NULL
         ", [$tahunAkhir]);
 
-        $Jatestasi = Jemaat::where('status_aktif', 'Atestasi Keluar')->count();
+        // Count distinct jemaat with atestasi keluar records (matching detail query logic)
+        $Jatestasi = DB::table('atestasi')
+            ->where('keluar', 1)
+            ->where('tanggal', '<=', $tahunAkhir)
+            ->join('jemaat', 'atestasi.id_jemaat', '=', 'jemaat.id_jemaat')
+            ->distinct('jemaat.id_jemaat')
+            ->count();
+
         $Jpasif = Jemaat::where('status_aktif', 'Pasif')->count();
         $JbukanAnggota = Jemaat::where('status_aktif', 'Bukan Anggota')->count();
         $Jmeninggal = Jemaat::where('status_aktif', 'Meninggal Dunia')->count();

@@ -30,22 +30,27 @@ class JemaatStatusService
     }
 
     private function handleAtestasi($jemaat, $tanggal, $gereja)
-    {
-        $existing = Atestasi::where('id_jemaat', $jemaat->id_jemaat)
-                            ->where('keluar', 1)
-                            ->first();
+        {
+            $existing = Atestasi::where('id_jemaat', $jemaat->id_jemaat)
+                                ->where('keluar', 1)
+                                ->first();
 
-        if (!$existing && (!$tanggal || !$gereja)) {
-            throw new \Exception("Anggota '{$jemaat->nama_jemaat}' wajib isi tanggal & gereja tujuan untuk status 'Atestasi Keluar'.");
-        }
+            // If no existing record, require both fields
+            if (!$existing && (!$tanggal || !$gereja)) {
+                throw new \Exception("Anggota '{$jemaat->nama_jemaat}' wajib isi tanggal & gereja tujuan untuk status 'Atestasi Keluar'.");
+            }
 
-        if ($this->shouldUpdate($existing, $tanggal, $gereja)) {
-            Atestasi::updateOrCreate(
-                ['id_jemaat' => $jemaat->id_jemaat, 'keluar' => 1],
-                ['tanggal' => $tanggal, 'gereja' => $gereja, 'setuju' => 1]
-            );
+            // Always create/update if we have the required data
+            if ($tanggal && $gereja) {
+                Atestasi::updateOrCreate(
+                    ['id_jemaat' => $jemaat->id_jemaat, 'keluar' => 1],
+                    ['tanggal' => $tanggal, 'gereja' => $gereja, 'setuju' => 1]
+                );
+            } elseif ($existing) {
+                // If existing record but no new data, keep existing (don't delete)
+                return;
+            }
         }
-    }
 
     private function handlePindahGereja($jemaat, $tanggal, $gereja)
     {

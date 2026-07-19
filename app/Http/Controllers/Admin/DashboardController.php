@@ -28,6 +28,7 @@ class DashboardController extends Controller
     {
         $tahunAwal = $request->input('tahun_awal', now()->year - 5);
         $tahunAkhir = $request->input('tahun_akhir', now()->year);
+        $tahunAkhirFormatted = $tahunAkhir . '-12-31';
 
         $laporan = DB::select('CALL laporan_keanggotaan(?, ?)', [
             $tahunAwal,
@@ -80,9 +81,9 @@ class DashboardController extends Controller
         }
 
 
-        $tahunG = []; 
+        $tahunG = [];
         $dataG = [];
-        
+
         foreach ($laporan as $row) {
             foreach ($row as $key => $value) {
                 if ($key === 'kategori') {
@@ -97,32 +98,29 @@ class DashboardController extends Controller
                 }
             }
         }
-        
+
         $tahunG = array_keys($tahunG);
         sort($tahunG);
-        
-        $jJ = $jemaatService->JumlahJemaat($tahunAkhir);
-        
+
+        $jJ = $jemaatService->JumlahJemaat($tahunAkhirFormatted);
+
         $tahun = range($tahunAwal, $tahunAkhir);
 
-                $jemaatList = Jemaat::with(['hubunganKeluarga.kkJemaat'])->get();
-
-                return view('admin.dashboard.dashboard', compact('jJ',
-                    'laporan',
-                    'tahunAwal',
-                    'tahunAkhir',
-                    'dataG',
-                    'tahunG',
-                    'lapUmur',
-                    'lapUmurG',
-                    'lapGender',
-                    'lapStatus',
-                    'totalGender',
-                    'totalAll',
-                    'totalTahun',
-                    'tahun',
-                                'jemaatList'
-                            ));
+        return view('admin.dashboard.dashboard', compact('jJ',
+            'laporan',
+            'tahunAwal',
+            'tahunAkhir',
+            'dataG',
+            'tahunG',
+            'lapUmur',
+            'lapUmurG',
+            'lapGender',
+            'lapStatus',
+            'totalGender',
+            'totalAll',
+            'totalTahun',
+            'tahun'
+        ));
     } //
 
     public function detail($detail, JemaatService $jemaatService)
@@ -132,77 +130,66 @@ class DashboardController extends Controller
 
         if($detail == 'atestasi')
         {
-            $item = Jemaat::where('status_aktif', 'Atestasi Keluar')
-                ->where('tanggal_terdaftar', '<=', $tahunAkhir)
-                ->whereHas('atestasiJemaatKeluar')
-                ->with(['atestasiJemaatKeluar', 'kkJemaat', 'hubunganKeluarga.kkJemaat'])
-                ->get();
-            $Hjudul = "<h1>Data Jemaat Atestasi</h1><hr>";
+            // Standard Query Pattern: Distinct Jemaat with latest atestasi per jemaat
+            // Uses MySQL 8 CTE with ROW_NUMBER() to deduplicate
+            $sql = "
+                WITH ranked AS (
+                    SELECT
+                        j.id_jemaat,
+                        j.nia,
+                        j.nama_jemaat,
+                        j.gender,
+                        j.telepon,
+                        j.keterangan,
+                        a.tanggal,
+                        a.gereja,
+                        a.id_atestasi,
+                        COALESCE(kk_kk.alamat, kk_anggota.alamat) as alamat,
+                        COALESCE(kk_kk.id_group_wilayah, kk_anggota.id_group_wilayah) as id_group_wilayah,
+                        ROW_NUMBER() OVER (PARTITION BY j.id_jemaat ORDER BY a.tanggal DESC) as rn
+                    FROM atestasi a
+                    JOIN jemaat j ON a.id_jemaat = j.id_jemaat
+                    LEFT JOIN hubungan_keluarga hk ON hk.id_jemaat = j.id_jemaat
+                    LEFT JOIN kk_jemaat kk_anggota ON kk_anggota.id_kk_jemaat = hk.id_kk_jemaat
+                    LEFT JOIN kk_jemaat kk_kk ON kk_kk.id_jemaat = j.id_jemaat
+                    WHERE a.keluar = 1
+                    AND a.tanggal <= '$tahunAkhir'
+                )
+                SELECT * FROM ranked WHERE rn = 1
+                ORDER BY tanggal DESC
+            ";
 
-            // Ambil nama wilayah
-            $item->each(function ($jemaat) {
-                $wilayahId = $jemaat->kkJemaat->id_group_wilayah ?? optional($jemaat->hubunganKeluarga->kkJemaat)->id_group_wilayah ?? null;
-                $wilayah = $wilayahId ? \App\Models\GroupWilayah::find($wilayahId) : null;
-                $jemaat->nama_wilayah = $wilayah ? $wilayah->nama_group_wilayah : '-';
-            });
+            $item = DB::select($sql);
 
-            // Total atestasi tanpa filter tanggal
-            $totalAtestasiAll = Jemaat::where('status_aktif', 'Atestasi Keluar')
-                ->whereHas('atestasiJemaatKeluar')
+            $totalAtestasiAll = DB::table('atestasi')
+                ->where('keluar', 1)
+                ->where('tanggal', '<=', $tahunAkhir)
+                ->join('jemaat', 'atestasi.id_jemaat', '=', 'jemaat.id_jemaat')
+                ->distinct('jemaat.id_jemaat')
                 ->count();
 
-            // Gereja tujuan terbanyak
-            $gerejaList = $item->pluck('atestasiJemaatKeluar.gereja')->filter()->countBy()->sortDesc()->take(5)->toArray();
+            $Hjudul = "<h1>Data Jemaat Atestasi Keluar</h1><hr>";
+
+            // Ambil nama wilayah
+            foreach ($item as $atestasi) {
+                $wilayahId = $atestasi->id_group_wilayah ?? null;
+                $wilayah = $wilayahId ? \App\Models\GroupWilayah::find($wilayahId) : null;
+                $atestasi->nama_wilayah = $wilayah ? $wilayah->nama_group_wilayah : '-';
+            }
+
+            $gerejaList = collect($item)->pluck('gereja')->filter()->countBy()->sortDesc()->take(5)->toArray();
 
             $stats = [
-                'total' => $item->count(),
+                'total' => count($item),
                 'total_all' => $totalAtestasiAll,
-                'laki_laki' => $item->where('gender', 'Laki-Laki')->count() ?: $item->where('gender', 'L')->count(),
-                'perempuan' => $item->where('gender', 'Perempuan')->count() ?: $item->where('gender', 'P')->count(),
+                'laki_laki' => collect($item)->filter(fn($a) => ($a->gender ?? '') === 'L')->count(),
+                'perempuan' => collect($item)->filter(fn($a) => ($a->gender ?? '') === 'P')->count(),
                 'gereja_list' => $gerejaList,
             ];
 
             return view('admin.dashboard.dashboard', compact('item', 'Hjudul', 'jJ', 'detail', 'stats'));
         }
 
-        if($detail == 'atestasi-masalah')
-        {
-            $Hjudul = "<h1>Data Atestasi - Perlu Perbaikan</h1><hr>";
-
-            // Atestasi keluar tapi tanggal_terdaftar kosong/masa depan ATAU tanpa record atestasiJemaatKeluar
-            $item = Jemaat::where('status_aktif', 'Atestasi Keluar')
-                ->where(function ($query) use ($tahunAkhir) {
-                    $query->whereNull('tanggal_terdaftar')
-                          ->orWhere('tanggal_terdaftar', '>', $tahunAkhir);
-                })
-                ->whereHas('atestasiJemaatKeluar')
-                ->with(['atestasiJemaatKeluar', 'kkJemaat', 'hubunganKeluarga.kkJemaat'])
-                ->get();
-
-            // Juga tampilkan yang punya atestasi tapi tidak punya record atestasiJemaatKeluar
-            $itemNoRecord = Jemaat::where('status_aktif', 'Atestasi Keluar')
-                ->where('tanggal_terdaftar', '<=', $tahunAkhir)
-                ->whereNull('tanggal_terdaftar')
-                ->doesntHave('atestasiJemaatKeluar')
-                ->with(['kkJemaat', 'hubunganKeluarga.kkJemaat'])
-                ->get();
-
-            $item = $item->concat($itemNoRecord);
-
-            $item->each(function ($jemaat) {
-                $wilayahId = $jemaat->kkJemaat->id_group_wilayah ?? optional($jemaat->hubunganKeluarga->kkJemaat)->id_group_wilayah ?? null;
-                $wilayah = $wilayahId ? \App\Models\GroupWilayah::find($wilayahId) : null;
-                $jemaat->nama_wilayah = $wilayah ? $wilayah->nama_group_wilayah : '-';
-            });
-
-            $stats = [
-                'total' => $item->count(),
-                'laki_laki' => $item->where('gender', 'Laki-Laki')->count() ?: $item->where('gender', 'L')->count(),
-                'perempuan' => $item->where('gender', 'Perempuan')->count() ?: $item->where('gender', 'P')->count(),
-            ];
-
-            return view('admin.dashboard.dashboard', compact('item', 'Hjudul', 'jJ', 'detail', 'stats'));
-        }
         if($detail == 'aktif')
         {
             $Hjudul = "<h1>Data Jemaat Aktif</h1><hr>";
@@ -211,7 +198,7 @@ class DashboardController extends Controller
                 ->whereNotNull('tanggal_terdaftar')
                 ->whereNotNull('tanggal_sidi')
                 ->whereNotNull('tanggal_baptis')
-                ->with(['kkJemaat', 'hubunganKeluarga.kkJemaat'])
+                ->with('kkJemaat', 'hubunganKeluarga.kkJemaat')
                 ->get();
 
             // Ambil nama wilayah
@@ -221,53 +208,6 @@ class DashboardController extends Controller
                 $jemaat->nama_wilayah = $wilayah ? $wilayah->nama_group_wilayah : '-';
             });
 
-            // Total semua jemaat dengan data lengkap (sama dengan dashboard: Aktif + Pasif + Bukan Anggota)
-            $totalAktifAll = Jemaat::whereIn('status_aktif', ['Aktif', 'Pasif', 'Bukan Anggota'])
-                ->where('tanggal_terdaftar', '<=', $tahunAkhir)
-                ->whereNotNull('tanggal_terdaftar')
-                ->whereNotNull('tanggal_sidi')
-                ->whereNotNull('tanggal_baptis')
-                ->whereNotNull('tanggal_lahir')
-                ->count();
-
-            // Hitung yang tanggal_lahir kosong (belumlah lengkap)
-            $belumLengkap = $item->filter(function ($j) {
-                return empty($j->tanggal_lahir);
-            })->count();
-
-            $stats = [
-                'total' => $item->count(),
-                'total_all' => $totalAktifAll,
-                'laki_laki' => $item->where('gender', 'Laki-Laki')->count() ?: $item->where('gender', 'L')->count(),
-                'perempuan' => $item->where('gender', 'Perempuan')->count() ?: $item->where('gender', 'P')->count(),
-                'dewasa' => $item->filter(function ($j) {
-                    return $j->tanggal_lahir && \Carbon\Carbon::parse($j->tanggal_lahir)->age >= 18;
-                })->count(),
-                'anak' => $item->filter(function ($j) {
-                    return $j->tanggal_lahir && \Carbon\Carbon::parse($j->tanggal_lahir)->age < 18;
-                })->count(),
-            ];
-
-            return view('admin.dashboard.dashboard', compact('item', 'Hjudul', 'jJ', 'detail', 'stats'));
-        }
-        if($detail == 'aktif-masalah')
-        {
-            $Hjudul = "<h1>Data Jemaat Aktif - Belum Lengkap (tanggal_lahir kosong)</h1><hr>";
-
-            // Jemaat Aktif yang tanggal_lahir kosong (semua yang belum lengkap)
-            $item = Jemaat::where('status_aktif', 'Aktif')
-                ->where('tanggal_terdaftar', '<=', $tahunAkhir)
-                ->whereNotNull('tanggal_terdaftar')
-                ->whereNull('tanggal_lahir')
-                ->with(['kkJemaat', 'hubunganKeluarga.kkJemaat'])
-                ->get();
-
-            $item->each(function ($jemaat) {
-                $wilayahId = $jemaat->kkJemaat->id_group_wilayah ?? optional($jemaat->hubunganKeluarga->kkJemaat)->id_group_wilayah ?? null;
-                $wilayah = $wilayahId ? \App\Models\GroupWilayah::find($wilayahId) : null;
-                $jemaat->nama_wilayah = $wilayah ? $wilayah->nama_group_wilayah : '-';
-            });
-
             $stats = [
                 'total' => $item->count(),
                 'laki_laki' => $item->where('gender', 'Laki-Laki')->count() ?: $item->where('gender', 'L')->count(),
@@ -276,81 +216,58 @@ class DashboardController extends Controller
 
             return view('admin.dashboard.dashboard', compact('item', 'Hjudul', 'jJ', 'detail', 'stats'));
         }
+
         if($detail == 'kepala-keluarga')
         {
             $Hjudul = "<h1>Data Kepala Keluarga</h1><hr>";
+            // All active KK (jemaat aktif with KK)
             $item = Jemaat::where('status_aktif', 'Aktif')
                 ->whereHas('kkJemaat')
-                ->where('tanggal_terdaftar', '<=', $tahunAkhir)
-                ->with(['kkJemaat', 'kkJemaat.anggotaKeluarga', 'hubunganKeluarga.kkJemaat'])
+                ->with('kkJemaat.anggotaKeluarga', 'hubunganKeluarga.kkJemaat')
                 ->get();
 
-            // [ENHANCED] Hitung jumlah anggota per KK & ambil nama wilayah
+            // Ambil nama wilayah
             $item->each(function ($jemaat) {
-                if ($jemaat->kkJemaat) {
-                    $jemaat->jumlah_anggota = $jemaat->kkJemaat->anggotaKeluarga->count();
-                    $wilayah = \App\Models\GroupWilayah::find($jemaat->kkJemaat->id_group_wilayah);
-                    $jemaat->nama_wilayah = $wilayah ? $wilayah->nama_group_wilayah : '-';
-                } else {
-                    $jemaat->jumlah_anggota = 0;
-                    $jemaat->nama_wilayah = '-';
-                }
+                $wilayahCode = optional($jemaat->kkJemaat)->id_group_wilayah;
+                $jemaat->nama_wilayah = $wilayahCode ? 'Wilayah ' . $wilayahCode : '-';
             });
 
-            // [ENHANCED] Hitung total KK (tanpa filter tanggal) untuk perbandingan
-            $totalKKAll = Jemaat::where('status_aktif', 'Aktif')
-                ->whereHas('kkJemaat')
-                ->count();
+            $activeKkIds = $item->pluck('kkJemaat.id_kk_jemaat')->filter()->values();
+            $totalAnggotaKeluarga = $activeKkIds->isEmpty()
+                ? 0
+                : DB::table('hubungan_keluarga')
+                    ->whereIn('id_kk_jemaat', $activeKkIds)
+                    ->whereNull('deleted_at')
+                    ->count();
 
-            // Summary stats
-            $stats = [
-                'total_kk' => $item->count(),
-                'total_kk_all' => $totalKKAll,
-                'laki_laki' => $item->where('gender', 'Laki-Laki')->count() ?: $item->where('gender', 'L')->count(),
-                'perempuan' => $item->where('gender', 'Perempuan')->count() ?: $item->where('gender', 'P')->count(),
-                'total_anggota' => $item->sum('jumlah_anggota'),
-            ];
+            // Problematic: null or future tanggal_terdaftar
+            $problematicCount = $item->filter(function ($j) use ($tahunAkhir) {
+                return is_null($j->tanggal_terdaftar) || $j->tanggal_terdaftar > $tahunAkhir;
+            })->count();
 
-            return view('admin.dashboard.dashboard', compact('item', 'Hjudul', 'jJ', 'detail', 'stats'));
-        }
-
-        if($detail == 'kepala-keluarga-masalah')
-        {
-            $Hjudul = "<h1>Data Kepala Keluarga - Perlu Perbaikan tanggal_terdaftar</h1><hr>";
-
-            // KK aktif tapi tanggal_terdaftar kosong atau di masa depan
-            $item = Jemaat::where('status_aktif', 'Aktif')
-                ->whereHas('kkJemaat')
-                ->where(function ($query) use ($tahunAkhir) {
-                    $query->whereNull('tanggal_terdaftar')
-                          ->orWhere('tanggal_terdaftar', '>', $tahunAkhir);
-                })
-                ->with(['kkJemaat', 'kkJemaat.anggotaKeluarga', 'hubunganKeluarga.kkJemaat'])
-                ->get();
-
-            $item->each(function ($jemaat) {
-                if ($jemaat->kkJemaat) {
-                    $jemaat->jumlah_anggota = $jemaat->kkJemaat->anggotaKeluarga->count();
-                    $wilayah = \App\Models\GroupWilayah::find($jemaat->kkJemaat->id_group_wilayah);
-                    $jemaat->nama_wilayah = $wilayah ? $wilayah->nama_group_wilayah : '-';
-                } else {
-                    $jemaat->jumlah_anggota = 0;
-                    $jemaat->nama_wilayah = '-';
-                }
-            });
+            // KK stats (exclude deleted)
+            $totalKkDb = DB::table('kk_jemaat')->whereNull('deleted_at')->count(); // 601
+            $deletedKk = DB::table('kk_jemaat')->whereNotNull('deleted_at')->count(); // 17
+            $kkWithActiveHead = DB::table('kk_jemaat')
+                ->join('jemaat', 'kk_jemaat.id_jemaat', '=', 'jemaat.id_jemaat')
+                ->where('jemaat.status_aktif', 'Aktif')
+                ->whereNull('kk_jemaat.deleted_at')
+                ->count(); // 376
 
             $stats = [
-                'total_kk' => $item->count(),
-                'laki_laki' => $item->where('gender', 'Laki-Laki')->count() ?: $item->where('gender', 'L')->count(),
-                'perempuan' => $item->where('gender', 'Perempuan')->count() ?: $item->where('gender', 'P')->count(),
-                'total_anggota' => $item->sum('jumlah_anggota'),
+                'total' => $item->count(), // 376
+                'laki_laki' => $item->where('gender', 'L')->count(),
+                'perempuan' => $item->where('gender', 'P')->count(),
+                'total_anggota' => $totalAnggotaKeluarga,
+                'total_kk_db' => $totalKkDb, // 601
+                'deleted_kk' => $deletedKk, // 17
+                'kk_with_active_head' => $kkWithActiveHead, // 376
+                'problematic' => $problematicCount, // 13
             ];
 
-            return view('admin.dashboard.dashboard', compact('item', 'Hjudul', 'jJ', 'detail', 'stats'));
+           return view('admin.dashboard.dashboard', compact('item', 'Hjudul', 'jJ', 'detail', 'stats'));
         }
 
-        $Hjudul = strtoupper($Hjudul);
-
-        return view('admin.dashboard.dashboard', compact('item', 'Hjudul', 'jJ', 'detail'));
+        return view('admin.dashboard.dashboard', compact('jJ'));
     }
 }

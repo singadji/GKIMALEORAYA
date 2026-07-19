@@ -78,7 +78,7 @@
                         ($item->status_aktif == 'Meninggal Dunia' ? 'badge-danger' :
                         ($item->status_aktif == 'Atestasi' ? 'badge-warning' : 'badge-danger'));
         @endphp
-        <span class="badge {{ $badgeClass }}" style="font-size: 0.75rem; padding: 0.35em 0.65em;">
+        <span class="badge {{ $badgeClass }}" style="font-size: 0.65rem; padding: 0.25em 0.5em;">
             {{ $item->status_aktif }}
         </span>
     </td>

@@ -40,16 +40,16 @@
 @endsection
 
 @php
-    $totalJemaat = $jemaatList->count();
-    $totalAktif = $jemaatList->where('status_aktif', 'Aktif')->count();
-    $totalMeninggal = $jemaatList->where('status_aktif', 'Meninggal Dunia')->count();
-    $totalAtestasi = $jemaatList->where('status_aktif', 'Atestasi Keluar')->count();
-    $totalPasif = $jemaatList->where('status_aktif', 'Pasif')->count();
-    $totalBukanAnggota = $jemaatList->where('status_aktif', 'Bukan Anggota')->count();
-    $totalTidakAktif = $totalPasif + $totalBukanAnggota;
-    $totalLaki = $jemaatList->where('gender', 'L')->count();
-    $totalPerempuan = $jemaatList->where('gender', 'P')->count();
-    $totalKK = $jemaatList->where('is_kk', true)->count();
+    $totalJemaat = $stats['total_jemaat'];
+    $totalAktif = $stats['aktif'];
+    $totalMeninggal = $stats['meninggal'];
+    $totalAtestasi = $stats['atestasi'];
+    $totalPasif = $stats['pasif'];
+    $totalBukanAnggota = $stats['bukan_anggota'];
+    $totalTidakAktif = $stats['tidak_aktif'];
+    $totalLaki = $stats['laki'];
+    $totalPerempuan = $stats['perempuan'];
+    $totalKK = $stats['kk'];
 @endphp
 
 <div class="container-fluid mt--6">

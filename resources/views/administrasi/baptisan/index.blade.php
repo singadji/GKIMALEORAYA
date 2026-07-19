@@ -4,7 +4,7 @@
 @section('content')
 
 @include('layouts.navbars.auth.topnav')
-@php 
+@php
     use Carbon\Carbon;
 @endphp
     @section('alert-error')
@@ -14,7 +14,7 @@
                 <div class="alert alert-danger" role="alert">
                     <button type="button" class="close" data-dismiss="alert" aria-label="Close"><span
                             aria-hidden="true">×</span></button>
-                    <strong>Oops, terjadi kesalahan. </strong> 
+                    <strong>Oops, terjadi kesalahan. </strong>
                     <ul style="font-size:12px;margin-top:5px;">
                         @foreach ($errors->all() as $error)
                         <li> &nbsp; - {{ $error }}</li>
@@ -24,7 +24,7 @@
             </div>
         @endif
     @endsection
-         
+
     <div class="container-fluid mt--6">
         <div class="card mb-10">
             <div class="card-header mb-0">
@@ -57,7 +57,7 @@
                         <tbody>
                             @php $no = 1; @endphp
                             @foreach($item as $item)
-                                
+
                                 <tr onclick="window.location='{{ route('administrasi.data-jemaat.show', $item->id_jemaat) }}';" style="cursor: pointer;">
                                     <td class="align-middle">{!! $no !!}</td>
                                     <td class="text-center font-weight-bold" width="30px" style="word-wrap: break-word; white-space: normal !important;">
@@ -93,7 +93,7 @@
                                             {{ $item->keterangan }}Belum Sidi
                                         </span>
                                     </td>
-                                    
+
                                 </tr>
                                 @php $no++; @endphp
                             @endforeach

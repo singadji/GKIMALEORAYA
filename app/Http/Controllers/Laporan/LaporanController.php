@@ -71,50 +71,53 @@ class LaporanController extends Controller
     }
 
     public function laporanAtestasiKeluar(Request $request)
-        {
-            $tanggalAwal = $request->input('tanggal_awal');
-            $tanggalAkhir = $request->input('tanggal_akhir');
+    {
+        $tanggalAwal = $request->input('tanggal_awal');
+        $tanggalAkhir = $request->input('tanggal_akhir');
 
-            // Default: 3 bulan terakhir
-            $tigaBulanLalu = Carbon::now()->subMonths(3)->startOfDay();
+        // Standard Query Pattern: CTE with ROW_NUMBER for distinct jemaat
+        $tahunAkhir = $tanggalAkhir ?? (date('Y') . '-12-31');
+        $tahunAwal = $tanggalAwal ?? '0001-01-01';
 
-            $query = DB::table('atestasi')
-                ->join('jemaat', 'atestasi.id_jemaat', '=', 'jemaat.id_jemaat')
-                ->leftJoin('kk_jemaat', 'kk_jemaat.id_jemaat', '=', 'jemaat.id_jemaat')
-                ->where('jemaat.status_aktif', 'Atestasi Keluar')
-                ->where('atestasi.keluar', 1)
-                ->select(
-                    'jemaat.id_jemaat',
-                    'jemaat.nama_jemaat',
-                    'jemaat.nia',
-                    'jemaat.gender',
-                    'atestasi.tanggal',
-                    'atestasi.gereja',
-                    'jemaat.telepon',
-                    'jemaat.keterangan',
-                    'kk_jemaat.alamat'
-                )
-                ->orderBy('atestasi.tanggal', 'desc');
+        $sql = "
+            WITH ranked AS (
+                SELECT
+                    j.id_jemaat,
+                    j.nama_jemaat,
+                    j.nia,
+                    j.gender,
+                    a.tanggal,
+                    a.gereja,
+                    j.telepon,
+                    j.keterangan,
+                    COALESCE(kk_kk.alamat, kk_anggota.alamat) as alamat,
+                    COALESCE(kk_kk.id_group_wilayah, kk_anggota.id_group_wilayah) as id_group_wilayah,
+                    ROW_NUMBER() OVER (PARTITION BY j.id_jemaat ORDER BY a.tanggal DESC) as rn
+                FROM atestasi a
+                JOIN jemaat j ON a.id_jemaat = j.id_jemaat
+                LEFT JOIN hubungan_keluarga hk ON hk.id_jemaat = j.id_jemaat
+                LEFT JOIN kk_jemaat kk_anggota ON kk_anggota.id_kk_jemaat = hk.id_kk_jemaat
+                LEFT JOIN kk_jemaat kk_kk ON kk_kk.id_jemaat = j.id_jemaat
+                WHERE a.keluar = 1
+                AND a.tanggal BETWEEN '$tahunAwal' AND '$tahunAkhir'
+            )
+            SELECT * FROM ranked WHERE rn = 1
+            ORDER BY tanggal DESC
+        ";
 
-            if ($tanggalAwal && $tanggalAkhir) {
-                $query->whereBetween('atestasi.tanggal', [$tanggalAwal, $tanggalAkhir]);
-            } else {
-                $query->where('atestasi.tanggal', '>=', $tigaBulanLalu);
-            }
+        $data = DB::select($sql);
 
-            $data = $query->get();
+        $title  = 'Hapus Data!';
+        $text   = "Data akan dihapus, Anda Yakin?";
+        $btn    = '';
+        $page   = 'Administrasi';
+        $judul  = 'Data Jemaat Atestasi Keluar';
+        $subjudul = 'Data Jemaat Atestasi Keluar' . ($tanggalAwal && $tanggalAkhir ? " Periode " . Carbon::parse($tanggalAwal)->translatedFormat('d F Y') . " - " . Carbon::parse($tanggalAkhir)->translatedFormat('d F Y') : " (Semua Data)");
+        $tombol = $btn;
+        $Hjudul = $subjudul;
 
-            $title  = 'Hapus Data!';
-            $text   = "Data akan dihapus, Anda Yakin?";
-            $btn    = '';
-            $page   = 'Administrasi';
-            $judul  = 'Data Jemaat Atestasi Keluar';
-            $subjudul = 'Data Jemaat Atestasi Keluar' . ($tanggalAwal && $tanggalAkhir ? " Periode " . Carbon::parse($tanggalAwal)->translatedFormat('d F Y') . " - " . Carbon::parse($tanggalAkhir)->translatedFormat('d F Y') : " dalam 3 bulan terakhir");
-            $tombol = $btn;
-            $Hjudul = $subjudul;
-
-            return view('laporan.atestasi-keluar', compact('data', 'btn', 'page', 'judul', 'subjudul', 'tombol', 'Hjudul', 'tanggalAwal', 'tanggalAkhir'));
-        }
+        return view('laporan.atestasi-keluar', compact('data', 'btn', 'page', 'judul', 'subjudul', 'tombol', 'Hjudul', 'tanggalAwal', 'tanggalAkhir'));
+    }
 
     public function laporanAtestasiMasuk(Request $request)
         {

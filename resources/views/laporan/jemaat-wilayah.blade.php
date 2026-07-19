@@ -168,10 +168,9 @@
                                 <th class="text-uppercase font-weight-bolder" width="30px">NIA</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">Nama Jemaat</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">L/P</th>
-                                <th class="text-uppercase font-weight-bolder ps-2">Wilayah</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">Tgl Lahir</th>
-                                <th class="text-uppercase font-weight-bolder ps-2">Tgl Baptis</th>
-                                <th class="text-uppercase font-weight-bolder ps-2">Tgl Sidi</th>
+                                <th class="text-uppercase font-weight-bolder ps-2">Alamat</th>
+                                <th class="text-uppercase font-weight-bolder ps-2">No. Telepon</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">Status Nikah</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">Tgl Terdaftar</th>
                             </tr>
@@ -195,17 +194,14 @@
                                             <span class="badge bg-secondary">{{ $item->gender }}</span>
                                         @endif
                                     </td>
-                                    <td class="align-left">
-                                        <span class="badge bg-info text-white">{{ $item->id_group_wilayah ? 'Wilayah '.$item->id_group_wilayah : '-' }}</span>
-                                    </td>
                                     <td class="text-center">
                                         {{ $item->tanggal_lahir ? \Carbon\Carbon::parse($item->tanggal_lahir)->translatedFormat('d M Y') : '-' }}
                                     </td>
-                                    <td class="text-center">
-                                        {{ ($item->tanggal_baptis && $item->tanggal_baptis != '1900-01-01') ? \Carbon\Carbon::parse($item->tanggal_baptis)->translatedFormat('d M Y') : '-' }}
+                                    <td class="text-left" style="max-width: 250px; white-space: normal; word-wrap: break-word;">
+                                        {{ $item->alamat ?? '-' }}
                                     </td>
                                     <td class="text-center">
-                                        {{ ($item->tanggal_sidi && $item->tanggal_sidi != '1900-01-01') ? \Carbon\Carbon::parse($item->tanggal_sidi)->translatedFormat('d M Y') : '-' }}
+                                        {{ $item->telepon ?? '-' }}
                                     </td>
                                     <td class="text-center">
                                         @if($item->status_menikah)
@@ -253,22 +249,21 @@
                                     <th style="background:#f2f2f2;">Tgl Daftar</th>
                                 </tr>
                             </thead>
-                            <tbody>
-                                @for($i = 0; $i < 5; $i++)
-                                <tr>
-                                    <td><div class="skeleton-line" style="width:20px;height:14px;background:#e9ecef;border-radius:4px;"></div></td>
-                                    <td><div class="skeleton-line" style="width:60px;height:14px;background:#e9ecef;border-radius:4px;"></div></td>
-                                    <td><div class="skeleton-line" style="width:140px;height:14px;background:#e9ecef;border-radius:4px;"></div></td>
-                                    <td><div class="skeleton-line" style="width:25px;height:14px;background:#e9ecef;border-radius:4px;"></div></td>
-                                    <td><div class="skeleton-line" style="width:60px;height:14px;background:#e9ecef;border-radius:4px;"></div></td>
-                                    <td><div class="skeleton-line" style="width:80px;height:14px;background:#e9ecef;border-radius:4px;"></div></td>
-                                    <td><div class="skeleton-line" style="width:80px;height:14px;background:#e9ecef;border-radius:4px;"></div></td>
-                                    <td><div class="skeleton-line" style="width:80px;height:14px;background:#e9ecef;border-radius:4px;"></div></td>
-                                    <td><div class="skeleton-line" style="width:60px;height:14px;background:#e9ecef;border-radius:4px;"></div></td>
-                                    <td><div class="skeleton-line" style="width:80px;height:14px;background:#e9ecef;border-radius:4px;"></div></td>
-                                </tr>
-                                @endfor
-                            </tbody>
+<tbody>
+                            @for($i = 0; $i < 8; $i++)
+                            <tr>
+                                <td><div class="skeleton-line" style="width:20px;height:14px;background:#e9ecef;border-radius:4px;"></div></td>
+                                <td><div class="skeleton-line" style="width:60px;height:14px;background:#e9ecef;border-radius:4px;"></div></td>
+                                <td><div class="skeleton-line" style="width:140px;height:14px;background:#e9ecef;border-radius:4px;"></div></td>
+                                <td><div class="skeleton-line" style="width:25px;height:14px;background:#e9ecef;border-radius:4px;"></div></td>
+                                <td><div class="skeleton-line" style="width:80px;height:14px;background:#e9ecef;border-radius:4px;"></div></td>
+                                <td><div class="skeleton-line" style="width:180px;height:14px;background:#e9ecef;border-radius:4px;"></div></td>
+                                <td><div class="skeleton-line" style="width:100px;height:14px;background:#e9ecef;border-radius:4px;"></div></td>
+                                <td><div class="skeleton-line" style="width:80px;height:14px;background:#e9ecef;border-radius:4px;"></div></td>
+                                <td><div class="skeleton-line" style="width:100px;height:14px;background:#e9ecef;border-radius:4px;"></div></td>
+                            </tr>
+                            @endfor
+                        </tbody>
                         </table>
                         <style>
                             @keyframes shimmer { 0% { background-position: -400px 0; } 100% { background-position: 400px 0; } }

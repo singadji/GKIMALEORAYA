@@ -682,61 +682,46 @@
             });
 
             document.getElementById('savePopup').addEventListener('click', function () {
-                const tanggal = document.getElementById('tanggalPindah').value;
-                const gereja = document.getElementById('gerejaTujuan').value;
-                const td = window.activeSelect.closest('td');
+                            const tanggal = document.getElementById('tanggalPindah').value;
+                            const gereja = document.getElementById('gerejaTujuan').value;
+                            const td = window.activeSelect.closest('td');
 
-                if (window.activeSelect.name === 'status_aktif_kk') {
-                    document.getElementById('tanggal_pindah_kk').value = tanggal;
-                    document.getElementById('gereja_tujuan_kk').value = gereja;
-                    $('#popupStatus').modal('hide');
-                    return;
-                }
+                            if (window.activeSelect.name === 'status_aktif_kk') {
+                                document.getElementById('tanggal_pindah_kk').value = tanggal;
+                                document.getElementById('gereja_tujuan_kk').value = gereja;
+                                $('#popupStatus').modal('hide');
+                                return;
+                            }
 
-                let tanggalInput = td.querySelector('.tanggal-pindah');
-                let gerejaInput = td.querySelector('.gereja-tujuan');
+                            // Find existing hidden inputs in the status-row1 div (same td)
+                            const statusRow = td.querySelector('.status-row1');
+                            if (!statusRow) return;
+                
+                            let tanggalInput = statusRow.querySelector('.tanggal-pindah');
+                            let gerejaInput = statusRow.querySelector('.gereja-tujuan');
 
-                if (!tanggalInput) {
-                    tanggalInput = document.createElement('input');
-                    tanggalInput.type = 'hidden';
-                    tanggalInput.name = 'tanggal_pindah[]';
-                    tanggalInput.classList.add('tanggal-pindah');
-                    td.appendChild(tanggalInput);
-                }
-                if (!gerejaInput) {
-                    gerejaInput = document.createElement('input');
-                    gerejaInput.type = 'hidden';
-                    gerejaInput.name = 'gereja_tujuan[]';
-                    gerejaInput.classList.add('gereja-tujuan');
-                    td.appendChild(gerejaInput);
-                }
-
-                tanggalInput.value = tanggal;
-                gerejaInput.value = gereja;
-                $('#popupStatus').modal('hide');
-            });
+                            if (tanggalInput) tanggalInput.value = tanggal;
+                            if (gerejaInput) gerejaInput.value = gereja;
+                            $('#popupStatus').modal('hide');
+                        });
 
             document.getElementById('saveTanggalMeninggal').addEventListener('click', function () {
-                const tanggal = document.getElementById('tanggalMeninggal').value;
-                const td = window.activeSelect.closest('td');
+                            const tanggal = document.getElementById('tanggalMeninggal').value;
+                            const td = window.activeSelect.closest('td');
 
-                if (window.activeSelect.name === 'status_aktif_kk') {
-                    document.getElementById('tanggal_meninggal_kk').value = tanggal;
-                    $('#popupMeninggal').modal('hide');
-                    return;
-                }
+                            if (window.activeSelect.name === 'status_aktif_kk') {
+                                document.getElementById('tanggal_meninggal_kk').value = tanggal;
+                                $('#popupMeninggal').modal('hide');
+                                return;
+                            }
 
-                let tanggalMeninggalInput = td.querySelector('.tanggal-meninggal');
-                if (!tanggalMeninggalInput) {
-                    tanggalMeninggalInput = document.createElement('input');
-                    tanggalMeninggalInput.type = 'hidden';
-                    tanggalMeninggalInput.name = 'tanggal_meninggal[]';
-                    tanggalMeninggalInput.classList.add('tanggal-meninggal');
-                    td.appendChild(tanggalMeninggalInput);
-                }
-                tanggalMeninggalInput.value = tanggal;
-                $('#popupMeninggal').modal('hide');
-            });
+                            const statusRow = td.querySelector('.status-row1');
+                            if (!statusRow) return;
+                
+                            let tanggalMeninggalInput = statusRow.querySelector('.tanggal-meninggal');
+                            if (tanggalMeninggalInput) tanggalMeninggalInput.value = tanggal;
+                            $('#popupMeninggal').modal('hide');
+                        });
         });
     </script>
 

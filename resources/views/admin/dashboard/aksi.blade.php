@@ -59,9 +59,6 @@
                           <tbody>
                               @php $no = 1; @endphp
                               @foreach($item as $item)
-                                  @php
-                                      $isKK = $item->kkJemaat ? true : false;
-                                  @endphp
                                   <tr onclick="window.location='{{ route('administrasi.data-jemaat.show', $item->id_jemaat) }}';" style="cursor: pointer;">
                                       <td class="align-middle">{!! $no !!}</td>
                                       <td class="text-center font-weight-bold" width="30px" style="word-wrap: break-word; white-space: normal !important;">
@@ -69,10 +66,10 @@
                                       </td>
                                       <td class="align-left">
                                           {!!  $item->nama_jemaat !!}
-                                          @if($item->status_aktif == "Meninggal Dunia")
+                                          @if(($item->status_aktif ?? null) == "Meninggal Dunia")
                                               <sup><i class="fa fa-solid fa-cross" style="color:purple;"></i></sup>
                                           @endif
-                                          @if($item->status_aktif == "Atestasi")
+                                          @if(($item->status_aktif ?? null) == "Atestasi")
                                               <sup><i class="fa fa-solid fa-share" style="color:red"></i></sup>
                                           @endif
                                       </td>
@@ -80,32 +77,20 @@
                                           {!!  $item->gender !!}
                                       </td>
                                           <td class="text-left" style="max-width: 500px; white-space: normal; word-wrap: break-word;">
-                                          @if($isKK)
-                                              {{ $item->kkJemaat->alamat }} <!-- Alamat dari KK Jemaat -->
-                                          @elseif ($item->hubunganKeluarga && $item->hubunganKeluarga->kkJemaat)
-                                              {{ $item->hubunganKeluarga->kkJemaat->alamat }} <!-- Alamat dari Hubungan Keluarga -->
-                                          @else
-                                              Tidak Diketahui
-                                          @endif
+                                          {{ $item->alamat ?? 'Tidak Diketahui' }}
                                       </td>
-                                      <td class="test-center">
-                                          @if($isKK)
-                                              {{ $item->kkJemaat->id_group_wilayah }} <!-- Alamat dari KK Jemaat -->
-                                          @elseif ($item->hubunganKeluarga && $item->hubunganKeluarga->kkJemaat)
-                                              {{ $item->hubunganKeluarga->kkJemaat->id_group_wilayah }} <!-- Alamat dari Hubungan Keluarga -->
-                                          @else
-                                              Tidak Diketahui
-                                          @endif
-                                      </td>
+<td class="test-center">
+                                           {{ $item->nama_wilayah ?? 'Tidak Diketahui' }}
+                                       </td>
                                       <td class="text-center">
                                           {!!  $item->telepon !!}
                                       </td>
                                       <td class="text-left">
-                                            {{ $item->atestasiJemaatKeluar?->tanggal ? \Carbon\Carbon::parse($item->atestasiJemaatKeluar->tanggal)->translatedFormat('d F Y'): 'Tidak Diketahui' }}
+                                            {{ $item->tanggal ? \Carbon\Carbon::parse($item->tanggal)->translatedFormat('d F Y'): 'Tidak Diketahui' }}
                                       </td>
 
                                         <td class="text-left">
-                                            {{ $item->atestasiJemaatKeluar?->gereja ?? 'Tidak Diketahui' }}  
+                                            {{ $item->gereja ?? 'Tidak Diketahui' }}
                                         </td>
                                   </tr>
                                   @php $no++; @endphp
@@ -128,6 +113,7 @@
                                 <th class="text-uppercase font-weight-bolder ps-2" style="display: none;"><br>Tanggal Nikah</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">Alamat Domisili</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">Wil.</th>
+                                <th class="text-uppercase font-weight-bolder ps-2">Kepala Keluarga</th>
                                 <th class="text-uppercase font-weight-bolder ps-2" style="display: none;">Asal Gereja</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">No. Telepon/HP</th>
                                 <th class="text-uppercase font-weight-bolder ps-2">Status<br>Keanggotaan</th>
@@ -139,14 +125,14 @@
                               @php $no = 1; @endphp
                               @foreach($item as $item)
                                   @php
-                                      $isKK = $item->kkJemaat ? true : false;
+                                      $isKK = optional($item->kkJemaat) ? true : false;
                                   @endphp
                                   <tr onclick="window.location='{{ route('administrasi.data-jemaat.show', $item->id_jemaat) }}';" style="cursor: pointer;">
                                         <td>{!! $isKK ? "<strong>{$loop->iteration}.</strong>" : "{$loop->iteration}." !!}</td>
                                         <td class="text-center font-weight-bold" width="30px">{{ $item->nia }}</td>
                                         <td style="display: none;">
                                             {{ $item->tanggal_terdaftar }}</td>
-                                        
+
                                         <td class="align-left">
                                             {{$item->nama_jemaat}}
                                         </td>
@@ -159,13 +145,16 @@
                                         <td style="display: none;">{{ $item->tanggal_nikah }}</td>
 
                                         <td class="text-left" style="max-width: 500px; white-space: normal; word-wrap: break-word;">
-                                            {{ optional($item->kkJemaat)->alamat 
-                                                ?? optional(optional($item->hubunganKeluarga)->kkJemaat)->alamat 
+                                            {{ optional($item->kkJemaat)->alamat
+                                                ?? optional(optional($item->hubunganKeluarga)->kkJemaat)->alamat
                                                 ?? '-' }}
                                         </td>
 
                                         <td class="align-left">
-                                            {{ optional($item->kkJemaat)->id_group_wilayah ?? optional(optional($item->hubunganKeluarga)->kkJemaat)->id_group_wilayah ?? '-' }}
+                                            {{ $item->nama_wilayah ?? optional($item->kkJemaat)->id_group_wilayah ?? optional(optional($item->hubunganKeluarga)->kkJemaat)->id_group_wilayah ?? '-' }}
+                                        </td>
+                                        <td class="align-left">
+                                            {{ optional($item->kkJemaat)->nama_jemaat ?? optional(optional($item->hubunganKeluarga)->kkJemaat)->nama_jemaat ?? ($isKK ? $item->nama_jemaat : '-') }}
                                         </td>
                                         <td style="display: none;">{{ $item->asal_gereja }}</td>
                                         <td class="text-center">{{ $item->telepon }}</td>

@@ -208,20 +208,22 @@
   </div>
   <!-- Page content -->
   @if(isset($item))
-  @include('admin.dashboard.aksi')
+    @if($detail === 'kepala-keluarga')
+        @include('admin.dashboard.kepala-keluarga')
+    @else
+      @include('admin.dashboard.aksi')
+    @endif
   @else
   <div class="container-fluid mt--6">
     <div class="row">
-    @include('admin.dashboard.usia')
-    @include('admin.dashboard.umurG')
-    @include('admin.dashboard.laporan')
-
+        @include('admin.dashboard.usia')
+        @include('admin.dashboard.umurG')
+        @include('admin.dashboard.laporan')
     </div>
-    @endif
-    <footer class="footer pt-0">
+  </div>
+@endif
     @include('layouts.footers.auth.footer')
-    </footer>
-  </div>
-  </div>
-  
+</div>
+</div>
+
 @endsection

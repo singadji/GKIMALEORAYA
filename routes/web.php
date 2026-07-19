@@ -10,7 +10,7 @@ use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Administrasi\JemaatController;
 use App\Http\Controllers\Administrasi\KKController;
-use App\Http\Controllers\Administrasi\AtestasiKeluarController;
+use App\Http\Controllers\Administrasi\AtestasiController;
 use App\Http\Controllers\Administrasi\BaptisanController;
 use App\Http\Controllers\Laporan\LaporanController;
 use App\Http\Controllers\Master\WilayahController;
@@ -64,18 +64,23 @@ Route::middleware(['auth', 'active'])->group(function () {
         });
 
         Route::prefix('administrasi')->name('administrasi.')->group(function () {
-            Route::post('data-jemaat/import', [JemaatController::class, 'import'])->name('data-jemaat.import');
-            Route::get('data-jemaat/cetak/{par1}', [JemaatController::class, 'cetakJemaat'])->name('data-jemaat.cetak');
-            Route::get('anggota-baptisan', [BaptisanController::class, 'index'])->name('anggota-baptisan');
-            Route::get('data-jemaat/search-jemaat', [JemaatController::class, 'search']);
-            Route::post('data-jemaat/simpan-jemaat', [JemaatController::class, 'simpan'])->name('data-jemaat.simpan');
-            Route::resource('data-jemaat', JemaatController::class);
-            Route::get('atestasi-keluar/cetak/{par1}', [JemaatController::class, 'cetak'])->name('atestasi-keluar.cetak');
-                        Route::resource('atestasi-keluar', AtestasiKeluarController::class);
-                        Route::resource('kk', KKController::class);
-                        Route::delete('kk/{id}', [KKController::class, 'destroy'])->name('data-kk.destroy');
-                        Route::get('kk/createFromJemaat/{id}', [KKController::class, 'createFromJemaat'])->name('data-kk.createFromJemaat');
-        });
+                    Route::post('data-jemaat/import', [JemaatController::class, 'import'])->name('data-jemaat.import');
+                    Route::get('data-jemaat/cetak/{par1}', [JemaatController::class, 'cetakJemaat'])->name('data-jemaat.cetak');
+                    Route::get('anggota-baptisan', [BaptisanController::class, 'index'])->name('anggota-baptisan');
+                    Route::get('data-jemaat/search-jemaat', [JemaatController::class, 'search']);
+                                        Route::get('data-jemaat/json/{id}', [JemaatController::class, 'getJemaatJson'])->name('data-jemaat.json');
+                                        Route::post('data-jemaat/simpan-jemaat', [JemaatController::class, 'simpan'])->name('data-jemaat.simpan');
+                    Route::resource('data-jemaat', JemaatController::class);
+
+                    // Atestasi routes - unified for Masuk & Keluar
+                    Route::resource('atestasi', AtestasiController::class);
+                    Route::get('atestasi/create/{type}', [AtestasiController::class, 'create'])->name('atestasi.create');
+                    Route::get('atestasi/cetak/{id}/{type}', [AtestasiController::class, 'cetak'])->name('atestasi.cetak');
+
+                    Route::resource('kk', KKController::class);
+                    Route::delete('kk/{id}', [KKController::class, 'destroy'])->name('data-kk.destroy');
+                    Route::get('kk/createFromJemaat/{id}', [KKController::class, 'createFromJemaat'])->name('data-kk.createFromJemaat');
+                });
 
         Route::prefix('master')->name('master.')->group(function () {
             Route::resource('grup-wilayah', WilayahController::class);
