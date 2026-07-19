@@ -264,6 +264,15 @@ public function index(Request $request)
 
     public function update(Request $request, $id)
     {
+        \Illuminate\Support\Facades\Log::info('Update request data', [
+            'status_aktif_kk' => $request->status_aktif_kk,
+            'tanggal_pindah_kk' => $request->tanggal_pindah_kk,
+            'gereja_tujuan_kk' => $request->gereja_tujuan_kk,
+            'status_aktif_anggota' => $request->status_aktif ?? [],
+            'tanggal_pindah_anggota' => $request->tanggal_pindah ?? [],
+            'gereja_tujuan_anggota' => $request->gereja_tujuan ?? [],
+        ]);
+
         //dd($request->all());
 
         DB::beginTransaction();

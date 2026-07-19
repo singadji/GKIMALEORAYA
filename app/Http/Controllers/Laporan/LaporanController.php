@@ -105,7 +105,7 @@ class LaporanController extends Controller
             ORDER BY tanggal DESC
         ";
 
-        $data = DB::select($sql);
+        $data = collect(DB::select($sql));
 
         $title  = 'Hapus Data!';
         $text   = "Data akan dihapus, Anda Yakin?";
@@ -235,7 +235,7 @@ class LaporanController extends Controller
         $tanggalAkhir = $request->input('tanggal_akhir');
 
         $query = Jemaat::with(['hubunganKeluarga.kkJemaat'])
-            ->where('status_aktif', 'Aktif')
+            ->whereIn('status_aktif', ['Aktif', 'Pasif'])
             ->orderBy('tanggal_terdaftar', 'asc');
 
         if ($tanggalAwal && $tanggalAkhir) {
@@ -280,7 +280,7 @@ class LaporanController extends Controller
                 'kk.id_group_wilayah'
             )
         ->whereNotNull('j.tanggal_lahir')
-        ->where('j.status_aktif', 'Aktif')
+        ->whereIn('j.status_aktif', ['Aktif', 'Bukan Anggota', 'Pasif'])
         ->orderByRaw("DATE_FORMAT(j.tanggal_lahir, '%m-%d') ASC");
 
     if ($bulanAwal && $hariAwal && $bulanAkhir && $hariAkhir) {

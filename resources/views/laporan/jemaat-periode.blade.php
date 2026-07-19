@@ -167,6 +167,7 @@
                                 <th>Alamat</th>
                                 <th>No. Telepon</th>
                                 <th>Tgl Terdaftar</th>
+                                <th>Status Keanggotaan</th>
                                 <th>Keterangan</th>
                             </tr>
                         </thead>
@@ -232,6 +233,23 @@
                                         @endif
                                     </td>
                                     <td>
+                                        @php
+                                            $status = $item->status_aktif ?? '-';
+                                            $badgeClass = match($status) {
+                                                'Aktif' => 'badge-success',
+                                                'Pasif' => 'badge-warning',
+                                                'Meninggal Dunia' => 'badge-danger',
+                                                'Atestasi Keluar' => 'badge-danger',
+                                                'Bukan Anggota' => 'badge-purple',
+                                                'Tidak Aktif' => 'badge-secondary',
+                                                default => 'badge-secondary',
+                                            };
+                                        @endphp
+                                        <span class="badge {{ $badgeClass }}" style="font-size: 0.7rem; padding: 0.35em 0.6em;">
+                                            {{ $status }}
+                                        </span>
+                                    </td>
+                                    <td>
                                         @if($item->keterangan)
                                             <span class="text-dark" style="font-size: 0.85rem;">{{ $item->keterangan }}</span>
                                         @else
@@ -241,7 +259,7 @@
                                 </tr>
                             @empty
                                 <tr>
-                                    <td colspan="9" class="text-center py-5">
+                                    <td colspan="10" class="text-center py-5">
                                         <div class="d-flex flex-column align-items-center">
                                             <i class="fas fa-inbox text-muted mb-3" style="font-size: 3rem; opacity: 0.3;"></i>
                                             <h6 class="text-muted mb-1">Tidak ada data ditemukan</h6>

@@ -54,7 +54,7 @@
             </div>
 
             <div class="card-body px-4 pt-0 pb-3">
-                <form role="form" method="POST" action="{{ $aksi }}" enctype="multipart/form-data">
+                <form role="form" method="POST" action="{{ $aksi }}" enctype="multipart/form-data" onsubmit="console.log('Form submitting', Array.from(new FormData(this).entries())); const form = this; console.log('Form inputs:', Array.from(form.querySelectorAll('input, select')).map(i => ({name: i.name, value: i.value, disabled: i.disabled})));">
                     @csrf
                     @if(isset($anggotaKeluarga))
                         @method('PUT')
@@ -663,11 +663,16 @@
     </script>
 
     <script>
-        document.addEventListener('DOMContentLoaded', function () {
+document.addEventListener('DOMContentLoaded', function () {
+            console.log('DOMContentLoaded - attaching event listeners');
+            
             const selects = document.querySelectorAll('.status-aktif-select');
+            console.log('Found status-aktif-select elements:', selects.length);
+            
             selects.forEach(select => {
                 select.addEventListener('change', function () {
                     const value = this.value;
+                    console.log('Status changed to:', value);
                     if (value === 'Atestasi Keluar' || value === 'Pindah Gereja') {
                         document.getElementById('tanggalPindah').value = '';
                         document.getElementById('gerejaTujuan').value = '';
@@ -681,47 +686,70 @@
                 });
             });
 
+            console.log('savePopup element:', document.getElementById('savePopup'));
             document.getElementById('savePopup').addEventListener('click', function () {
-                            const tanggal = document.getElementById('tanggalPindah').value;
-                            const gereja = document.getElementById('gerejaTujuan').value;
-                            const td = window.activeSelect.closest('td');
+                console.log('savePopup CLICKED!');
+                const tanggal = document.getElementById('tanggalPindah').value;
+                const gereja = document.getElementById('gerejaTujuan').value;
+                const td = window.activeSelect.closest('td');
 
-                            if (window.activeSelect.name === 'status_aktif_kk') {
-                                document.getElementById('tanggal_pindah_kk').value = tanggal;
-                                document.getElementById('gereja_tujuan_kk').value = gereja;
-                                $('#popupStatus').modal('hide');
-                                return;
-                            }
+                console.log('savePopup clicked', { 
+                    tanggal, 
+                    gereja, 
+                    activeSelect: window.activeSelect,
+                    activeSelectName: window.activeSelect?.name,
+                    td: td
+                });
 
-                            // Find existing hidden inputs in the status-row1 div (same td)
-                            const statusRow = td.querySelector('.status-row1');
-                            if (!statusRow) return;
+                if (window.activeSelect.name === 'status_aktif_kk') {
+                    document.getElementById('tanggal_pindah_kk').value = tanggal;
+                    document.getElementById('gereja_tujuan_kk').value = gereja;
+                    console.log('Set KK hidden inputs', tanggal, gereja);
+                    $('#popupStatus').modal('hide');
+                    return;
+                }
+
+                // Find existing hidden inputs in the status-row1 div (same td)
+                const statusRow = td.querySelector('.status-row1');
+                console.log('statusRow found:', statusRow);
+                if (!statusRow) return;
+
+                // Try multiple selectors
+                let tanggalInput = statusRow.querySelector('.tanggal-pindah');
+                let gerejaInput = statusRow.querySelector('.gereja-tujuan');
                 
-                            let tanggalInput = statusRow.querySelector('.tanggal-pindah');
-                            let gerejaInput = statusRow.querySelector('.gereja-tujuan');
+                console.log('Looking for .tanggal-pindah:', statusRow.querySelector('.tanggal-pindah'));
+                console.log('Looking for .gereja-tujuan:', statusRow.querySelector('.gereja-tujuan'));
+                console.log('All inputs in statusRow:', statusRow.querySelectorAll('input'));
 
-                            if (tanggalInput) tanggalInput.value = tanggal;
-                            if (gerejaInput) gerejaInput.value = gereja;
-                            $('#popupStatus').modal('hide');
-                        });
+                if (tanggalInput) {
+                    tanggalInput.value = tanggal;
+                    console.log('Set tanggal-pindah value to:', tanggalInput.value);
+                }
+                if (gerejaInput) {
+                    gerejaInput.value = gereja;
+                    console.log('Set gereja-tujuan value to:', gerejaInput.value);
+                }
+                $('#popupStatus').modal('hide');
+            });
 
             document.getElementById('saveTanggalMeninggal').addEventListener('click', function () {
-                            const tanggal = document.getElementById('tanggalMeninggal').value;
-                            const td = window.activeSelect.closest('td');
+                const tanggal = document.getElementById('tanggalMeninggal').value;
+                const td = window.activeSelect.closest('td');
 
-                            if (window.activeSelect.name === 'status_aktif_kk') {
-                                document.getElementById('tanggal_meninggal_kk').value = tanggal;
-                                $('#popupMeninggal').modal('hide');
-                                return;
-                            }
+                if (window.activeSelect.name === 'status_aktif_kk') {
+                    document.getElementById('tanggal_meninggal_kk').value = tanggal;
+                    $('#popupMeninggal').modal('hide');
+                    return;
+                }
 
-                            const statusRow = td.querySelector('.status-row1');
-                            if (!statusRow) return;
-                
-                            let tanggalMeninggalInput = statusRow.querySelector('.tanggal-meninggal');
-                            if (tanggalMeninggalInput) tanggalMeninggalInput.value = tanggal;
-                            $('#popupMeninggal').modal('hide');
-                        });
+                const statusRow = td.querySelector('.status-row1');
+                if (!statusRow) return;
+
+                let tanggalMeninggalInput = statusRow.querySelector('.tanggal-meninggal');
+                if (tanggalMeninggalInput) tanggalMeninggalInput.value = tanggal;
+                $('#popupMeninggal').modal('hide');
+            });
         });
     </script>
 

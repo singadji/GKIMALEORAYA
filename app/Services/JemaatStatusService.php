@@ -5,11 +5,19 @@ namespace App\Services;
 use App\Models\Atestasi;
 use App\Models\PindahGereja;
 use App\Models\MeninggalDunia;
+use Illuminate\Support\Facades\Log;
 
 class JemaatStatusService
 {
     public function handle($jemaat, $status, $tanggal = null, $gereja = null)
     {
+        Log::info('JemaatStatusService handle called', [
+            'jemaat_id' => $jemaat->id_jemaat,
+            'status' => $status,
+            'tanggal' => $tanggal,
+            'gereja' => $gereja,
+        ]);
+
         switch ($status) {
             case 'Atestasi Keluar':
                 $this->handleAtestasi($jemaat, $tanggal, $gereja);
@@ -42,6 +50,11 @@ class JemaatStatusService
 
             // Always create/update if we have the required data
             if ($tanggal && $gereja) {
+                Log::info('Creating/updating Atestasi', [
+                    'id_jemaat' => $jemaat->id_jemaat,
+                    'tanggal' => $tanggal,
+                    'gereja' => $gereja,
+                ]);
                 Atestasi::updateOrCreate(
                     ['id_jemaat' => $jemaat->id_jemaat, 'keluar' => 1],
                     ['tanggal' => $tanggal, 'gereja' => $gereja, 'setuju' => 1]
@@ -67,6 +80,11 @@ class JemaatStatusService
         }
 
         if ($this->shouldUpdate($existing, $tanggal, $gereja)) {
+            Log::info('Creating/updating PindahGereja', [
+                'id_jemaat' => $jemaat->id_jemaat,
+                'tanggal' => $tanggal,
+                'gereja' => $gereja,
+            ]);
             PindahGereja::updateOrCreate(
                 ['id_jemaat' => $jemaat->id_jemaat, 'ke' => 1],
                 ['tanggal' => $tanggal, 'gereja' => $gereja, 'setuju' => 1]
@@ -83,6 +101,10 @@ class JemaatStatusService
         }
 
         if ($this->shouldUpdate($existing, $tanggal)) {
+            Log::info('Creating/updating MeninggalDunia', [
+                'id_jemaat' => $jemaat->id_jemaat,
+                'tanggal' => $tanggal,
+            ]);
             MeninggalDunia::updateOrCreate(
                 ['id_jemaat' => $jemaat->id_jemaat],
                 ['tanggal' => $tanggal, 'alamat' => '-']

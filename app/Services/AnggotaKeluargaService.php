@@ -5,6 +5,7 @@ namespace App\Services;
 use App\Models\Jemaat;
 use App\Models\HubunganKeluarga;
 use App\Models\KkJemaat;
+use Illuminate\Support\Facades\Log;
 
 class AnggotaKeluargaService
 {
@@ -13,6 +14,14 @@ class AnggotaKeluargaService
         $messages = [];
 
         if (!is_array($request->nia_anggota)) return $messages;
+
+        Log::info('AnggotaKeluargaService updateAll called', [
+            'nia_anggota' => $request->nia_anggota,
+            'status_aktif' => $request->status_aktif ?? [],
+            'tanggal_pindah' => $request->tanggal_pindah ?? [],
+            'gereja_tujuan' => $request->gereja_tujuan ?? [],
+            'tanggal_meninggal' => $request->tanggal_meninggal ?? [],
+        ]);
 
         foreach ($request->nia_anggota as $index => $nia) {
     // Lewati jika data penting tidak tersedia
@@ -52,6 +61,14 @@ class AnggotaKeluargaService
        $tanggal = null;
     }
     $gereja = in_array($status, ['Atestasi Keluar', 'Pindah Gereja']) ? $request->gereja_tujuan[$index] ?? null : null;
+
+    Log::info('Processing status for jemaat', [
+        'index' => $index,
+        'nia' => $nia,
+        'status' => $status,
+        'tanggal' => $tanggal,
+        'gereja' => $gereja,
+    ]);
 
     $statusService->handle($jemaat, $status, $tanggal, $gereja);
 
