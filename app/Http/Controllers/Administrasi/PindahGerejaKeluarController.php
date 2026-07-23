@@ -222,6 +222,8 @@ class PindahGerejaKeluarController extends Controller
                 'gereja' => $record->gereja ?? '-',
                 'tanggal' => $record->tanggal,
                 'nomor_surat' => $record->nomor_surat ?? null,
+                'nama_ketua' => config('app.nama_ketua', 'Nama Ketua'),
+                'nama_sekretaris' => config('app.nama_sekretaris', 'Nama Sekretaris'),
             ]);
         }
 
@@ -239,6 +241,8 @@ class PindahGerejaKeluarController extends Controller
             'gereja' => $record->gereja ?? '-',
             'tanggal' => $record->tanggal,
             'nomor_surat' => $record->nomor_surat ?? null,
+            'nama_ketua' => config('app.nama_ketua', 'Nama Ketua'),
+            'nama_sekretaris' => config('app.nama_sekretaris', 'Nama Sekretaris'),
         ]);
     }
 

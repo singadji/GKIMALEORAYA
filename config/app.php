@@ -190,6 +190,8 @@ return [
     'aliases' => Facade::defaultAliases()->merge([
         'Excel' => Maatwebsite\Excel\Facades\Excel::class,
     ])->toArray(),
-    
+
+    'nama_ketua' => env('NAMA_KETUA', 'Parulian Situmorang'),
+    'nama_sekretaris' => env('NAMA_SEKRETARIS', 'Febiana Rima Kainama'),
 
 ];

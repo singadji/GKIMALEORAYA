@@ -194,10 +194,6 @@ class DashboardController extends Controller
         {
             $Hjudul = "<h1>Data Jemaat Aktif</h1><hr>";
             $item = Jemaat::where('status_aktif', 'Aktif')
-                ->where('tanggal_terdaftar', '<=', $tahunAkhir)
-                ->whereNotNull('tanggal_terdaftar')
-                ->whereNotNull('tanggal_sidi')
-                ->whereNotNull('tanggal_baptis')
                 ->with('kkJemaat', 'hubunganKeluarga.kkJemaat')
                 ->get();
 

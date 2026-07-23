@@ -3,160 +3,187 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>{{ $title }} - {{ $nama_jemaat }}</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" rel="stylesheet">
+    <title>Surat Atestasi - {{ $nama_jemaat ?? '' }}</title>
     <style>
         @page { margin: 2cm; size: A4; }
-        body { font-family: 'Times New Roman', Times, serif; font-size: 12pt; line-height: 1.6; color: #000; }
-        .surat-container { max-width: 21cm; margin: 0 auto; padding: 0; }
-        .header { text-align: center; margin-bottom: 30px; border-bottom: 3px double #000; padding-bottom: 20px; }
-        .header h1 { font-size: 16pt; font-weight: bold; margin: 5px 0; text-transform: uppercase; letter-spacing: 1px; }
-        .header h2 { font-size: 14pt; font-weight: bold; margin: 5px 0; text-decoration: underline; }
-        .header .nomor-surat { font-size: 12pt; margin-top: 15px; }
-        .alamat-gereja { font-size: 10pt; line-height: 1.4; margin-top: 10px; }
-        .content { text-align: justify; margin-bottom: 30px; }
-        .content p { margin-bottom: 15px; text-indent: 1.5cm; }
-        .content .opening { text-indent: 0; }
-        .data-table { width: 100%; border-collapse: collapse; margin: 20px 0; font-size: 11pt; }
-        .data-table td { padding: 6px 10px; vertical-align: top; }
-        .data-table td.label { width: 30%; font-weight: bold; }
-        .data-table td.separator { width: 2%; }
-        .data-table td.value { width: 68%; }
-        .closing { margin-top: 40px; }
-        .closing .place-date { text-align: right; margin-bottom: 20px; }
-        .closing .signature-block { text-align: right; }
-        .closing .signature-block .title { margin-bottom: 60px; }
-        .closing .signature-block .name { font-weight: bold; text-decoration: underline; text-transform: uppercase; }
-        .closing .signature-block .nip { font-size: 10pt; }
-        .ttd-area { height: 70px; }
-        .note { margin-top: 30px; padding: 15px; background-color: #f8f9fa; border: 1px solid #dee2e6; border-radius: 5px; font-size: 10pt; }
-        .note-title { font-weight: bold; text-decoration: underline; margin-bottom: 10px; }
-        @media print { .no-print { display: none !important; } body { -webkit-print-color-adjust: exact; print-color-adjust: exact; } }
-        .btn-print { position: fixed; top: 20px; right: 20px; z-index: 1000; box-shadow: 0 4px 12px rgba(0,0,0,0.15); }
+        body {
+            font-family: 'Times New Roman', Times, serif;
+            font-size: 12pt;
+            line-height: 1.5;
+            color: #000;
+            margin: 0;
+            padding: 0;
+        }
+        .surat-container {
+            max-width: 21cm;
+            margin: 0 auto;
+            padding: 2cm;
+        }
+        .place-date {
+            text-align: right;
+            margin-bottom: 30px;
+        }
+        .recipient {
+            margin-bottom: 30px;
+            line-height: 1.5;
+        }
+        .recipient .title-line {
+            margin-bottom: 2px;
+        }
+        .letter-title {
+            text-align: center;
+            margin: 30px 0 5px 0;
+        }
+        .letter-title h2 {
+            font-size: 14pt;
+            font-weight: bold;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin: 0 0 5px 0;
+            text-decoration: underline;
+        }
+        .letter-number {
+            text-align: center;
+            font-size: 12pt;
+            margin-bottom: 30px;
+        }
+        .salutation {
+            margin-bottom: 20px;
+        }
+        .body-text {
+            text-align: justify;
+            margin-bottom: 15px;
+            line-height: 1.6;
+        }
+        .closing-text {
+            text-align: left;
+            margin-bottom: 25px;
+        }
+        .signature-area {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+            page-break-inside: avoid;
+        }
+        .sig-block {
+            width: 45%;
+            text-align: center;
+        }
+        .sig-title {
+            margin-bottom: 80px;
+            line-height: 1.4;
+        }
+        .sig-name {
+            font-weight: bold;
+            text-decoration: underline;
+            text-transform: uppercase;
+            font-size: 11pt;
+        }
+        .tembusan {
+            margin-top: 40px;
+            font-size: 11pt;
+            border-top: 1px solid #000;
+            padding-top: 10px;
+        }
+        .tembusan-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .tembusan ol {
+            margin: 0;
+            padding-left: 20px;
+            line-height: 1.6;
+        }
+        .no-print { display: block; }
+        .btn-print {
+            position: fixed;
+            top: 20px;
+            right: 20px;
+            z-index: 1000;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+        @media print {
+            .no-print { display: none !important; }
+            body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+        }
     </style>
 </head>
 <body>
     <div class="no-print btn-print">
-        <button onclick="window.print()" class="btn btn-primary btn-lg">
-            <i class="fas fa-print me-2"></i>Cetak / Simpan PDF
+        <button onclick="window.print()" style="background:#007bff;color:#fff;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;font-size:14px;">
+            Cetak / Simpan PDF
         </button>
-        <button onclick="window.close()" class="btn btn-secondary btn-lg ms-2">
-            <i class="fas fa-times me-2"></i>Tutup
+        <button onclick="window.close()" style="background:#6c757d;color:#fff;border:none;padding:10px 20px;border-radius:6px;cursor:pointer;font-size:14px;margin-left:8px;">
+            Tutup
         </button>
     </div>
 
     <div class="surat-container">
-        <div class="header">
-            <div class="text-center">
-                <img src="https://gkimaleo.or.id/assets/images/gkimaleologo.png" alt="Logo GKI Maleo Raya" style="height: 80px; margin-bottom: 15px;">
-            </div>
-            <h1>Gereja Krinten Indonesia</h1>
-            <h1>Maleo Raya</h1>
-            <h2>{{ $title }}</h2>
-            <div class="alamat-gereja">
-                Jl. Maleo Raya, Bintaro Jaya Sektor IX, Tangerang-Selatan, Banten.<br>
-                Telepon/WA: +62 896 6018 3999 | Fax: +62 21 7455781<br>
-                Email: gki_maleoraya@yahoo.com
-            </div>
-            <div class="nomor-surat">
-                Nomor: <u>{{ $nomor_surat ?? '....................' }}</u> / AT-PK / {{ date('m') }} / {{ date('Y') }}
-            </div>
+        <div class="place-date">
+            Tangerang Selatan, {{ $tanggal ? \Carbon\Carbon::parse($tanggal)->translatedFormat('d F Y') : \Carbon\Carbon::now()->translatedFormat('d F Y') }}
         </div>
 
-        <div class="content">
-            <p class="opening">
-                Yang bertanda tangan di bawah ini, kami pengurus Gereja Krinten Indonesia Maleo Raya,
-                dengan ini menerangkan bahwa:
-            </p>
-
-            <table class="data-table">
-                <tr>
-                    <td class="label">Nama Lengkap</td>
-                    <td class="separator">:</td>
-                    <td class="value"><u>{{ $nama_jemaat }}</u></td>
-                </tr>
-                <tr>
-                    <td class="label">NIA</td>
-                    <td class="separator">:</td>
-                    <td class="value">{{ $nia }}</td>
-                </tr>
-                <tr>
-                    <td class="label">Jenis Kelamin</td>
-                    <td class="separator">:</td>
-                    <td class="value">{{ $gender === 'L' ? 'Laki-laki' : 'Perempuan' }}</td>
-                </tr>
-                <tr>
-                    <td class="label">Tempat / Tanggal Lahir</td>
-                    <td class="separator">:</td>
-                    <td class="value">
-                        {{ $tempat_lahir }} /
-                        {{ $tanggal_lahir ? \Carbon\Carbon::parse($tanggal_lahir)->translatedFormat('d F Y') : '-' }}
-                    </td>
-                </tr>
-                <tr>
-                    <td class="label">Alamat</td>
-                    <td class="separator">:</td>
-                    <td class="value">{{ $alamat }}</td>
-                </tr>
-                <tr>
-                    <td class="label">No. Telepon / HP</td>
-                    <td class="separator">:</td>
-                    <td class="value">{{ $telepon }}</td>
-                </tr>
-                <tr>
-                    <td class="label">Gereja Tujuan</td>
-                    <td class="separator">:</td>
-                    <td class="value"><u>{{ $gereja }}</u></td>
-                </tr>
-                <tr>
-                    <td class="label">Tanggal Pindah</td>
-                    <td class="separator">:</td>
-                    <td class="value">{{ $tanggal ? \Carbon\Carbon::parse($tanggal)->translatedFormat('d F Y') : '-' }}</td>
-                </tr>
-            </table>
-
-            <p>
-                Jemaat tersebut di atas telah memindahkan keanggotaannya dari Gereja Krinten Indonesia Maleo Raya
-                ke <strong>{{ $gereja }}</strong>, dan telah dikeluarkan surat atestasi keluar pindah
-                pada tanggal <strong>{{ $tanggal ? \Carbon\Carbon::parse($tanggal)->translatedFormat('d F Y') : '..............' }}</strong>.
-            </p>
-            <p>
-                Selama menjadi jemaat di GKI Maleo Raya, beliau/ia telah beribadah dan melayani dengan setia.
-                Kami berdoa agar di tempat baru, jemaat tersebut terus diberkati Tuhan dan setia dalam melayani-Nya.
-            </p>
-            <p>
-                Surat keterangan ini diberikan untuk digunakan sebagaimana mestinya.
-            </p>
+        <div class="recipient">
+            <div class="title-line">Yang terhormat,</div>
+            <div class="title-line" style="font-weight:bold;">Majelis Jemaat {{ $gereja ?? '...' }}</div>
+            @if(!empty($gereja_alamat))
+                <div class="title-line">{{ $gereja_alamat }}</div>
+            @endif
         </div>
 
-        <div class="closing">
-            <div class="place-date">
-                Jakarta, {{ \Carbon\Carbon::now()->translatedFormat('d F Y') }}
-            </div>
-            <div class="signature-block">
-                <div class="title">
-                    Ketua Dewan Gereja<br>
-                    GKI Maleo Raya
+        <div class="letter-title">
+            <h2>SURAT ATESTASI</h2>
+        </div>
+        <div class="letter-number">
+            No: <u>{{ $nomor_surat ?? '...' }}</u>
+        </div>
+
+        <div class="salutation">
+            Salam dalam kasih Tuhan Yesus Kristus,
+        </div>
+
+        <div class="body-text">
+            Berdasarkan permohonan {{ $gender === 'P' ? 'Sdri.' : 'Sdr.' }} {{ $nama_jemaat ?? '...' }}
+            NA.{{ $nia ?? '...' }} (fotocopy surat permohonan terlampir),
+            maka dengan ini kami Majelis Jemaat GKI Maleo Raya
+            menyerahkan keanggotaan beliau ke dalam pelayanan
+            Majelis Jemaat {{ $gereja ?? '...' }}.
+        </div>
+
+        <div class="closing-text">
+            Atas perhatian dan pelayanan Saudara kami ucapkan terima kasih.
+        </div>
+
+        <div class="signature-area">
+            <div class="sig-block">
+                <div class="sig-title">
+                    Teriring salam dan doa,<br>
+                    Majelis Jemaat<br>
+                    GKI Maleo Raya – Tangerang
                 </div>
-                <div class="ttd-area"></div>
-                <div class="name">{{ config('app.ketua_geraja', 'Nama Ketua Dewan Gereja') }}</div>
-                <div class="nip">NIA: {{ config('app.ketua_nia', '..........') }}</div>
+                <div class="sig-name">Pnt. {{ $nama_ketua ?? '...' }}</div>
+                <div style="font-size:10pt;">Ketua</div>
+            </div>
+            <div class="sig-block">
+                <div class="sig-title">
+                    &nbsp;<br>
+                    &nbsp;<br>
+                    &nbsp;
+                </div>
+                <div class="sig-name">Pnt. {{ $nama_sekretaris ?? '...' }}</div>
+                <div style="font-size:10pt;">Sekretaris</div>
             </div>
         </div>
 
-        <div class="note">
-            <div class="note-title"><i class="fas fa-info-circle me-1"></i> CATATAN PENTING:</div>
-            <ol style="margin: 0; padding-left: 20px; line-height: 1.8;">
-                <li>Surat ini dibuat dalam rangkap 2 (dua), masing-masing bermaterai cukup.</li>
-                <li>Surat ini berlaku selama 6 (enam) bulan terhitung sejak tanggal terbit.</li>
-                <li>Setiap pengubahan atau pencoretisan pada surat ini mengakibatkan surat menjadi tidak sah.</li>
-                <li>Jemaat dimohon untuk segera melaporkan ke gereja tujuan yang bersangkutan.</li>
+        <div class="tembusan">
+            <div class="tembusan-title">Tembusan:</div>
+            <ol>
+                <li>{{ $nama_jemaat ?? '...' }}</li>
+                <li>Arsip.</li>
             </ol>
         </div>
     </div>
 
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
         document.addEventListener('keydown', function(e) {
             if (e.ctrlKey && e.key === 'p') { e.preventDefault(); window.print(); }

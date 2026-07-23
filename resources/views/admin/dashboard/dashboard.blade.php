@@ -188,7 +188,7 @@
                 <div class="card-body">
                   <div class="row align-items-center">
                     <div class="col">
-                      <h5 class="card-title text-uppercase text-muted mb-1">Kepala Keluarga</h5>
+                      <h5 class="card-title text-uppercase text-muted mb-1">Kepala Keluarga Aktif</h5>
                       <span class="h2 font-weight-bold mb-0 text-info">{{ $jJ['jemaat_kk'] }}</span>
                       <span class="unit">KK</span>
                     </div>

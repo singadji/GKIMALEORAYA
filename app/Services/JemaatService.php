@@ -98,13 +98,9 @@ class JemaatService
         $Jaktif = DB::selectOne("
             SELECT COUNT(id_jemaat) AS total
             FROM jemaat
-            WHERE status_aktif IN ('Aktif', 'Pasif', 'Bukan Anggota')
-                AND tanggal_lahir IS NOT NULL
-                AND tanggal_terdaftar IS NOT NULL
-                AND tanggal_terdaftar <= STR_TO_DATE(CONCAT(?, '-12-31'), '%Y-%m-%d')
-                AND tanggal_sidi IS NOT NULL
-                AND tanggal_baptis IS NOT NULL
-        ", [$tahunAkhir]);
+            WHERE status_aktif = 'Aktif'
+                AND deleted_at IS NULL
+        ");
 
         // Count distinct jemaat with atestasi keluar records (matching detail query logic)
         $Jatestasi = DB::table('atestasi')
