@@ -90,7 +90,7 @@
                                     </td>
                                     <td class="text-center">
                                         <span id="status-keanggotaan-row1" class="badge bg-gradient-danger text-white status-keanggotaan-row1">
-                                            {{ $item->keterangan }}Belum Sidi
+                                            Belum Sidi
                                         </span>
                                     </td>
 

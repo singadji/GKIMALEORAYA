@@ -116,14 +116,16 @@ class JemaatService
         $Jkk = Jemaat::where('status_aktif', 'Aktif')->whereHas('kkJemaat')->count();
 
         $baptisan = Jemaat::with(['kkJemaat', 'hubunganKeluarga.kkJemaat'])
-            ->whereIn('status_aktif', ['Bukan Anggota'])
+            ->whereNotIn('status_aktif', ['Atestasi Keluar', 'Meninggal Dunia', 'Bukan Anggota', 'Pindah Gereja'])
             ->where(function ($query) {
                 $query->whereNull('tanggal_sidi')
-                      ->orWhere('tanggal_sidi', '1900-01-01')
-                      ->orWhereNull('tanggal_baptis')
-                      ->orWhere('tanggal_baptis', '1900-01-01');
+                      ->orWhere('tanggal_sidi', '1900-01-01');
             })
-            ->where('tanggal_lahir', '<=', now()->subYears(16))
+            ->where(function ($query) {
+                $query->whereNotNull('tanggal_baptis')
+                      ->where('tanggal_baptis', '!=', '1900-01-01');
+            })
+            ->where('tanggal_lahir', '<=', now()->subYears(15))
             ->where('tanggal_lahir', '!=', '1900-01-01')
             ->count();
 
