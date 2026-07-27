@@ -289,12 +289,21 @@ let table = $('#dataTable').DataTable({
      "<'row'<'col-sm-6'i><'col-sm-6'p>>",
     buttons: [
         {
-            extend: 'excel',
+            extend: 'excelHtml5',
             title: '',
             className: 'd-none buttons-excel',
             filename: function (win) {
                 return $('#judulLaporanInput').val() || 'Laporan';
             },
+            exportOptions: {
+                format: {
+                    text: function (data, node, column) {
+                        var cloned = $(node).clone();
+                        cloned.find('.avatar').remove();
+                        return cloned.text().trim();
+                    }
+                }
+            }
         },
         {
             extend: 'print',

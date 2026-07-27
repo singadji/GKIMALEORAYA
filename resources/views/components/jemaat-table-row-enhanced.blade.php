@@ -16,15 +16,9 @@
         <span class="font-weight-bold text-dark">{{ $item->nia }}</span>
     </td>
     <td>
-        <div class="d-flex align-items-center">
-            <div class="avatar avatar-sm rounded-circle bg-gradient-secondary text-white d-flex align-items-center justify-content-center me-2"
-                 style="width: 32px; height: 32px; font-size: 0.75rem;">
-                {{ strtoupper(substr($item->nama_jemaat ?? 'X', 0, 1)) }}
-            </div>
-            <span class="font-weight-600">
-                {{ $item->nama_jemaat }} {!! $statusIcon !!}
-            </span>
-        </div>
+        <span class="font-weight-600">
+            {{ $item->nama_jemaat }} {!! $statusIcon !!}
+        </span>
     </td>
     <td class="text-center">
         @if($item->gender == 'L')
